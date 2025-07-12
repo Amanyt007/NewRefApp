@@ -1,0 +1,116 @@
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Recharge";
+}
+
+<div class="container mt-4">
+    <div class="card bg-primary text-white p-3 mb-3">
+        <h5>Balance</h5>
+        <h3>₹30.00</h3>
+    </div>
+    <div class="card p-3">
+        <div class="form-group">
+            <label for="rechargeAmount">Recharge amount</label>
+            <input type="number" class="form-control mb-2" id="rechargeAmount" placeholder="Recharge amount">
+        </div>
+        <div class="form-group">
+            <label>Quick amount</label>
+            <div class="d-flex justify-content-around mb-3">
+                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="290">290</button>
+                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="750">750</button>
+                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="1950">1950</button>
+                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="2750">2750</button>
+            </div>
+            <div class="d-flex justify-content-around">
+                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="4320">4320</button>
+                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="11320">11320</button>
+                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="24450">24450</button>
+                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="71150">71150</button>
+            </div>
+        </div>
+    </div>
+    <div class="card p-3 mt-3">
+        <div class="form-group">
+            <label>Recharge Channel</label>
+            <div class="form-check">
+                <input type="radio" class="form-check-input" id="upi" name="channel" value="upi" checked>
+                <label class="form-check-label" for="upi">Upi</label>
+            </div>
+            <div class="form-check">
+                <input type="radio" class="form-check-input" id="banktranfer" name="channel" value="banktranfer">
+                <label class="form-check-label" for="banktranfer">Bank Transfer</label>
+            </div>
+           @*  <div class="form-check">
+                <input type="radio" class="form-check-input" id="xdPay" name="channel" value="xdPay">
+                <label class="form-check-label" for="xdPay">XDpay</label>
+            </div> *@
+        </div>
+        
+    </div>
+    <button id="rechargeNow" class="btn btn-primary mt-3 w-100 p-3 fw-bold">Recharge Now</button>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const amountButtons = document.querySelectorAll(".amount-btn");
+            const rechargeInput = document.getElementById("rechargeAmount");
+            const rechargeNowBtn = document.getElementById("rechargeNow");
+            const minAmount = 290; // Minimum amount based on the first quick amount
+
+            // Disable button by default and enable/disable based on input
+            function updateButtonState() {
+                const amount = parseFloat(rechargeInput.value) || 0;
+                rechargeNowBtn.disabled = amount === 0 || isNaN(amount);
+            }
+
+            // Handle amount button clicks
+            amountButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const amount = parseFloat(this.getAttribute("data-amount"));
+                    rechargeInput.value = amount;
+                    updateButtonState();
+                });
+            });
+
+            // Update button state on input change
+            rechargeInput.addEventListener("input", updateButtonState);
+
+            // Handle Recharge Now click
+            rechargeNowBtn.addEventListener("click", function () {
+                const amount = parseFloat(rechargeInput.value);
+                const paymentType = document.querySelector('input[name="channel"]:checked').value;
+                if (isNaN(amount)){
+                    alert(`Please Select Amount`);
+                    return;
+                }
+                if (amount < minAmount) {
+                    alert(`Minimum recharge amount is ${minAmount}`);
+                    return;
+                }
+
+                if (amount > 0 && !isNaN(amount) && paymentType) {
+                    window.location.href = `/home/Transaction?amount=${amount}&paymentType=${paymentType}`;
+                }
+            });
+        });
+    </script>
+}
+
+<style>
+    .amount-btn {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .card {
+        border-radius: 10px;
+    }
+    .bg-primary {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+</style>

@@ -1,0 +1,43 @@
+﻿@model User
+
+@{
+    ViewData["Title"] = "Referrals";
+}
+
+<div class="referral-container">
+    @if (Model != null && ViewBag.ReferralData != null)
+    {
+        var referralData = ViewBag.ReferralData;
+        <div class="level-row level1">
+            <span class="level-label">Level 1</span>
+            <span class="rebate">@referralData.Level1.Rebate% Lv 1 Rebate</span>
+            <span class="total-invites">Total Invite: @referralData.Level1.TotalInvites</span>
+            <span class="active-invites">Active: @referralData.Level1.ActiveInvites</span>
+        </div>
+        <div class="level-row level2">
+            <span class="level-label">Level 2</span>
+            <span class="rebate">@referralData.Level2.Rebate% Lv 2 Rebate</span>
+            <span class="total-invites">Total Invite: @referralData.Level2.TotalInvites</span>
+            <span class="active-invites">Active: @referralData.Level2.ActiveInvites</span>
+        </div>
+        <div class="level-row level3">
+            <span class="level-label">Level 3</span>
+            <span class="rebate">@referralData.Level3.Rebate% Lv 3 Rebate</span>
+            <span class="total-invites">Total Invite: @referralData.Level3.TotalInvites</span>
+            <span class="active-invites">Active: @referralData.Level3.ActiveInvites</span>
+        </div>
+    }
+    else
+    {
+        <p>No referral data available. Please log in.</p>
+    }
+</div>
+
+<style>
+    .level-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border-radius: 5px; }
+    .level1 { background-color: #fff3cd; }
+    .level2 { background-color: #cce5ff; }
+    .level3 { background-color: #f8d7da; }
+    .level-label { font-weight: bold; margin-right: 10px; }
+    .rebate, .total-invites, .active-invites { margin: 0 15px; }
+</style>

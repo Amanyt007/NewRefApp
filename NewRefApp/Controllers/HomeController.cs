@@ -1,0 +1,167 @@
+using System.Diagnostics;
+using NewRefApp.Models;
+using Microsoft.AspNetCore.Mvc;
+using NewRefApp.Middlewares;
+using NewRefApp.Services;
+using NewRefApp.Data.DTOs;
+using NewRefApp.Interfaces;
+using System.Text.RegularExpressions;
+
+namespace NewRefApp.Controllers
+{
+    [ServiceFilter(typeof(UserFilter))]
+    public class HomeController : BaseController
+    {
+        private readonly ILogger<HomeController> _logger;
+        //private readonly IInvestmentPlanService _investmentPlanService;
+        private readonly IUserService _userService;
+        private readonly IUpiDetailsService _upiDetailsService;
+        private readonly IDepositService _depositService;
+
+        public HomeController(ILogger<HomeController> logger,  IUserService userService, IUpiDetailsService upiDetailsService, IDepositService depositService)
+        {
+            _logger = logger;
+            //_investmentPlanService = investmentPlanService;
+            _userService = userService;
+            _upiDetailsService = upiDetailsService;
+            _depositService = depositService;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            User user = null;
+
+            if (!string.IsNullOrEmpty(userPhone))
+            {
+                try
+                {
+                    user = await _userService.GetByPhoneAsync(userPhone);
+                }
+                catch (Exception ex)
+                {
+                    // Optional: log or handle error
+                    Console.WriteLine("Error fetching user: " + ex.Message);
+                }
+            }
+
+            //ViewBag.User = user;
+            return View(user);
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+        public async Task<IActionResult> Investments()
+        {
+            //var plans = await _investmentPlanService.GetAllAsync();
+            return View();
+        }
+        public async Task<IActionResult> Referrals()
+        {
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            User user = null;
+
+            if (!string.IsNullOrEmpty(userPhone))
+            {
+                try
+                {
+                    user = await _userService.GetByPhoneAsync(userPhone);
+                    if (user != null)
+                    {
+                        ViewBag.ReferralData = await _userService.GetReferralDataAsync(user.Id);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Optional: log or handle error
+                    Console.WriteLine("Error fetching user: " + ex.Message);
+                }
+            }
+
+            return View(user);
+        }
+        public async Task<IActionResult> TeamMembers()
+        {
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            User user = null;
+            TeamMemberDataDto teamMembers = new TeamMemberDataDto();
+
+            if (!string.IsNullOrEmpty(userPhone))
+            {
+                try
+                {
+                    user = await _userService.GetByPhoneAsync(userPhone);
+                    if (user != null)
+                    {
+                        teamMembers = await _userService.GetAllTeamMembersAsync(user.Id);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error fetching team members: " + ex.Message);
+                }
+            }
+
+            return View(teamMembers);
+        }
+        public IActionResult Recharge()
+        {
+            return View();
+        }
+        public async Task<IActionResult> Transaction(decimal? amount, string paymentType)
+        {
+            if (amount <= 0 || string.IsNullOrEmpty(paymentType))
+            {
+                return BadRequest("Invalid amount or payment type.");
+            }
+
+            var upiDetail = await _upiDetailsService.GetFirstActiveAdminUpiAsync();
+            string upiId = upiDetail?.UpiId ?? "No active admin UPI found";
+            string qrCodeBase64 = null;
+
+            if (upiDetail != null)
+            {
+                qrCodeBase64 = _upiDetailsService.GenerateUpiQrCode(upiId, (decimal)amount);
+            }
+
+            ViewBag.Amount = amount;
+            ViewBag.PaymentType = paymentType;
+            ViewBag.UpiId = upiId;
+            ViewBag.QrCode = qrCodeBase64;
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> SubmitDeposit(string utrNumber, decimal amount, string paymentType, string upiId)
+        {
+            if (string.IsNullOrEmpty(utrNumber) || !new Regex("^[0-9A-Za-z]{6,12}$").IsMatch(utrNumber))
+            {
+                return Json(new { success = false, message = "Invalid UTR number. Must be 6-12 alphanumeric characters." });
+            }
+
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            var user = !string.IsNullOrEmpty(userPhone) ? await _depositService.GetUserByPhoneAsync(userPhone) : null;
+            if (user == null)
+            {
+                return Json(new { success = false, message = "User not found." });
+            }
+
+            var deposit = new Deposit
+            {
+                UserId = user.Id,
+                Amount = amount,
+                BonusPercentage = 0, // Set based on your logic
+                Status = 0, // Pending
+                PaymentType = paymentType == "UPI" ? 0 : 1, // UPI - 0, BankTransfer - 1
+                AdminUpiId = upiId != "No active admin UPI found" ? (int?)_upiDetailsService.GetFirstActiveAdminUpiAsync().Result.Id : null,
+                UtrNumber = utrNumber,
+                Date = DateTime.UtcNow
+            };
+
+            await _depositService.CreateDepositAsync(deposit);
+            return Json(new { success = true, message = "Deposit submitted successfully." });
+        }
+
+    }
+}

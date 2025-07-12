@@ -1,0 +1,133 @@
+﻿@model NewRefApp.Data.DTOs.TeamMemberDataDto
+
+@{
+    ViewData["Title"] = "Team Members";
+    var currentDateTime = DateTime.Now.ToString("hh:mm tt 'IST' on dddd, MMMM dd, yyyy"); // Formats to 02:31 PM IST on Saturday, July 12, 2025
+}
+
+<div class="tab-wrapper">
+    <div class="tabs">
+        <button class="tab active" data-tab="level1">Level 1</button>
+        <button class="tab" data-tab="level2">Level 2</button>
+        <button class="tab" data-tab="level3">Level 3</button>
+    </div>
+
+    <div class="tab-content" id="level1">
+        <p>Updated as of @currentDateTime</p>
+        @if (Model?.Level1 != null && Model.Level1.Any())
+        {
+            <h3>Level 1 Members</h3>
+            @foreach (var member in Model.Level1)
+            {
+                <div class="member-row">
+                    <span>Mobile: @member.MobileNumber</span>
+                    <span>Purchased: @(member.IsPurchased ? "Yes" : "No")</span>
+                    <span>VIP Level: @member.VipLevel</span>
+                </div>
+            }
+        }
+        else
+        {
+            <div>No team member</div>
+        }
+    </div>
+    <div class="tab-content" id="level2" style="display: none;">
+        <p>Updated as of @currentDateTime</p>
+        @if (Model?.Level2 != null && Model.Level2.Any())
+        {
+            <h3>Level 2 Members</h3>
+            @foreach (var member in Model.Level2)
+            {
+                <div class="member-row">
+                    <span>Mobile: @member.MobileNumber</span>
+                    <span>Purchased: @(member.IsPurchased ? "Yes" : "No")</span>
+                    <span>VIP Level: @member.VipLevel</span>
+                </div>
+            }
+        }
+        else
+        {
+            <div>No team member</div>
+        }
+    </div>
+    <div class="tab-content" id="level3" style="display: none;">
+        <p>Updated as of @currentDateTime</p>
+        @if (Model?.Level3 != null && Model.Level3.Any())
+        {
+            <h3>Level 3 Members</h3>
+            @foreach (var member in Model.Level3)
+            {
+                <div class="member-row">
+                    <span>Mobile: @member.MobileNumber</span>
+                    <span>Purchased: @(member.IsPurchased ? "Yes" : "No")</span>
+                    <span>VIP Level: @member.VipLevel</span>
+                </div>
+            }
+        }
+        else
+        {
+            <div>No team member</div>
+        }
+    </div>
+</div>
+
+<style>
+
+    .tab-wrapper {
+        max-width: 600px;
+        width: 100%;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .tab {
+        flex: 1;
+        padding: 12px;
+        background: #1f1f1f;
+        color: #eee;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+        .tab.active {
+            background: #00ffd5;
+            color: #111;
+        }
+
+    .tab-content {
+        padding: 20px;
+        border-radius: 6px;
+    }
+
+    .member-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px;
+        margin-bottom: 5px;
+        border-bottom: 1px solid #333;
+    }
+</style>
+
+<script>
+    const tabs = document.querySelectorAll(".tab");
+    const contents = document.querySelectorAll(".tab-content");
+
+    tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+            tabs.forEach((t) => t.classList.remove("active"));
+            tab.classList.add("active");
+
+            const selected = tab.getAttribute("data-tab");
+            contents.forEach((c) => {
+                c.style.display = c.id === selected ? "block" : "none";
+            });
+        });
+    });
+</script>

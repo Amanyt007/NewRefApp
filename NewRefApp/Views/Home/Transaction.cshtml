@@ -1,0 +1,197 @@
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Transaction";
+    var amount = ViewBag.Amount;
+    var paymentType = ViewBag.PaymentType;
+    var upiId = ViewBag.UpiId;
+    var qrCode = ViewBag.QrCode;
+}
+
+<div class="container mt-4">
+    <div class="card bg-dark text-white p-3 mb-3">
+        <h5>Transaction Details</h5>
+        <p>Amount: ₹@amount</p>
+        <p>Payment Type: @paymentType</p>
+    </div>
+
+    <div class="tab-wrapper">
+        <div class="tabs">
+            <button class="tab active" data-tab="details">Payment Details</button>
+            <button class="tab" data-tab="qr">QR Code</button>
+            <button class="tab" data-tab="confirmation">Confirmation</button>
+        </div>
+
+        <div class="tab-content" id="details">
+            <div class="card bg-secondary text-white p-3">
+                <h4>Payment Information</h4>
+                <p><strong>Amount:</strong> ₹@amount</p>
+                <p><strong>Payment Method:</strong> @paymentType</p>
+                @if (!string.IsNullOrEmpty(upiId) && upiId != "No active admin UPI found")
+                {
+                    <p><strong>UPI ID:</strong> @upiId</p>
+                }
+                else
+                {
+                    <p class="text-warning">No active admin UPI available.</p>
+                }
+            </div>
+        </div>
+
+        <div class="tab-content" id="qr" style="display: none;">
+            <div class="card bg-secondary text-white p-3 text-center">
+                <h4>Scan to Pay</h4>
+                @if (!string.IsNullOrEmpty(qrCode))
+                {
+                    <img src="data:image/png;base64,@qrCode" alt="QR Code" style="width: 200px; height: 200px;" />
+                    <p>Scan the QR code with your UPI app to pay ₹@amount to @upiId</p>
+                }
+                else
+                {
+                    <p class="text-warning">No QR code available. Please ensure an active admin UPI exists.</p>
+                }
+            </div>
+        </div>
+
+        <div class="tab-content" id="confirmation" style="display: none;">
+            <div class="card bg-secondary text-white p-3">
+                <h4>Transaction Confirmation</h4>
+                <form id="utrForm" asp-action="SubmitDeposit" asp-controller="Home" method="post">
+                    <div class="form-group">
+                        <label for="utrNumber">UTR Number</label>
+                        <input type="text" class="form-control" id="utrNumber" name="utrNumber"
+                               pattern="^[0-9A-Za-z]{6,12}$" required
+                               oninput="validateUtr()" />
+                        <small class="text-danger" id="utrError"></small>
+                    </div>
+                    <button type="submit" id="submitBtn" class="btn btn-primary mt-3" disabled>Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tabs = document.querySelectorAll(".tab");
+            const contents = document.querySelectorAll(".tab-content");
+            const utrInput = document.getElementById("utrNumber");
+            const submitBtn = document.getElementById("submitBtn");
+            const utrError = document.getElementById("utrError");
+
+            tabs.forEach((tab) => {
+                tab.addEventListener("click", () => {
+                    tabs.forEach((t) => t.classList.remove("active"));
+                    tab.classList.add("active");
+
+                    const selected = tab.getAttribute("data-tab");
+                    contents.forEach((c) => {
+                        c.style.display = c.id === selected ? "block" : "none";
+                    });
+
+                    if (selected === "qr" && @Html.Raw(Json.Serialize(!string.IsNullOrEmpty(qrCode))) && "@upiId" !== "No active admin UPI found") {
+                        // QR code is already generated in the previous response
+                    }
+                });
+            });
+
+            function validateUtr() {
+                const utrValue = utrInput.value.trim();
+                const isValid = /^[0-9A-Za-z]{6,12}$/.test(utrValue);
+                submitBtn.disabled = !utrValue || !isValid;
+                utrError.textContent = !utrValue ? "UTR is required" :
+                    (!isValid ? "UTR must be 6-12 alphanumeric characters" : "");
+                utrError.style.display = utrError.textContent ? "block" : "none";
+            }
+
+            utrInput.addEventListener("input", validateUtr);
+
+            $("#utrForm").on("submit", function (e) {
+                e.preventDefault();
+                const utrNumber = utrInput.value.trim();
+                if (/^[0-9A-Za-z]{6,12}$/.test(utrNumber)) {
+                    $.ajax({
+                        url: "/Home/SubmitDeposit",
+                        type: "POST",
+                        data: {
+                            utrNumber: utrNumber,
+                            amount: @amount,
+                            paymentType: "@paymentType",
+                            upiId: "@upiId"
+                        },
+                        success: function (response) {
+                            alert("Deposit submitted successfully!");
+                            window.location.href = "/Home/Index";
+                        },
+                        error: function (xhr, status, error) {
+                            alert("Error submitting deposit: " + error);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+}
+
+<style>
+    body {
+        background: #111;
+        color: #eee;
+        margin: 0;
+        padding: 80px 20px;
+        font-family: sans-serif;
+    }
+
+    .tab-wrapper {
+        max-width: 600px;
+        width: 100%;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .tab {
+        flex: 1;
+        padding: 12px;
+        background: #1f1f1f;
+        color: #eee;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .tab.active {
+            background: #00ffd5;
+            color: #111;
+        }
+
+    .tab-content {
+        background: #222;
+        padding: 20px;
+        border-radius: 6px;
+        display: none;
+    }
+
+        .tab-content#details {
+            display: block;
+        }
+
+    .card {
+        border-radius: 10px;
+    }
+
+    .bg-dark {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    #utrError {
+        display: none;
+    }
+</style>

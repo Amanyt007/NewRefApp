@@ -1,0 +1,116 @@
+﻿<div class="container mt-5">
+	<h2>Login</h2>
+	<div id="login-form">
+		<div class="mb-3">
+			<label for="mobileno" class="form-label">Mobile Number</label>
+			<input type="text" class="form-control" id="mobileno" name="mobileno" onchange="clearValidation('mobileno')">
+			<div id="mobileno-error" class="error"></div>
+		</div>
+		<div class="mb-3">
+			<label for="password" class="form-label">Password</label>
+			<input type="password" class="form-control" id="password" name="password" onchange="clearValidation('password')">
+			<div id="password-error" class="error"></div>
+		</div>
+		<button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Login</button>
+		<div id="success-message" class="text-success mt-3" style="display: none;"></div>
+		<div id="error-message" class="text-danger mt-3" style="display: none;"></div>
+	</div>
+</div>
+
+<script>
+	function clearValidation(fieldId) {
+		const input = document.getElementById(fieldId);
+		const error = document.getElementById(fieldId + '-error');
+		input.classList.remove('is-invalid');
+		if (error) {
+			error.style.display = 'none';
+			error.textContent = '';
+		}
+	}
+
+	function showError(fieldId, message) {
+		const input = document.getElementById(fieldId);
+		const error = document.getElementById(fieldId + '-error');
+		error.textContent = message;
+		error.style.display = 'block';
+		input.classList.add('is-invalid');
+	}
+
+	function showMessage(elementId, message, isSuccess) {
+		const messageElement = document.getElementById(elementId);
+		messageElement.textContent = message;
+		messageElement.style.display = 'block';
+		messageElement.classList.remove(isSuccess ? 'text-danger' : 'text-success');
+		messageElement.classList.add(isSuccess ? 'text-success' : 'text-danger');
+	}
+
+	async function validateAndSubmit() {
+		let isValid = true;
+		const mobileno = document.getElementById('mobileno');
+		const password = document.getElementById('password');
+
+		// Reset error states
+		document.querySelectorAll('.error').forEach(error => {
+			error.style.display = 'none';
+			error.textContent = '';
+		});
+		document.querySelectorAll('.form-control').forEach(input => input.classList.remove('is-invalid'));
+		document.getElementById('success-message').style.display = 'none';
+		document.getElementById('error-message').style.display = 'none';
+
+		// Mobile Number validation (10 digits)
+		const mobileRegex = /^\d{10}$/;
+		if (!mobileRegex.test(mobileno.value.trim())) {
+			showError('mobileno', 'Please enter a valid 10-digit mobile number');
+			isValid = false;
+		}
+
+		// Password validation (non-empty)
+		if (!password.value.trim()) {
+			showError('password', 'Password is required');
+			isValid = false;
+		}
+
+		if (!isValid) return;
+
+		// Prepare data for API
+		const loginData = {
+			PhoneNumber: mobileno.value,
+			Password: password.value
+		};
+
+		try {
+			const response = await fetch('/api/login', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(loginData)
+			});
+
+			const result = await response.json();
+			if (response.ok) {
+				showMessage('success-message', 'Login successful!', true);
+				//document.getElementById('login-form').reset();
+				sessionStorage.setItem("rareentUser", result.user.phoneNumber);
+				const rareentUser = sessionStorage.getItem("rareentUser"); // changed to sessionStorage
+
+				const expireDate = new Date();
+				expireDate.setTime(expireDate.getTime() + (1 * 60 * 60 * 1000)); // 1 hour in ms
+
+				if (rareentUser) {
+					// Set a session cookie (no expires means session cookie)
+					document.cookie = `rareentUser=${rareentUser}; expires=${expireDate.toUTCString()}; path=/`;
+				} else {
+					// Clear the cookie if no value found
+					document.cookie = "rareentUser=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+				}
+				window.location.href = '/Home';
+			} else {
+				showMessage('error-message', result.message || 'Login failed', false);
+			}
+		} catch (error) {
+			showMessage('error-message', 'An error occurred. Please try again.', false);
+		}
+	}
+</script>
