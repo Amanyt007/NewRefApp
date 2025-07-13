@@ -1,0 +1,48 @@
+﻿@model IEnumerable<BankDetails>
+
+@{
+    ViewData["Title"] = "Bank Details";
+}
+
+<h2>Bank Details</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Account Number</th>
+            <th>Account Name</th>
+            <th>Bank Name</th>
+            <th>IFSC Code</th>
+            <th>Bank Location</th>
+            <th>Is Admin</th>
+            <th>Status</th>
+            <th>Created Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.AccountNumber</td>
+                <td>@item.AccountName</td>
+                <td>@item.BankName</td>
+                <td>@item.IFSCCode</td>
+                <td>@item.BankLocation</td>
+                <td>@item.IsAdmin</td>
+                <td>@item.Status</td>
+                <td>@item.CreatedDate</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

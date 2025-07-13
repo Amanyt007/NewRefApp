@@ -6,6 +6,7 @@
     var paymentType = ViewBag.PaymentType;
     var upiId = ViewBag.UpiId;
     var qrCode = ViewBag.QrCode;
+    var bankDetail = ViewBag.BankDetail;
 }
 
 <div class="container mt-4">
@@ -18,8 +19,10 @@
     <div class="tab-wrapper">
         <div class="tabs">
             <button class="tab active" data-tab="details">Payment Details</button>
-            <button class="tab" data-tab="qr">QR Code</button>
-            <button class="tab" data-tab="confirmation">Confirmation</button>
+            @if (paymentType == "UPI" && !string.IsNullOrEmpty(qrCode))
+            {
+                <button class="tab" data-tab="qr">QR Code</button>
+            }
         </div>
 
         <div class="tab-content" id="details">
@@ -27,51 +30,54 @@
                 <h4>Payment Information</h4>
                 <p><strong>Amount:</strong> ₹@amount</p>
                 <p><strong>Payment Method:</strong> @paymentType</p>
-                @if (!string.IsNullOrEmpty(upiId) && upiId != "No active admin UPI found")
+                @if (paymentType == "UPI" && !string.IsNullOrEmpty(upiId) && upiId != "No active admin UPI found")
                 {
                     <p><strong>UPI ID:</strong> @upiId</p>
                 }
+                else if (paymentType == "BankTransfer" && bankDetail != null)
+                {
+                    <p><strong>Account Number:</strong> @bankDetail.AccountNumber</p>
+                    <p><strong>Account Name:</strong> @bankDetail.AccountName</p>
+                    <p><strong>Bank Name:</strong> @bankDetail.BankName</p>
+                    <p><strong>IFSC Code:</strong> @bankDetail.IFSCCode</p>
+                }
                 else
                 {
-                    <p class="text-warning">No active admin UPI available.</p>
+                    <p class="text-warning">No active @paymentType details available.</p>
                 }
             </div>
         </div>
 
-        <div class="tab-content" id="qr" style="display: none;">
-            <div class="card bg-secondary text-white p-3 text-center">
-                <h4>Scan to Pay</h4>
-                @if (!string.IsNullOrEmpty(qrCode))
-                {
+        @if (paymentType == "UPI" && !string.IsNullOrEmpty(qrCode))
+        {
+            <div class="tab-content" id="qr" style="display: none;">
+                <div class="card bg-secondary text-white p-3 text-center">
+                    <h4>Scan to Pay</h4>
                     <img src="data:image/png;base64,@qrCode" alt="QR Code" style="width: 200px; height: 200px;" />
                     <p>Scan the QR code with your UPI app to pay ₹@amount to @upiId</p>
-                }
-                else
-                {
-                    <p class="text-warning">No QR code available. Please ensure an active admin UPI exists.</p>
-                }
+                </div>
             </div>
-        </div>
+        }
 
-        <div class="tab-content" id="confirmation" style="display: none;">
-            <div class="card bg-secondary text-white p-3">
-                <h4>Transaction Confirmation</h4>
-                <form id="utrForm" asp-action="SubmitDeposit" asp-controller="Home" method="post">
-                    <div class="form-group">
-                        <label for="utrNumber">UTR Number</label>
-                        <input type="text" class="form-control" id="utrNumber" name="utrNumber"
-                               pattern="^[0-9A-Za-z]{6,12}$" required
-                               oninput="validateUtr()" />
-                        <small class="text-danger" id="utrError"></small>
-                    </div>
-                    <button type="submit" id="submitBtn" class="btn btn-primary mt-3" disabled>Submit</button>
-                </form>
-            </div>
+        <!-- Confirmation Section Moved Outside Tabs -->
+        <div class="card bg-secondary text-white p-3 mt-3">
+            <h4>Transaction Confirmation</h4>
+            <form id="utrForm" asp-action="SubmitDeposit" asp-controller="Home" method="post">
+                <div class="form-group">
+                    <label for="utrNumber">UTR Number</label>
+                    <input type="text" class="form-control" id="utrNumber" name="utrNumber"
+                           pattern="^[0-9A-Za-z]{6,12}$" required
+                           oninput="validateUtr()" />
+                    <small class="text-danger" id="utrError"></small>
+                </div>
+                <button type="submit" id="submitBtn" class="btn btn-primary mt-3" disabled>Submit</button>
+            </form>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const tabs = document.querySelectorAll(".tab");
@@ -89,10 +95,6 @@
                     contents.forEach((c) => {
                         c.style.display = c.id === selected ? "block" : "none";
                     });
-
-                    if (selected === "qr" && @Html.Raw(Json.Serialize(!string.IsNullOrEmpty(qrCode))) && "@upiId" !== "No active admin UPI found") {
-                        // QR code is already generated in the previous response
-                    }
                 });
             });
 
@@ -110,6 +112,7 @@
             $("#utrForm").on("submit", function (e) {
                 e.preventDefault();
                 const utrNumber = utrInput.value.trim();
+                const rareentUser = sessionStorage.getItem("rareentUser");
                 if (/^[0-9A-Za-z]{6,12}$/.test(utrNumber)) {
                     $.ajax({
                         url: "/Home/SubmitDeposit",
@@ -118,11 +121,16 @@
                             utrNumber: utrNumber,
                             amount: @amount,
                             paymentType: "@paymentType",
-                            upiId: "@upiId"
+                            upiId: "@upiId",
+                            userId: rareentUser
                         },
                         success: function (response) {
-                            alert("Deposit submitted successfully!");
-                            window.location.href = "/Home/Index";
+                            if (response.success) {
+                                alert(response.message);
+                                window.location.href = "/Home/Index";
+                            } else {
+                                alert(response.message);
+                            }
                         },
                         error: function (xhr, status, error) {
                             alert("Error submitting deposit: " + error);
@@ -132,7 +140,6 @@
             });
         });
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 }
 
 <style>

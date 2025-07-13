@@ -34,12 +34,12 @@
         <div class="form-group">
             <label>Recharge Channel</label>
             <div class="form-check">
-                <input type="radio" class="form-check-input" id="upi" name="channel" value="upi" checked>
-                <label class="form-check-label" for="upi">Upi</label>
+                <input type="radio" class="form-check-input" id="UPI" name="channel" value="UPI" checked>
+                <label class="form-check-label" for="UPI">Upi</label>
             </div>
             <div class="form-check">
-                <input type="radio" class="form-check-input" id="banktranfer" name="channel" value="banktranfer">
-                <label class="form-check-label" for="banktranfer">Bank Transfer</label>
+                <input type="radio" class="form-check-input" id="BankTransfer" name="channel" value="BankTransfer">
+                <label class="form-check-label" for="BankTransfer">Bank Transfer</label>
             </div>
            @*  <div class="form-check">
                 <input type="radio" class="form-check-input" id="xdPay" name="channel" value="xdPay">
@@ -91,7 +91,7 @@
                 }
 
                 if (amount > 0 && !isNaN(amount) && paymentType) {
-                    window.location.href = `/home/Transaction?amount=${amount}&paymentType=${paymentType}`;
+                    window.location.href = `/home/Payment?amount=${amount}&paymentType=${paymentType}`;
                 }
             });
         });

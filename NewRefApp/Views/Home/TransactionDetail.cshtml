@@ -1,0 +1,75 @@
+﻿@model Deposit
+
+@{
+    ViewData["Title"] = "Transaction Details";
+}
+
+<div class="container mt-4">
+    <div class="card bg-dark text-white p-3 mb-3">
+        <h5>Transaction Details</h5>
+    </div>
+
+    <div class="card bg-secondary text-white p-3">
+        <h4>Transaction Information</h4>
+        <p><strong>ID:</strong> @Model.Id</p>
+        <p><strong>User Name:</strong> @Model.User.FullName</p>
+        <p><strong>Amount:</strong> ₹@Model.Amount</p>
+        <p><strong>Payment Type:</strong> @(Model.PaymentType == 0 ? "UPI" : "BankTransfer")</p>
+        @if (Model.PaymentType == 0 && Model.UpiDetail != null)
+        {
+            <p><strong>UPI ID:</strong> @Model.UpiDetail.UpiId</p>
+        }
+        else if (Model.PaymentType == 1 && Model.BankDetail != null)
+        {
+            <p><strong>Account Number:</strong> @Model.BankDetail.AccountNumber</p>
+            <p><strong>Account Name:</strong> @Model.BankDetail.AccountName</p>
+            <p><strong>Bank Name:</strong> @Model.BankDetail.BankName</p>
+            <p><strong>IFSC Code:</strong> @Model.BankDetail.IFSCCode</p>
+        }
+        <p><strong>UTR Number:</strong> @Model.UtrNumber</p>
+        <p><strong>Date:</strong> @Model.Date.ToString("dd/MM/yyyy HH:mm:ss")</p>
+        <p>
+            <strong>Status:</strong>
+            @if (Model.Status == 0)
+            {
+                <span class="badge bg-warning"><i class="fas fa-clock"></i> Pending</span>
+            }
+            else if (Model.Status == 1)
+            {
+                <span class="badge bg-success"><i class="fas fa-check-circle"></i> Completed</span>
+            }
+            else if (Model.Status == 2)
+            {
+                <span class="badge bg-danger"><i class="fas fa-times-circle"></i> Failed</span>
+            }
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}
+
+<style>
+    .card {
+        border-radius: 10px;
+    }
+    .bg-dark {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    .badge {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .bg-warning {
+        background-color: #ffc107 !important;
+    }
+    .bg-success {
+        background-color: #28a745 !important;
+    }
+    .bg-danger {
+        background-color: #dc3545 !important;
+    }
+</style>

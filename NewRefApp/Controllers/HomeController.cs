@@ -17,14 +17,18 @@ namespace NewRefApp.Controllers
         private readonly IUserService _userService;
         private readonly IUpiDetailsService _upiDetailsService;
         private readonly IDepositService _depositService;
+        private readonly IBankDetailsService _bankService;
+        private readonly ITransactionDetailsService _transactionDetailsService;
 
-        public HomeController(ILogger<HomeController> logger,  IUserService userService, IUpiDetailsService upiDetailsService, IDepositService depositService)
+        public HomeController(ILogger<HomeController> logger, IUserService userService, IUpiDetailsService upiDetailsService, IDepositService depositService, IBankDetailsService bankService, ITransactionDetailsService transactionDetailsService)
         {
             _logger = logger;
             //_investmentPlanService = investmentPlanService;
             _userService = userService;
             _upiDetailsService = upiDetailsService;
             _depositService = depositService;
+            _bankService = bankService;
+            _transactionDetailsService = transactionDetailsService;
         }
 
         public async Task<IActionResult> Index()
@@ -110,38 +114,48 @@ namespace NewRefApp.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> Transaction(decimal? amount, string paymentType)
+        public async Task<IActionResult> Payment(decimal? amount, string paymentType)
         {
             if (amount <= 0 || string.IsNullOrEmpty(paymentType))
             {
                 return BadRequest("Invalid amount or payment type.");
             }
 
-            var upiDetail = await _upiDetailsService.GetFirstActiveAdminUpiAsync();
-            string upiId = upiDetail?.UpiId ?? "No active admin UPI found";
+            string upiId = null;
             string qrCodeBase64 = null;
+            BankDetails bankDetail = null;
 
-            if (upiDetail != null)
+            if (paymentType == "UPI")
             {
-                qrCodeBase64 = _upiDetailsService.GenerateUpiQrCode(upiId, (decimal)amount);
+                var upiDetail = await _upiDetailsService.GetFirstActiveAdminUpiAsync();
+                upiId = upiDetail?.UpiId ?? "No active admin UPI found";
+                if (upiDetail != null)
+                {
+                    qrCodeBase64 = _upiDetailsService.GenerateUpiQrCode(upiId, (decimal)amount);
+                }
+            }
+            else if (paymentType == "BankTransfer")
+            {
+                bankDetail = await _bankService.GetFirstActiveAdminBankAsync();
             }
 
             ViewBag.Amount = amount;
             ViewBag.PaymentType = paymentType;
             ViewBag.UpiId = upiId;
             ViewBag.QrCode = qrCodeBase64;
+            ViewBag.BankDetail = bankDetail;
             return View();
         }
+
         [HttpPost]
-        public async Task<IActionResult> SubmitDeposit(string utrNumber, decimal amount, string paymentType, string upiId)
+        public async Task<IActionResult> SubmitDeposit(string utrNumber, decimal amount, string paymentType, string upiId, string userId)
         {
             if (string.IsNullOrEmpty(utrNumber) || !new Regex("^[0-9A-Za-z]{6,12}$").IsMatch(utrNumber))
             {
                 return Json(new { success = false, message = "Invalid UTR number. Must be 6-12 alphanumeric characters." });
             }
 
-            var userPhone = HttpContext.Session.GetString("UserPhone");
-            var user = !string.IsNullOrEmpty(userPhone) ? await _depositService.GetUserByPhoneAsync(userPhone) : null;
+            var user = !string.IsNullOrEmpty(userId) ? await _depositService.GetUserByPhoneAsync(userId) : null;
             if (user == null)
             {
                 return Json(new { success = false, message = "User not found." });
@@ -151,10 +165,11 @@ namespace NewRefApp.Controllers
             {
                 UserId = user.Id,
                 Amount = amount,
-                BonusPercentage = 0, // Set based on your logic
-                Status = 0, // Pending
-                PaymentType = paymentType == "UPI" ? 0 : 1, // UPI - 0, BankTransfer - 1
-                AdminUpiId = upiId != "No active admin UPI found" ? (int?)_upiDetailsService.GetFirstActiveAdminUpiAsync().Result.Id : null,
+                BonusPercentage = 0,
+                Status = 0,
+                PaymentType = paymentType == "UPI" ? 0 : 1,
+                AdminUpiId = paymentType == "UPI" && upiId != "No active admin UPI found" ? (int?)_upiDetailsService.GetFirstActiveAdminUpiAsync().Result.Id : null,
+                AdminAccountID = paymentType == "BankTransfer" ? (int?)_bankService.GetFirstActiveAdminBankAsync().Result.Id : null,
                 UtrNumber = utrNumber,
                 Date = DateTime.UtcNow
             };
@@ -163,5 +178,26 @@ namespace NewRefApp.Controllers
             return Json(new { success = true, message = "Deposit submitted successfully." });
         }
 
+        public async Task<IActionResult> Transactions()
+        {
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            if (string.IsNullOrEmpty(userPhone))
+            {
+                return RedirectToAction("Login", "Account"); // Adjust as per your auth logic
+            }
+
+            var transactions = await _transactionDetailsService.GetUserTransactionsAsync(userPhone);
+            return View(transactions);
+        }
+
+        public async Task<IActionResult> TransactionDetail(int id)
+        {
+            var transaction = await _transactionDetailsService.GetTransactionByIdAsync(id);
+            if (transaction == null)
+            {
+                return NotFound();
+            }
+            return View(transaction);
+        }
     }
 }
