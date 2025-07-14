@@ -16,7 +16,10 @@ namespace NewRefApp.Models
         public string Category { get; set; }
 
         [Required]
-        public int RevenueDurationValue { get; set; }
+        public string RevenueDurationValue { get; set; }
+
+        [Required]
+        public int? VipLevel { get; set; }
 
         public decimal? DailyEarningsPerUnit { get; set; }
 

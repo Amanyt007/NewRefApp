@@ -12,6 +12,8 @@ namespace NewRefApp.Models
         [ForeignKey(nameof(InvestmentPlan))] 
         public int PlanId { get; set; }
         public InvestmentPlan InvestmentPlan { get; set; }
+
+        public int PurchaseQuantity { get; set; }
         public DateTime StartDate { get; set; }
         
         public DateTime EndDate { get; set; }

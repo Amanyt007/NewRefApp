@@ -19,8 +19,10 @@ namespace NewRefApp.Controllers
         private readonly IDepositService _depositService;
         private readonly IBankDetailsService _bankService;
         private readonly ITransactionDetailsService _transactionDetailsService;
+        private readonly IInvestmentPlanService _investmentPlanService;
+        private readonly IUserInvestmentService _userInvestmentService;
 
-        public HomeController(ILogger<HomeController> logger, IUserService userService, IUpiDetailsService upiDetailsService, IDepositService depositService, IBankDetailsService bankService, ITransactionDetailsService transactionDetailsService)
+        public HomeController(ILogger<HomeController> logger, IUserService userService, IUpiDetailsService upiDetailsService, IDepositService depositService, IBankDetailsService bankService, ITransactionDetailsService transactionDetailsService, IInvestmentPlanService investmentPlanService, IUserInvestmentService userInvestmentService)
         {
             _logger = logger;
             //_investmentPlanService = investmentPlanService;
@@ -29,6 +31,8 @@ namespace NewRefApp.Controllers
             _depositService = depositService;
             _bankService = bankService;
             _transactionDetailsService = transactionDetailsService;
+            _investmentPlanService = investmentPlanService;
+            _userInvestmentService = userInvestmentService;
         }
 
         public async Task<IActionResult> Index()
@@ -198,6 +202,51 @@ namespace NewRefApp.Controllers
                 return NotFound();
             }
             return View(transaction);
+        }
+        public async Task<IActionResult> InvestmentPlans()
+        {
+            var investmentPlans = await _investmentPlanService.GetAllInvestmentPlansAsync();
+            return View(investmentPlans);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Invest(int planId, int quantity, string utrNumber)
+        {
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            var user = !string.IsNullOrEmpty(userPhone) ? await _depositService.GetUserByPhoneAsync(userPhone) : null;
+            if (user == null)
+            {
+                return Json(new { success = false, message = "User not found." });
+            }
+            var Balance = 50000; // For testing purposes, set a fixed balance
+            var plan = await _investmentPlanService.GetInvestmentPlanByIdAsync(planId);
+            if (plan == null)
+            {
+                return Json(new { success = false, message = "Investment plan not found." });
+            }
+
+            decimal totalAmount = plan.InvestmentAmount * quantity;
+            if (Balance < totalAmount) // Assuming User has a Balance property
+            {
+                return Json(new { success = false, message = "Insufficient wallet balance." });
+            }
+
+            //var userInvestment = new UserInvestment
+            //{
+            //    UserId = user.Id,
+            //    PlanId = planId,
+            //    PurchaseQuantity = quantity,
+            //    StartDate = DateTime.UtcNow,
+            //    EndDate = DateTime.UtcNow.AddDays(plan.RevenueDurationValue ?? 30), // Default to 30 if null
+            //    status = 1 // Purchased
+            //};
+
+
+            //Balance -= totalAmount; // Deduct from wallet
+            //await _depositService.UpdateUserAsync(user);
+            //await _userInvestmentService.CreateUserInvestmentAsync(userInvestment);
+
+            return Json(new { success = true, message = "Investment successful. Wallet balance updated." });
         }
     }
 }

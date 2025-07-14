@@ -37,6 +37,8 @@ builder.Services.AddScoped<IUpiDetailsService, UpiDetailsService>();
 builder.Services.AddScoped<IDepositService, DepositService>();
 builder.Services.AddScoped<IBankDetailsService, BankDetailsService>();
 builder.Services.AddScoped<ITransactionDetailsService, TransactionDetailsService>();
+builder.Services.AddScoped<IInvestmentPlanService, InvestmentPlanService>();
+builder.Services.AddScoped<IUserInvestmentService, UserInvestmentService>();
 //builder.Services.AddScoped<IInvestmentPlanService, InvestmentPlanService>();
 
 

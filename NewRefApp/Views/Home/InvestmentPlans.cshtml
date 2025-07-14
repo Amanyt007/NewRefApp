@@ -1,0 +1,274 @@
+﻿@model IEnumerable<InvestmentPlan>
+
+@{
+    ViewData["Title"] = "Investment Plans";
+    var categories = Model.Select(p => p.Category).Distinct().ToList();
+}
+
+<div class="container mt-4">
+    <div class="card bg-dark text-white p-3 mb-3">
+        <h5>Investment Opportunities</h5>
+    </div>
+
+    <div class="tab-wrapper">
+        <div class="tabs">
+            @foreach (var category in categories)
+            {
+                <button class="tab @(category == categories.First() ? "active" : "")" data-tab="@category">@category</button>
+            }
+        </div>
+
+        @foreach (var category in categories)
+        {
+            <div class="tab-content @(category == categories.First() ? "active" : "")" id="@category" style="display: @(category == categories.First() ? "block" : "none");">
+                <div class="card bg-secondary text-white p-3">
+                    <h4>@category Plans</h4>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        @foreach (var plan in Model.Where(p => p.Category == category))
+                        {
+                            int duration = 0;
+if (!string.IsNullOrEmpty(plan.RevenueDurationValue))
+{
+    // This pulls out the number (e.g., "49" from "49 Days")
+    var match = System.Text.RegularExpressions.Regex.Match(plan.RevenueDurationValue, @"\d+");
+    if (match.Success)
+    {
+        duration = int.Parse(match.Value);
+    }
+}
+                            var totalIncome = (plan.DailyEarningsPerUnit ?? plan.HourlyEarningsPerUnit ?? 0) * duration;
+                            var maxInvestment = 2; // As per your example
+                            <div class="col">
+                                <div class="card h-100 bg-dark text-white">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">@plan.Name</h5>
+                                        <p class="card-text"><strong>Each Price:</strong> ₹@plan.InvestmentAmount</p>
+                                        <p class="card-text"><strong>Revenue Duration:</strong> @plan.RevenueDurationValue @(plan.HourlyEarningsPerUnit.HasValue ? "Hour(s)" : "Day(s)")</p>
+                                        <p class="card-text"><strong>Daily Earnings:</strong> ₹@(plan.DailyEarningsPerUnit ?? 0)</p>
+                                        <p class="card-text"><strong>Total Income:</strong> ₹@totalIncome</p>
+                                        <p class="card-text"><strong>Max Investment:</strong> @maxInvestment</p>
+                                        <p class="card-text"><strong>VIP Level:</strong> @plan.VipLevel</p>
+                                        <button type="button" class="btn btn-primary invest-btn" data-id="@plan.Id" data-name="@plan.Name" data-amount="@plan.InvestmentAmount" data-duration="@plan.RevenueDurationValue" data-daily="@(plan.DailyEarningsPerUnit ?? 0)" data-max="@maxInvestment" data-toggle="modal" data-target="#investModal">Invest Now</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="investModal" tabindex="-1" aria-labelledby="investModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title" id="investModalLabel">Confirm Investment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="investForm" asp-action="Invest" asp-controller="Home" method="post">
+                    <input type="hidden" id="planId" name="planId" />
+                    <div class="form-group">
+                        <label>Plan Name</label>
+                        <input type="text" class="form-control" id="planName" name="planName" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label>Each Price</label>
+                        <input type="text" class="form-control" id="eachPrice" name="eachPrice" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label>Revenue Duration</label>
+                        <input type="text" class="form-control" id="revenueDuration" name="revenueDuration" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label>Daily Earnings</label>
+                        <input type="text" class="form-control" id="dailyEarnings" name="dailyEarnings" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label>Total Income</label>
+                        <input type="text" class="form-control" id="totalIncome" name="totalIncome" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label>Max Investment</label>
+                        <input type="text" class="form-control" id="maxInvestment" name="maxInvestment" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label>Buy Share</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="2" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Pay Money</label>
+                        <input type="text" class="form-control" id="payMoney" name="payMoney" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label>Expected Total Revenue</label>
+                        <input type="text" class="form-control" id="expectedRevenue" name="expectedRevenue" readonly />
+                    </div>
+                    <button type="submit" id="investBtn" class="btn btn-primary">Invest Now</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tabs = document.querySelectorAll(".tab");
+            const contents = document.querySelectorAll(".tab-content");
+            const quantityInput = document.getElementById("quantity");
+            const investBtn = document.getElementById("investBtn");
+            const payMoney = document.getElementById("payMoney");
+            const expectedRevenue = document.getElementById("expectedRevenue");
+
+            tabs.forEach((tab) => {
+                tab.addEventListener("click", () => {
+                    tabs.forEach((t) => t.classList.remove("active"));
+                    tab.classList.add("active");
+
+                    const selected = tab.getAttribute("data-tab");
+                    contents.forEach((c) => {
+                        c.style.display = c.id === selected ? "block" : "none";
+                        if (c.id === selected) c.classList.add("active");
+                        else c.classList.remove("active");
+                    });
+                });
+            });
+
+            $('.invest-btn').on('click', function () {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+                const amount = $(this).data('amount');
+                const duration = $(this).data('duration');
+                const daily = $(this).data('daily');
+                const max = $(this).data('max');
+                const totalIncome = daily * duration;
+
+                $('#planId').val(id);
+                $('#planName').val(name);
+                $('#eachPrice').val('₹' + amount);
+                $('#revenueDuration').val(duration + (daily == 0 ? ' Hour(s)' : ' Day(s)'));
+                $('#dailyEarnings').val('₹' + daily);
+                $('#totalIncome').val('₹' + totalIncome);
+                $('#maxInvestment').val(max);
+                $('#quantity').val(1).attr('max', max);
+                $('#payMoney').val('₹' + amount);
+                $('#expectedRevenue').val('₹' + totalIncome);
+
+                $('#investModal').modal('show');
+            });
+
+            quantityInput.addEventListener("input", function () {
+                const qty = parseInt(this.value) || 1;
+                const amount = parseFloat($('#eachPrice').val().replace('₹', '')) || 0;
+                const daily = parseFloat($('#dailyEarnings').val().replace('₹', '')) || 0;
+                const duration = parseInt($('#revenueDuration').val().split(' ')[0]) || 0;
+                const max = parseInt($('#maxInvestment').val()) || 1;
+
+                if (qty > max) this.value = max;
+                const totalPay = amount * qty;
+                const totalRev = daily * duration * qty;
+                payMoney.value = '₹' + totalPay.toFixed(2);
+                expectedRevenue.value = '₹' + totalRev.toFixed(2);
+                investBtn.disabled = qty < 1 || qty > max;
+            });
+
+            $("#investForm").on("submit", function (e) {
+                e.preventDefault();
+                const quantity = parseInt(quantityInput.value);
+                if (quantity > 0 && quantity <= parseInt($('#maxInvestment').val())) {
+                    $.ajax({
+                        url: "/Home/Invest",
+                        type: "POST",
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            if (response.success) {
+                                alert(response.message);
+                                $('#investModal').modal('hide');
+                                location.reload();
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            alert("Error processing investment: " + error);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
+
+<style>
+    body {
+        background: #111;
+        color: #eee;
+        margin: 0;
+        padding: 80px 20px;
+        font-family: sans-serif;
+    }
+    .tab-wrapper {
+        max-width: 1200px;
+        width: 100%;
+    }
+    .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .tab {
+        flex: 1;
+        padding: 12px;
+        background: #1f1f1f;
+        color: #eee;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .tab.active {
+        background: #00ffd5;
+        color: #111;
+    }
+    .tab-content {
+        background: #222;
+        padding: 20px;
+        border-radius: 6px;
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+    }
+    .card {
+        border-radius: 10px;
+    }
+    .bg-dark {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    .card-title {
+        font-size: 1.25rem;
+        margin-bottom: 10px;
+    }
+    .card-text {
+        margin-bottom: 5px;
+    }
+    .invest-btn {
+        width: 100%;
+    }
+    .row-cols-1 { flex: 100%; }
+    @@media (min-width: 768px) {
+        .row-cols-md-2 { flex: 50%; }
+    }
+    @@media (min-width: 992px) {
+        .row-cols-lg-3 { flex: 33.33%; }
+    }
+</style>
