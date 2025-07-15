@@ -10,5 +10,6 @@ namespace NewRefApp.Interfaces
         Task UpdateBankDetailAsync(BankDetails bankDetails);
         Task DeleteBankDetailAsync(int id);
         Task<BankDetails> GetFirstActiveAdminBankAsync();
+        Task<BankDetails> GetBankDetailsByUserIdAsync(int userId);
     }
 }

@@ -39,21 +39,27 @@ namespace NewRefApp.Controllers
         {
             var userPhone = HttpContext.Session.GetString("UserPhone");
             User user = null;
+            decimal balance = 0;
 
             if (!string.IsNullOrEmpty(userPhone))
             {
                 try
                 {
                     user = await _userService.GetByPhoneAsync(userPhone);
+                    if (user != null)
+                    {
+                        balance = await _depositService.CalculateUserBalanceAsync(user.Id);
+                    }
                 }
                 catch (Exception ex)
                 {
                     // Optional: log or handle error
-                    Console.WriteLine("Error fetching user: " + ex.Message);
+                    Console.WriteLine("Error fetching user or balance: " + ex.Message);
                 }
             }
 
-            //ViewBag.User = user;
+            ViewBag.User = user;
+            ViewBag.Balance = balance;
             return View(user);
         }
 

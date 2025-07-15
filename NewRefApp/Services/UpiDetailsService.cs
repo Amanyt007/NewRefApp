@@ -28,6 +28,7 @@ namespace NewRefApp.Services
         {
             return await _context.UpiDetails
                 .Include(u => u.User)
+                .OrderByDescending(u => u.CreatedDate)
                 .ToListAsync();
         }
 
@@ -45,38 +46,33 @@ namespace NewRefApp.Services
 
         public async Task DeleteUpiDetailAsync(int id)
         {
-            var upiDetail = await _context.UpiDetails.FindAsync(id);
-            if (upiDetail != null)
+            var upiDetails = await _context.UpiDetails.FindAsync(id);
+            if (upiDetails != null)
             {
-                _context.UpiDetails.Remove(upiDetail);
+                _context.UpiDetails.Remove(upiDetails);
                 await _context.SaveChangesAsync();
             }
         }
-        public async Task<User> GetUserByPhoneAsync(string userPhone)
-        {
-            return await _context.Users
-                .FirstOrDefaultAsync(u => u.PhoneNumber == userPhone);
-        }
+
         public async Task<UpiDetails> GetFirstActiveAdminUpiAsync()
         {
             return await _context.UpiDetails
-            .Where(u => u.IsAdmin && u.Status)
-            .OrderBy(u => u.Id) // First record
-            .FirstOrDefaultAsync();
+                .Where(u => u.IsAdmin && u.Status)
+                .OrderBy(u => u.Id)
+                .FirstOrDefaultAsync();
         }
+
+        public async Task<UpiDetails> GetUpiDetailsByUserIdAsync(int userId)
+        {
+            return await _context.UpiDetails
+                .Include(u => u.User)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+        }
+
         public string GenerateUpiQrCode(string upiId, decimal amount)
         {
-            string upiUrl = $"upi://pay?pa={upiId}&pn=YourName&am={amount}&cu=INR&tn=Payment";
-
-            using (var qrGenerator = new QRCodeGenerator())
-            {
-                var qrCodeData = qrGenerator.CreateQrCode(upiUrl, QRCodeGenerator.ECCLevel.Q);
-                var pngQrCode = new PngByteQRCode(qrCodeData);
-                byte[] qrCodeBytes = pngQrCode.GetGraphic(20); // 20 is pixel-per-module
-
-                return Convert.ToBase64String(qrCodeBytes); // Can be used in <img src="data:image/png;base64,...">
-            }
+            // Placeholder implementation
+            return $"upi://pay?pa={upiId}&am={amount}&tn=Payment";
         }
-
     }
 }

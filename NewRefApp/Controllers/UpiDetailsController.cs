@@ -15,10 +15,12 @@ namespace NewRefApp.Controllers
     public class UpiDetailsController : Controller
     {
         private readonly IUpiDetailsService _upiDetailsService;
+        private readonly IUserService _userService;
 
-        public UpiDetailsController(IUpiDetailsService upiDetailsService)
+        public UpiDetailsController(IUpiDetailsService upiDetailsService, IUserService userService)
         {
             _upiDetailsService = upiDetailsService;
+            _userService = userService;
         }
 
         // GET: UpiDetails
@@ -42,7 +44,7 @@ namespace NewRefApp.Controllers
             {
                 try
                 {
-                    var user = await _upiDetailsService.GetUserByPhoneAsync(userPhone); // Assume this method exists
+                    var user = await _userService.GetByPhoneAsync(userPhone); // Assume this method exists
                     if (user != null)
                     {
                         upiDetails.UserId = user.Id;

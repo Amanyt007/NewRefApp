@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NewRefApp.Data;
 
@@ -11,9 +12,11 @@ using NewRefApp.Data;
 namespace NewRefApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250715191125_addPurchaseQuantity")]
+    partial class addPurchaseQuantity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -336,11 +339,17 @@ namespace NewRefApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AdminAccountID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AdminUpiId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("BankDetailId")
-                        .HasColumnType("int");
+                    b.Property<float>("BonusPercentage")
+                        .HasColumnType("real");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -351,21 +360,14 @@ namespace NewRefApp.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UpiDetailId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<string>("transactionPassword")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("BankDetailId");
+                    b.HasIndex("AdminAccountID");
 
-                    b.HasIndex("UpiDetailId");
+                    b.HasIndex("AdminUpiId");
 
                     b.HasIndex("UserId");
 
@@ -451,11 +453,11 @@ namespace NewRefApp.Migrations
                 {
                     b.HasOne("NewRefApp.Models.BankDetails", "BankDetail")
                         .WithMany()
-                        .HasForeignKey("BankDetailId");
+                        .HasForeignKey("AdminAccountID");
 
                     b.HasOne("NewRefApp.Models.UpiDetails", "UpiDetail")
                         .WithMany()
-                        .HasForeignKey("UpiDetailId");
+                        .HasForeignKey("AdminUpiId");
 
                     b.HasOne("NewRefApp.Models.User", "User")
                         .WithMany()

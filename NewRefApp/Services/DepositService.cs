@@ -59,5 +59,29 @@ namespace NewRefApp.Services
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
         }
+        public async Task<decimal> CalculateUserBalanceAsync(int userId)
+        {
+            try
+            {
+                // Calculate total deposits (approved only, assuming Status = 1)
+                var totalDeposits = await _context.Deposit
+                    .Where(d => d.UserId == userId && d.Status == 1)
+                    .SumAsync(d => d.Amount);
+
+                // Calculate total investments (purchased only, assuming status = 1)
+                var totalInvestments = await _context.UserInvestment
+                    .Where(ui => ui.UserId == userId && ui.status == 1)
+                    .SumAsync(ui => ui.InvestmentPlan.InvestmentAmount * ui.PurchaseQuantity);
+
+                // Balance = Total Deposits - Total Investments
+                return totalDeposits - totalInvestments;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            
+        }
     }
 }

@@ -1,0 +1,46 @@
+﻿@model Withdraw
+
+@{
+    ViewData["Title"] = "Withdraw Money";
+}
+
+<div class="container mt-4">
+    <div class="card bg-dark text-white p-3 mb-3">
+        <h5>Withdraw Money</h5>
+    </div>
+
+    <div class="card bg-secondary text-white p-3">
+        <p>Available Balance: ₹@(ViewBag.Balance >= 0 ? ViewBag.Balance.ToString("F2") : "0.00")</p>
+        <form asp-action="WithdrawMoney" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="UserId" />
+            <div class="form-group">
+                <label asp-for="PaymentType" class="control-label">Payment Type</label>
+                <select asp-for="PaymentType" class="form-control">
+                    <option value="0">UPI</option>
+                    <option value="1">Bank Transfer</option>
+                </select>
+                <span asp-validation-for="PaymentType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Amount" class="control-label">Amount</label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="transactionPassword" class="control-label">Transaction Password</label>
+                <input asp-for="transactionPassword" type="password" class="form-control" />
+                <span asp-validation-for="transactionPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-3">
+                <input type="submit" value="Withdraw" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

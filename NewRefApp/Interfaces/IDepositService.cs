@@ -10,5 +10,8 @@ namespace NewRefApp.Interfaces
         Task UpdateDepositAsync(Deposit deposit);
         Task DeleteDepositAsync(int id);
         Task<User> GetUserByPhoneAsync(string phoneNumber);
+        //Task UpdateUserAsync(User user);
+        //Task CreateUserInvestmentAsync(UserInvestment userInvestment);
+        Task<decimal> CalculateUserBalanceAsync(int userId);
     }
 }

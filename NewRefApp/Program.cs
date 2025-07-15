@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NewRefApp.Controllers;
 using NewRefApp.Data;
 using NewRefApp.Interfaces;
 using NewRefApp.Middlewares;
@@ -39,6 +40,8 @@ builder.Services.AddScoped<IBankDetailsService, BankDetailsService>();
 builder.Services.AddScoped<ITransactionDetailsService, TransactionDetailsService>();
 builder.Services.AddScoped<IInvestmentPlanService, InvestmentPlanService>();
 builder.Services.AddScoped<IUserInvestmentService, UserInvestmentService>();
+builder.Services.AddScoped<AdminController>();
+builder.Services.AddScoped<IWithdrawService, WithdrawService>();
 //builder.Services.AddScoped<IInvestmentPlanService, InvestmentPlanService>();
 
 

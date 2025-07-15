@@ -10,7 +10,7 @@
     @if (Model != null)
     {
         <p>Phone: @Model.PhoneNumber</p>
-        @* <p>Balance: @Model.Balance</p> *@
+        <p>Balance: ₹@(ViewBag.Balance >= 0 ? ViewBag.Balance.ToString("F2") : "0.00")</p>
         <p>Referral Code: @Model.ReferralCode</p>
         <p>Joined On: @Model.CreatedAt.ToString("MMMM dd, yyyy")</p>
     }

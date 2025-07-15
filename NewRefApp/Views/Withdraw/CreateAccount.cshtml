@@ -1,0 +1,74 @@
+﻿@model NewRefApp.Data.DTOs.AccountDetailsViewModel
+
+@{
+    ViewData["Title"] = "Create Account Details";
+}
+
+<div class="container mt-4">
+    <div class="card bg-dark text-white p-3 mb-3">
+        <h5>Create Account Details</h5>
+    </div>
+
+    <div class="card bg-secondary text-white p-3">
+        <form asp-action="CreateAccount" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="BankDetails.UserId" />
+            <input type="hidden" asp-for="UpiDetails.UserId" />
+
+            <h4>Bank Details</h4>
+            <div class="form-group">
+                <label asp-for="BankDetails.AccountNumber" class="control-label">Account Number</label>
+                <input asp-for="BankDetails.AccountNumber" class="form-control" />
+                <span asp-validation-for="BankDetails.AccountNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BankDetails.IFSCCode" class="control-label">IFSC Code</label>
+                <input asp-for="BankDetails.IFSCCode" class="form-control" />
+                <span asp-validation-for="BankDetails.IFSCCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BankDetails.AccountName" class="control-label">Account Holder Name</label>
+                <input asp-for="BankDetails.AccountName" class="form-control" />
+                <span asp-validation-for="BankDetails.AccountName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BankDetails.BankName" class="control-label">Bank Name</label>
+                <input asp-for="BankDetails.BankName" class="form-control" />
+                <span asp-validation-for="BankDetails.BankName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BankDetails.BankLocation" class="control-label">Bank Location</label>
+                <input asp-for="BankDetails.BankLocation" class="form-control" />
+                <span asp-validation-for="BankDetails.BankLocation" class="text-danger"></span>
+            </div>
+
+            <h4 class="mt-4">UPI Details</h4>
+            <div class="form-group">
+                <label asp-for="UpiDetails.UpiId" class="control-label">UPI ID <i class="fas fa-info-circle" data-toggle="tooltip" title="Enter your UPI ID (e.g., user@paytm, user@okicici)"></i></label>
+                <input asp-for="UpiDetails.UpiId" class="form-control" />
+                <span asp-validation-for="UpiDetails.UpiId" class="text-danger"></span>
+            </div>
+            <h4 class="mt-4">Security</h4>
+            <div class="form-group">
+                <label asp-for="TransactionPassword" class="control-label">Withdrawal Password</label>
+                <input asp-for="TransactionPassword" type="password" class="form-control" />
+                <span asp-validation-for="TransactionPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-3">
+                <input type="submit" value="Create Account" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}

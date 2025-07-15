@@ -25,6 +25,7 @@ namespace NewRefApp.Services
         {
             return await _context.BankDetails
                 .Include(b => b.User)
+                .OrderByDescending(b => b.CreatedDate)
                 .ToListAsync();
         }
 
@@ -42,10 +43,10 @@ namespace NewRefApp.Services
 
         public async Task DeleteBankDetailAsync(int id)
         {
-            var bankDetail = await _context.BankDetails.FindAsync(id);
-            if (bankDetail != null)
+            var bankDetails = await _context.BankDetails.FindAsync(id);
+            if (bankDetails != null)
             {
-                _context.BankDetails.Remove(bankDetail);
+                _context.BankDetails.Remove(bankDetails);
                 await _context.SaveChangesAsync();
             }
         }
@@ -53,9 +54,16 @@ namespace NewRefApp.Services
         public async Task<BankDetails> GetFirstActiveAdminBankAsync()
         {
             return await _context.BankDetails
-                .Where(b => b.IsAdmin && b.Status)
+                .Where(b => b.User.IsAdmin && b.Status) // Assuming User has IsAdmin and Status properties
                 .OrderBy(b => b.Id)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<BankDetails> GetBankDetailsByUserIdAsync(int userId)
+        {
+            return await _context.BankDetails
+                .Include(b => b.User)
+                .FirstOrDefaultAsync(b => b.UserId == userId);
         }
     }
 }
