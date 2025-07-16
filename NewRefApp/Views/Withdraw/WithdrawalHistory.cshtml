@@ -17,8 +17,6 @@
                     <tr>
                         <th>ID</th>
                         <th>Amount</th>
-                        <th>Payment Type</th>
-                        <th>UPI ID</th>
                         <th>Status</th>
                         <th>Date</th>
                     </tr>
@@ -29,8 +27,6 @@
                         <tr>
                             <td>@item.Id</td>
                             <td>₹@item.Amount</td>
-                            <td>@(item.PaymentType == 0 ? "UPI" : "BankTransfer")</td>
-                            <td>@(item.PaymentType == 0 ? item.UpiDetail?.UpiId ?? "N/A" : "N/A")</td>
                             <td>@(item.Status == 0 ? "Pending" : item.Status == 1 ? "Completed" : "Failed")</td>
                             <td>@item.Date.ToString("dd/MM/yyyy HH:mm:ss")</td>
                         </tr>

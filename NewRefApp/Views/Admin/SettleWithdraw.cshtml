@@ -1,0 +1,111 @@
+﻿@model IEnumerable<Withdraw>
+
+@{
+    ViewData["Title"] = "Settle Withdrawals";
+}
+
+<div class="container mt-4">
+    <div class="card bg-dark text-white p-3 mb-3">
+        <h5>Settle Withdrawals</h5>
+    </div>
+
+    <div class="card bg-secondary text-white p-3">
+        @if (Model.Any())
+        {
+            <table class="table table-dark table-striped" id="withdrawTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Amount</th>
+                        <th>Payment Type</th>
+                        <th>UPI ID</th>
+                        <th>Bank Account</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.UserId</td>
+                            <td>₹@item.Amount.ToString("F2")</td>
+                            <td>@(item.PaymentType == 0 ? "UPI" : "Bank Transfer")</td>
+                            <td>@(item.PaymentType == 0 && item.UpiDetail != null ? item.UpiDetail.UpiId : "N/A")</td>
+                            <td>@(item.PaymentType == 1 && item.BankDetail != null ? $"{item.BankDetail.AccountNumber} ({item.BankDetail.BankName})" : "N/A")</td>
+                            <td>@(item.Status == 0 ? "Pending" : item.Status == 1 ? "Completed" : "Failed")</td>
+                            <td>@item.Date.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td>
+                                <form asp-action="ShowSuccessWithdrawConfirmation" method="post" id="successForm_@item.Id" style="display:inline;">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="button" class="btn btn-success btn-sm success-btn" data-id="@item.Id">Success</button>
+                                </form>
+                                <form asp-action="ShowCancelWithdrawConfirmation" method="post" id="cancelForm_@item.Id" style="display:inline;">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="button" class="btn btn-danger btn-sm cancel-btn" data-id="@item.Id">Cancel</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p class="text-warning">No pending withdrawals found.</p>
+        }
+    </div>
+</div>
+
+<!-- Modal for Confirmation -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalMessage">
+                Are you sure you want to proceed with this action?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmBtn" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Success button click handler
+            $(".success-btn").click(function () {
+                const id = $(this).data("id");
+                $("#modalMessage").text("Are you sure you want to mark withdrawal ID " + id + " as successful?");
+                $("#confirmBtn").off("click").on("click", function () {
+                    $("#successForm_" + id).submit();
+                });
+                new bootstrap.Modal(document.getElementById("confirmationModal")).show();
+            });
+
+            // Cancel button click handler
+            $(".cancel-btn").click(function () {
+                const id = $(this).data("id");
+                $("#modalMessage").text("Are you sure you want to cancel withdrawal ID " + id + "?");
+                $("#confirmBtn").off("click").on("click", function () {
+                    $("#cancelForm_" + id).submit();
+                });
+                new bootstrap.Modal(document.getElementById("confirmationModal")).show();
+            });
+        });
+    </script>
+}

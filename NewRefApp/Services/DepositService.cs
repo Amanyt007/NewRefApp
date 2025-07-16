@@ -73,15 +73,18 @@ namespace NewRefApp.Services
                     .Where(ui => ui.UserId == userId && ui.status == 1)
                     .SumAsync(ui => ui.InvestmentPlan.InvestmentAmount * ui.PurchaseQuantity);
 
-                // Balance = Total Deposits - Total Investments
-                return totalDeposits - totalInvestments;
+                // Calculate total withdrawals (completed only, assuming Status = 1)
+                var totalWithdrawals = await _context.Withdraw
+                    .Where(w => w.UserId == userId && w.Status == 1)
+                    .SumAsync(w => w.Amount);
+
+                // Balance = Total Deposits - Total Investments - Total Withdrawals
+                return totalDeposits - totalInvestments - totalWithdrawals;
             }
             catch (Exception ex)
             {
-
                 throw;
             }
-            
         }
     }
 }

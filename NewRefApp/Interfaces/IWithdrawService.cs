@@ -11,5 +11,9 @@ namespace NewRefApp.Interfaces
         Task CreateWithdrawAsync(Withdraw withdraw);
         Task UpdateWithdrawAsync(Withdraw withdraw);
         Task DeleteWithdrawAsync(int id);
+
+        // New methods for SettleWithdraw and SuccessfulWithdraws
+        Task<IEnumerable<Withdraw>> GetPendingWithdrawsAsync(); // For SettleWithdraw (Status = 0)
+        Task<IEnumerable<Withdraw>> GetSuccessfulWithdrawsAsync(); // For SuccessfulWithdraws (Status = 1)
     }
 }

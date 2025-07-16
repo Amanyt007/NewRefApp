@@ -70,5 +70,14 @@ namespace NewRefApp.Services
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<IEnumerable<Withdraw>> GetPendingWithdrawsAsync()
+        {
+            return await _context.Withdraw.Where(w => w.Status == 0).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Withdraw>> GetSuccessfulWithdrawsAsync()
+        {
+            return await _context.Withdraw.Where(w => w.Status == 1).ToListAsync();
+        }
     }
 }

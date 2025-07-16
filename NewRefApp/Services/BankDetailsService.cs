@@ -54,7 +54,7 @@ namespace NewRefApp.Services
         public async Task<BankDetails> GetFirstActiveAdminBankAsync()
         {
             return await _context.BankDetails
-                .Where(b => b.User.IsAdmin && b.Status) // Assuming User has IsAdmin and Status properties
+                .Where(b => b.IsAdmin && b.Status) // Assuming User has IsAdmin and Status properties
                 .OrderBy(b => b.Id)
                 .FirstOrDefaultAsync();
         }

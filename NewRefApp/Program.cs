@@ -21,16 +21,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     ));
 
 
-// Add CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", builder =>
-    {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
-    });
-});
+
 
 builder.Services.AddScoped<UserFilter>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -44,6 +35,17 @@ builder.Services.AddScoped<AdminController>();
 builder.Services.AddScoped<IWithdrawService, WithdrawService>();
 //builder.Services.AddScoped<IInvestmentPlanService, InvestmentPlanService>();
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
+    });
+});
 
 var app = builder.Build();
 
