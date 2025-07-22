@@ -1,43 +1,92 @@
 ﻿@model User
 
 @{
-    ViewData["Title"] = "Referrals";
+    ViewData["Title"] = "My Referrals";
+    var referralData = ViewBag.ReferralData as NewRefApp.Data.DTOs.ReferralDto;
 }
 
-<div class="referral-container">
-    @if (Model != null && ViewBag.ReferralData != null)
-    {
-        var referralData = ViewBag.ReferralData;
-        <div class="level-row level1">
-            <span class="level-label">Level 1</span>
-            <span class="rebate">@referralData.Level1.Rebate% Lv 1 Rebate</span>
-            <span class="total-invites">Total Invite: @referralData.Level1.TotalInvites</span>
-            <span class="active-invites">Active: @referralData.Level1.ActiveInvites</span>
-        </div>
-        <div class="level-row level2">
-            <span class="level-label">Level 2</span>
-            <span class="rebate">@referralData.Level2.Rebate% Lv 2 Rebate</span>
-            <span class="total-invites">Total Invite: @referralData.Level2.TotalInvites</span>
-            <span class="active-invites">Active: @referralData.Level2.ActiveInvites</span>
-        </div>
-        <div class="level-row level3">
-            <span class="level-label">Level 3</span>
-            <span class="rebate">@referralData.Level3.Rebate% Lv 3 Rebate</span>
-            <span class="total-invites">Total Invite: @referralData.Level3.TotalInvites</span>
-            <span class="active-invites">Active: @referralData.Level3.ActiveInvites</span>
-        </div>
+<style>
+    .referral-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 10px;
     }
-    else
-    {
-        <p>No referral data available. Please log in.</p>
+
+    .referral-row td {
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        vertical-align: middle;
     }
+
+    .level-1 {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .level-2 {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    .level-3 {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .referral-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .referral-data {
+        font-size: 1.1rem;
+        margin: 5px 0;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card bg-dark text-white p-3 mb-3">
+        <h5 class="text-center">My Referral Program</h5>
+    </div>
+
+    <div class="card bg-secondary text-white p-3">
+        @if (Model != null && referralData != null)
+        {
+            <table class="referral-table">
+                <tr class="referral-row">
+                    <td class="level-1">
+                        <div class="referral-title">Level 1 (Direct)</div>
+                        <div class="referral-data"><strong>Rebate Amount:</strong> ₹@referralData.Level1.Rebate.ToString("F2")</div>
+                        <div class="referral-data"><strong>Total Invites:</strong> @referralData.Level1.TotalInvites</div>
+                        <div class="referral-data"><strong>Active Invites:</strong> @referralData.Level1.ActiveInvites</div>
+                    </td>
+                    <td class="level-2">
+                        <div class="referral-title">Level 2</div>
+                        <div class="referral-data"><strong>Rebate Amount:</strong> ₹@referralData.Level2.Rebate.ToString("F2")</div>
+                        <div class="referral-data"><strong>Total Invites:</strong> @referralData.Level2.TotalInvites</div>
+                        <div class="referral-data"><strong>Active Invites:</strong> @referralData.Level2.ActiveInvites</div>
+                    </td>
+                    <td class="level-3">
+                        <div class="referral-title">Level 3</div>
+                        <div class="referral-data"><strong>Rebate Amount:</strong> ₹@referralData.Level3.Rebate.ToString("F2")</div>
+                        <div class="referral-data"><strong>Total Invites:</strong> @referralData.Level3.TotalInvites</div>
+                        <div class="referral-data"><strong>Active Invites:</strong> @referralData.Level3.ActiveInvites</div>
+                    </td>
+                </tr>
+            </table>
+        }
+        else
+        {
+            <p class="text-warning">No referral data available. Please ensure you are logged in.</p>
+        }
+    </div>
 </div>
 
-<style>
-    .level-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border-radius: 5px; }
-    .level1 { background-color: #fff3cd; }
-    .level2 { background-color: #cce5ff; }
-    .level3 { background-color: #f8d7da; }
-    .level-label { font-weight: bold; margin-right: 10px; }
-    .rebate, .total-invites, .active-invites { margin: 0 15px; }
-</style>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

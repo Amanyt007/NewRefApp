@@ -1,0 +1,49 @@
+﻿@model List<NewRefApp.Data.DTOs.InvestmentViewModel>
+
+@{
+    ViewData["Title"] = "My Investments";
+}
+
+<div class="container mt-4">
+    <div class="card bg-dark text-white p-3 mb-3">
+        <h5>My Investments</h5>
+    </div>
+
+    <div class="card bg-secondary text-white p-3">
+        @if (Model != null && Model.Any())
+        {
+            <div class="list-group">
+                @foreach (var item in Model)
+                {
+                    var investment = item.Investment;
+                    var totalDays = (investment.EndDate - investment.StartDate).TotalDays;
+                    var daysElapsed = (DateTime.UtcNow - investment.StartDate).TotalDays;
+                    var progress = totalDays > 0 ? Math.Min(100, (daysElapsed / totalDays) * 100) : 0;
+                    var status = DateTime.UtcNow > investment.EndDate ? "Finished" : "Running";
+                    <div class="list-group-item bg-dark text-white mb-2">
+                        <h5 class="mb-1">@investment.InvestmentPlan.Name</h5>
+                        <p class="mb-1"><strong>Quantity:</strong> @investment.PurchaseQuantity</p>
+                        <p class="mb-1"><strong>Start Date:</strong> @investment.StartDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                        <p class="mb-1"><strong>End Date:</strong> @investment.EndDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                        <p class="mb-1"><strong>Invested Amount:</strong> ₹@item.InvestedAmount.ToString("F2")</p>
+                        <p class="mb-1"><strong>Calculated Amount:</strong> ₹@item.CalculatedAmount.ToString("F2")</p>
+                        <p class="mb-1"><strong>Status:</strong> @status</p>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: @progress%;" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100">@progress.ToString("F0")%</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-warning">No investments found.</p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NewRefApp.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NewRefApp.Data.DTOs
@@ -37,8 +38,10 @@ namespace NewRefApp.Data.DTOs
     public class LevelData
     {
         public int Rebate { get; set; }
+        public int Percentage { get; set; }
         public int TotalInvites { get; set; }
         public int ActiveInvites { get; set; }
+        public decimal TotalInvestmentAmount { get; set; } // Added property
     }
     public class TeamMemberDataDto
     {
@@ -52,5 +55,16 @@ namespace NewRefApp.Data.DTOs
         public string MobileNumber { get; set; }
         public bool IsPurchased { get; set; }
         public int VipLevel { get; set; }
+    }
+    public class InvestmentViewModel
+    {
+        public UserInvestment Investment { get; set; }
+        public decimal InvestedAmount { get; set; }
+        public decimal CalculatedAmount { get; set; }
+    }
+    public class LoginRequestDto
+    {
+        public string PhoneNumber { get; set; }
+        public string Password { get; set; }
     }
 }

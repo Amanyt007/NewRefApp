@@ -1,17 +1,125 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var isLoggedIn = ViewBag.IsLoggedIn as bool? ?? false;
+    var phoneNumber = ViewBag.PhoneNumber as string;
+}
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.Title</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - NewRefApp</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/NewRefApp.styles.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
 </head>
 <body>
-    <div>
-        @RenderBody()
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">NewRefApp</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        @{
+                            if (ViewBag.isLoggedIn == false)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" id="register" asp-area="" asp-controller="Admin" asp-action="Register">Register</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" id="login" asp-area="" asp-controller="Admin" asp-action="Login">Login</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="SettleTransactions">SettleTransactions</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="SettleWithdraw">SettleWithdraw</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="BankDetails" asp-action="Index">Bank Details</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="UpiDetails" asp-action="index">Upi Details</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="InvestmentPlans" asp-action="index">Investment Plans</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="ReferralProgram" asp-action="index">Referral Program</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark cursor-pointer" id="logout">Log Out</a>
+                                </li>
+                            }
+                        }
+
+                        @*  <li class="nav-item">
+                        <button class="btn btn-success" id="loggedDone">Logged In</button>
+                        </li> *@
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
     </div>
-    @RenderSection("Scripts", required: false)
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - NewRefApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+                   $(document).ready(function () {
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+                return null;
+            }
+
+            // if (getCookie("rareentAdmin")) {
+            //     $("#register").hide();
+            //     $("#login").hide();
+            // }
+
+            // Logout click handler
+            $("#logout").click(function (e) {
+                e.preventDefault();
+                sessionStorage.removeItem("rareentAdmin");
+                // Remove the rareentAdmin cookie
+                document.cookie = "rareentAdmin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                $.post("/admin/api/Logout", function () {
+                // Redirect to login page after logout
+                window.location.href = "/admin/Login";
+            }).fail(function (err) {
+                console.error("Logout failed", err);
+                alert("Logout failed.");
+            });
+                // Call logout API to clear server session
+            });
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -11,6 +11,7 @@ namespace NewRefApp.Controllers
         public BankDetailsController(IBankDetailsService bankService)
         {
             _bankService = bankService;
+            ViewData["Layout"] = "~/Views/Shared/_AdminLayout.cshtml";
         }
 
         public async Task<IActionResult> Index()

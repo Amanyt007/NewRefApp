@@ -2,21 +2,54 @@
 using Microsoft.EntityFrameworkCore;
 using NewRefApp.Data;
 using NewRefApp.Interfaces;
+using NewRefApp.Middlewares;
+using NewRefApp.Models;
 using NewRefApp.Services;
 
 namespace NewRefApp.Controllers
 {
+    [ServiceFilter(typeof(AdminFilter))]
     public class AdminController : Controller
     {
         private readonly IDepositService _depositService;
         private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
 
-        public AdminController(IDepositService depositService, ApplicationDbContext context)
+        public AdminController(IDepositService depositService, ApplicationDbContext context, IUserService userService)
         {
+            ViewData["Layout"] = "~/Views/Shared/_AdminLayout.cshtml";
             _depositService = depositService;
             _context = context;
+            _userService = userService;
         }
 
+        public async Task<IActionResult> Index()
+        {
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            User user = null;
+            decimal balance = 0;
+
+            if (!string.IsNullOrEmpty(userPhone))
+            {
+                try
+                {
+                    user = await _userService.GetByPhoneAsync(userPhone);
+                    if (user != null)
+                    {
+                        balance = await _depositService.CalculateUserBalanceAsync(user.Id);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Optional: log or handle error
+                    Console.WriteLine("Error fetching user or balance: " + ex.Message);
+                }
+            }
+
+            ViewBag.User = user;
+            ViewBag.Balance = balance;
+            return View(user);
+        }
         public async Task<IActionResult> SettleTransactions()
         {
             var deposits = await _depositService.GetAllDepositsAsync();

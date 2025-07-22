@@ -89,7 +89,6 @@ namespace NewRefApp.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // Optional: log or handle error
                     Console.WriteLine("Error fetching user: " + ex.Message);
                 }
             }
@@ -224,7 +223,9 @@ namespace NewRefApp.Controllers
             {
                 return Json(new { success = false, message = "User not found." });
             }
-            var Balance = 50000; // For testing purposes, set a fixed balance
+
+            // Fetch user's current balance
+            var balance = await _depositService.CalculateUserBalanceAsync(user.Id);
             var plan = await _investmentPlanService.GetInvestmentPlanByIdAsync(planId);
             if (plan == null)
             {
@@ -232,27 +233,54 @@ namespace NewRefApp.Controllers
             }
 
             decimal totalAmount = plan.InvestmentAmount * quantity;
-            if (Balance < totalAmount) // Assuming User has a Balance property
+            if (balance < totalAmount)
             {
                 return Json(new { success = false, message = "Insufficient wallet balance." });
             }
 
-            //var userInvestment = new UserInvestment
-            //{
-            //    UserId = user.Id,
-            //    PlanId = planId,
-            //    PurchaseQuantity = quantity,
-            //    StartDate = DateTime.UtcNow,
-            //    EndDate = DateTime.UtcNow.AddDays(plan.RevenueDurationValue ?? 30), // Default to 30 if null
-            //    status = 1 // Purchased
-            //};
+            var userInvestment = new UserInvestment
+            {
+                UserId = user.Id,
+                PlanId = planId,
+                PurchaseQuantity = quantity,
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow.AddDays(int.TryParse(System.Text.RegularExpressions.Regex.Match(plan.RevenueDurationValue ?? "30", @"\d+").Value, out int days) ? days : 30),
+                status = 1 // Purchased
+            };
 
-
-            //Balance -= totalAmount; // Deduct from wallet
-            //await _depositService.UpdateUserAsync(user);
-            //await _userInvestmentService.CreateUserInvestmentAsync(userInvestment);
+            // Update user's balance after investment
+            balance -= totalAmount; // Deduct the investment amount
+            await _userService.UpdateToPurchased(userPhone);
+            await _userInvestmentService.CreateUserInvestmentAsync(userInvestment);
 
             return Json(new { success = true, message = "Investment successful. Wallet balance updated." });
+        }
+        // New action to show user investments
+        public async Task<IActionResult> MyInvestments()
+        {
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            var user = !string.IsNullOrEmpty(userPhone) ? await _depositService.GetUserByPhoneAsync(userPhone) : null;
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var investments = await _userInvestmentService.GetUserInvestmentsByUserIdAsync(user.Id);
+            var viewModel = investments.Select(investment => new InvestmentViewModel
+            {
+                Investment = investment,
+                InvestedAmount = investment.InvestmentPlan.InvestmentAmount * investment.PurchaseQuantity,
+                CalculatedAmount = CalculateAccruedProfit(investment)
+            }).ToList();
+
+            return View(viewModel);
+        }
+        private decimal CalculateAccruedProfit(UserInvestment investment)
+        {
+            var hoursElapsed = (DateTime.UtcNow - investment.StartDate).TotalHours;
+            var fullDays = (int)(hoursElapsed / 24);
+            var dailyEarnings = investment.InvestmentPlan.DailyEarningsPerUnit ?? 0;
+            return dailyEarnings * investment.PurchaseQuantity * fullDays;
         }
     }
 }

@@ -1,0 +1,37 @@
+﻿@model ReferralProgram
+
+@{
+    ViewData["Title"] = "Create Referral Program";
+}
+
+<div class="container mt-4">
+    <div class="card bg-dark text-white p-3 mb-3">
+        <h5>Create Referral Program</h5>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+
+    <div class="card bg-secondary text-white p-3">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Level" class="control-label">Level</label>
+                <input asp-for="Level" class="form-control" required />
+                <span asp-validation-for="Level" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Percent" class="control-label">Percentage</label>
+                <input asp-for="Percent" class="form-control" required />
+                <span asp-validation-for="Percent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

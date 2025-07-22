@@ -24,6 +24,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 
 builder.Services.AddScoped<UserFilter>();
+builder.Services.AddScoped<AdminFilter>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUpiDetailsService, UpiDetailsService>();
 builder.Services.AddScoped<IDepositService, DepositService>();
@@ -33,6 +34,7 @@ builder.Services.AddScoped<IInvestmentPlanService, InvestmentPlanService>();
 builder.Services.AddScoped<IUserInvestmentService, UserInvestmentService>();
 builder.Services.AddScoped<AdminController>();
 builder.Services.AddScoped<IWithdrawService, WithdrawService>();
+builder.Services.AddScoped<IReferralProgramService, ReferralProgramService>();
 //builder.Services.AddScoped<IInvestmentPlanService, InvestmentPlanService>();
 
 // Add CORS
@@ -67,5 +69,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "Admin",
+    pattern: "{controller=Admin}/{action=Index}/{id?}");
 
 app.Run();

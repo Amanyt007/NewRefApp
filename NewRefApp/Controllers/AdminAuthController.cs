@@ -1,38 +1,36 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NewRefApp.Data.DTOs;
-using NewRefApp.Models;
 using NewRefApp.Services;
 
 namespace NewRefApp.Controllers
 {
-    public class AuthorizationController : BaseController
+    public class AdminAuthController : BaseController
     {
         private readonly IUserService _userService;
 
-        public AuthorizationController(IUserService userService)
+        public AdminAuthController(IUserService userService)
         {
+            ViewData["Layout"] = "~/Views/Shared/_AdminLayout.cshtml";
             _userService = userService;
         }
-        [HttpGet("/User/register")]
+        [HttpGet("/Admin/register")]
         public IActionResult Register()
         {
             return View();
         }
 
-        [HttpGet("/User/login")]
+        [HttpGet("/Admin/login")]
         public IActionResult Login()
         {
             return View();
         }
 
-        [HttpPost("api/register")]
+        [HttpPost("/admin/api/register")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto registrationDto)
         {
             try
             {
-                var registeredUser = await _userService.RegisterAsync(registrationDto);
+                var registeredUser = await _userService.RegisterAsync(registrationDto,true);
                 return Ok(new { Message = "Registration successful", User = registeredUser });
             }
             catch (Exception ex)
@@ -41,7 +39,7 @@ namespace NewRefApp.Controllers
             }
         }
 
-        [HttpPost("api/login")]
+        [HttpPost("/admin/api/login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
             try
@@ -57,7 +55,7 @@ namespace NewRefApp.Controllers
                 return BadRequest(new { Message = ex.Message });
             }
         }
-        [HttpPost("api/logout")]
+        [HttpPost("/admin/api/logout")]
         public IActionResult Logout()
         {
             try
@@ -72,5 +70,4 @@ namespace NewRefApp.Controllers
             }
         }
     }
-    
 }
