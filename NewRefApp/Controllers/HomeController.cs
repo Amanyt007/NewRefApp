@@ -63,7 +63,11 @@ namespace NewRefApp.Controllers
             return View(user);
         }
 
-        public IActionResult Privacy()
+        //public IActionResult Privacy()
+        //{
+        //    return View();
+        //}
+        public IActionResult Account()
         {
             return View();
         }

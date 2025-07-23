@@ -11,7 +11,9 @@
         <button class="tab" data-tab="level2">Level 2</button>
         <button class="tab" data-tab="level3">Level 3</button>
     </div>
-
+    <div>
+        <a class="nav-link text-dark btn btn-primary d-inline-block text-white my-3" asp-area="" asp-controller="Home" asp-action="Referrals">Referrals</a>
+    </div>
     <div class="tab-content" id="level1">
         <p>Updated as of @currentDateTime</p>
         @if (Model?.Level1 != null && Model.Level1.Any())

@@ -18,7 +18,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">NewRefApp</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Admin" asp-action="Index">NewRefApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -26,17 +26,14 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Home</a>
                         </li>
                         @{
                             if (ViewBag.isLoggedIn == false)
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" id="register" asp-area="" asp-controller="Admin" asp-action="Register">Register</a>
-                                </li>
+                                // <li class="nav-item">
+                                //     <a class="nav-link text-dark" id="register" asp-area="" asp-controller="Admin" asp-action="Register">Register</a>
+                                // </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" id="login" asp-area="" asp-controller="Admin" asp-action="Login">Login</a>
                                 </li>
@@ -56,7 +53,7 @@
                                     <a class="nav-link text-dark" asp-area="" asp-controller="UpiDetails" asp-action="index">Upi Details</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="InvestmentPlans" asp-action="index">Investment Plans</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="InvestmentPlan" asp-action="index">Investment Plans</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="ReferralProgram" asp-action="index">Referral Program</a>

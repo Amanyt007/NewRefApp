@@ -28,9 +28,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
+                        @* <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        </li> *@
                         @{
                             if (ViewBag.isLoggedIn == false)
                             {
@@ -43,19 +43,22 @@
                             }
                             else{
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Investments">Investments</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="MyInvestments">My Investments</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Referrals">Referrals</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="TeamMembers">Referral Details</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="InvestmentPlans">Investment Plans</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Recharge">Recharge</a>
                                 </li>
+                                // <li class="nav-item">
+                                //     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Transactions">Transaction Details</a>
+                                // </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Transactions">Transaction Details</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Account">Account</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark cursor-pointer" id="logout">Log Out</a>
