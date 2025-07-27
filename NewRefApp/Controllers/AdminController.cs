@@ -14,13 +14,15 @@ namespace NewRefApp.Controllers
         private readonly IDepositService _depositService;
         private readonly ApplicationDbContext _context;
         private readonly IUserService _userService;
+        private readonly ITransactionService _transactionService;
 
-        public AdminController(IDepositService depositService, ApplicationDbContext context, IUserService userService)
+        public AdminController(IDepositService depositService, ApplicationDbContext context, IUserService userService, ITransactionService transactionService)
         {
             ViewData["Layout"] = "~/Views/Shared/_AdminLayout.cshtml";
             _depositService = depositService;
             _context = context;
             _userService = userService;
+            _transactionService = transactionService;
         }
 
         public async Task<IActionResult> Index()
@@ -36,7 +38,7 @@ namespace NewRefApp.Controllers
                     user = await _userService.GetByPhoneAsync(userPhone);
                     if (user != null)
                     {
-                        balance = await _depositService.CalculateUserBalanceAsync(user.Id);
+                        balance = await _transactionService.CalculateUserBalanceAsync(user.Id);
                     }
                 }
                 catch (Exception ex)
@@ -94,12 +96,6 @@ namespace NewRefApp.Controllers
         [HttpPost]
         public async Task<IActionResult> ShowSuccessWithdrawConfirmation(int id)
         {
-            return Json(new { success = true, id = id });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SuccessWithdraw(int id)
-        {
             var withdraw = await _context.Withdraw.FindAsync(id);
             if (withdraw != null)
             {
@@ -109,14 +105,20 @@ namespace NewRefApp.Controllers
             return RedirectToAction("SettleWithdraw");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> ShowCancelWithdrawConfirmation(int id)
-        {
-            return Json(new { success = true, id = id });
-        }
+        //[HttpPost]
+        //public async Task<IActionResult> SuccessWithdraw(int id)
+        //{
+        //    var withdraw = await _context.Withdraw.FindAsync(id);
+        //    if (withdraw != null)
+        //    {
+        //        withdraw.Status = 1; // Completed
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    return RedirectToAction("SettleWithdraw");
+        //}
 
         [HttpPost]
-        public async Task<IActionResult> CancelWithdraw(int id)
+        public async Task<IActionResult> ShowCancelWithdrawConfirmation(int id)
         {
             var withdraw = await _context.Withdraw.FindAsync(id);
             if (withdraw != null)
@@ -127,6 +129,27 @@ namespace NewRefApp.Controllers
             return RedirectToAction("SettleWithdraw");
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> CancelWithdraw(int id)
+        //{
+            
+        //}
+
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            // Clear authentication cookies
+            Response.Cookies.Delete("rareentUser", new CookieOptions { Path = "/" });
+            Response.Cookies.Delete("rareentAdmin", new CookieOptions { Path = "/" });
+            Response.Cookies.Delete("findUser", new CookieOptions { Path = "/" });
+
+            // Clear session if needed
+            HttpContext.Session.Clear();
+
+            // Optionally, clear any other server-side session/authentication data
+
+            return Json(new { success = true });
+        }
         //// SuccessfulWithdraws action
         //public async Task<IActionResult> SuccessfulWithdraws()
         //{

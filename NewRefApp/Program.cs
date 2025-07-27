@@ -35,6 +35,7 @@ builder.Services.AddScoped<IUserInvestmentService, UserInvestmentService>();
 builder.Services.AddScoped<AdminController>();
 builder.Services.AddScoped<IWithdrawService, WithdrawService>();
 builder.Services.AddScoped<IReferralProgramService, ReferralProgramService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 //builder.Services.AddScoped<IInvestmentPlanService, InvestmentPlanService>();
 
 // Add CORS

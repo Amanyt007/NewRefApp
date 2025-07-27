@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/NewRefApp.styles.css" asp-append-version="true" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 </head>
 <body>
     <header>
@@ -33,7 +35,7 @@
                             {
                                 // <li class="nav-item">
                                 //     <a class="nav-link text-dark" id="register" asp-area="" asp-controller="Admin" asp-action="Register">Register</a>
-                                // </li>
+                // </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" id="login" asp-area="" asp-controller="Admin" asp-action="Login">Login</a>
                                 </li>
@@ -76,6 +78,17 @@
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
+        <div class="modal fade" id="loaderModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content text-center py-4 bg-transparent" style="border:none;">
+                    <div class="modal-body">
+                        <div class="spinner-border text-primary text-white" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <footer class="border-top footer text-muted">
@@ -87,7 +100,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
-                   $(document).ready(function () {
+        $(document).ready(function () {
             function getCookie(name) {
                 const value = `; ${document.cookie}`;
                 const parts = value.split(`; ${name}=`);
@@ -103,19 +116,36 @@
             // Logout click handler
             $("#logout").click(function (e) {
                 e.preventDefault();
+
+                // Remove 'rareentAdmin' from sessionStorage
                 sessionStorage.removeItem("rareentAdmin");
-                // Remove the rareentAdmin cookie
-                document.cookie = "rareentAdmin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-                $.post("/admin/api/Logout", function () {
-                // Redirect to login page after logout
-                window.location.href = "/admin/Login";
-            }).fail(function (err) {
-                console.error("Logout failed", err);
-                alert("Logout failed.");
+
+                // Remove the 'rareentAdmin' and 'findUser' cookies
+                
+                // Send a POST request to the /admin/api/Logout endpoint to handle server-side logout
+                $.post("/admin/Logout", function (response) {
+                    // Check if the response indicates success
+                    if (response.success) {
+                        // Redirect to the login page after a successful logout
+                        document.cookie = "rareentAdmin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                        document.cookie = "findUser=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                        window.location.href = "/admin/Login";
+                    } else {
+                        // Handle failure if any
+                        console.error("Logout failed", response);
+                        alert("Logout failed. Please try again.");
+                    }
+                }).fail(function (err) {
+                    // Handle any errors during the logout process
+                    console.error("Logout failed", err);
+                    alert("Logout failed. Please try again.");
+                });
             });
-                // Call logout API to clear server session
-            });
+
+
+            // Call logout API to clear server session
         });
+
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

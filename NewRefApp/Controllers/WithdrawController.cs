@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NewRefApp.Data.DTOs;
 using NewRefApp.Interfaces;
+using NewRefApp.Middlewares;
 using NewRefApp.Models;
 using NewRefApp.Services;
 
 namespace NewRefApp.Controllers
 {
+    [ServiceFilter(typeof(UserFilter))]
     public class WithdrawController : Controller
     {
         private readonly IDepositService _depositService;
@@ -13,74 +15,80 @@ namespace NewRefApp.Controllers
         private readonly IUserService _userService;
         private readonly IBankDetailsService _bankDetailsService;
         private readonly IUpiDetailsService _upiDetailsService;
+        private readonly IConfiguration _configuration;
+        private readonly ITransactionService _transactionService;
 
-        public WithdrawController(IDepositService depositService, IWithdrawService withdrawService, IUserService userService, IBankDetailsService bankDetailsService, IUpiDetailsService upiDetailsService)
+
+        public WithdrawController(IDepositService depositService, IWithdrawService withdrawService, IUserService userService, IBankDetailsService bankDetailsService, IUpiDetailsService upiDetailsService, IConfiguration configuration, ITransactionService transactionService)
         {
             _depositService = depositService;
             _withdrawService = withdrawService;
             _userService = userService;
             _bankDetailsService = bankDetailsService;
             _upiDetailsService = upiDetailsService;
+            _configuration = configuration;
+            _transactionService = transactionService;
         }
+
 
         // Create both bank and UPI details in a single view
-        public async Task<IActionResult> CreateAccount()
-        {
-            var userPhone = HttpContext.Session.GetString("UserPhone");
-            if (string.IsNullOrEmpty(userPhone))
-            {
-                return RedirectToAction("Login", "User");
-            }
+        //public async Task<IActionResult> CreateAccount()
+        //{
+        //    var userPhone = HttpContext.Session.GetString("UserPhone");
+        //    if (string.IsNullOrEmpty(userPhone))
+        //    {
+        //        return RedirectToAction("Login", "User");
+        //    }
 
-            var user = await _userService.GetByPhoneAsync(userPhone);
-            var bankDetails = await _bankDetailsService.GetBankDetailsByUserIdAsync(user.Id);
-            var upiDetails = await _upiDetailsService.GetUpiDetailsByUserIdAsync(user.Id);
-            if (bankDetails != null && upiDetails != null)
-            {
-                return RedirectToAction("AccountDetails");
-            }
-            return View(new AccountDetailsViewModel { BankDetails = new BankDetails { UserId = user.Id }, UpiDetails = new UpiDetails { UserId = user.Id, Status = true } });
-        }
+        //    var user = await _userService.GetByPhoneAsync(userPhone);
+        //    var bankDetails = await _bankDetailsService.GetBankDetailsByUserIdAsync(user.Id);
+        //    var upiDetails = await _upiDetailsService.GetUpiDetailsByUserIdAsync(user.Id);
+        //    if (bankDetails != null && upiDetails != null)
+        //    {
+        //        return RedirectToAction("AccountDetails");
+        //    }
+        //    return View(new AccountDetailsViewModel { BankDetails = new BankDetails { UserId = user.Id }, UpiDetails = new UpiDetails { UserId = user.Id, Status = true },TransactionPassword = user.WithdrawnPassword });
+        //}
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateAccount(AccountDetailsViewModel model)
-        {
-            var userPhone = HttpContext.Session.GetString("UserPhone");
-            if (string.IsNullOrEmpty(userPhone))
-            {
-                return RedirectToAction("Login", "User");
-            }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> CreateAccount(AccountDetailsViewModel model)
+        //{
+        //    var userPhone = HttpContext.Session.GetString("UserPhone");
+        //    if (string.IsNullOrEmpty(userPhone))
+        //    {
+        //        return RedirectToAction("Login", "User");
+        //    }
 
-            var user = await _userService.GetByPhoneAsync(userPhone);
-            model.BankDetails.UserId = user.Id;
-            model.UpiDetails.UserId = user.Id;
-            model.UpiDetails.Status = true; // Set as active for user
+        //    var user = await _userService.GetByPhoneAsync(userPhone);
+        //    model.BankDetails.UserId = user.Id;
+        //    model.UpiDetails.UserId = user.Id;
+        //    model.UpiDetails.Status = true; // Set as active for user
 
-            //if (!ModelState.IsValid)
-            //{
-            //    return View(model);
-            //}
+        //    //if (!ModelState.IsValid)
+        //    //{
+        //    //    return View(model);
+        //    //}
 
-            await _bankDetailsService.CreateBankDetailAsync(model.BankDetails);
+        //    await _bankDetailsService.CreateBankDetailAsync(model.BankDetails);
 
-            // Create or update Withdraw record with transactionPassword
-            var withdraw = await _withdrawService.GetWithdrawByUserIdAsync(user.Id) ?? new Withdraw { UserId = user.Id };
-            withdraw.transactionPassword = model.TransactionPassword; // Set withdrawal password
-            withdraw.Status = 0; // Pending by default
-            withdraw.Date = DateTime.UtcNow;
-            if (await _withdrawService.GetWithdrawByUserIdAsync(user.Id) == null)
-            {
-                await _withdrawService.CreateWithdrawAsync(withdraw);
-            }
-            else
-            {
-                await _withdrawService.UpdateWithdrawAsync(withdraw);
-            }
+        //    // Create or update Withdraw record with transactionPassword
+        //    var withdraw = await _withdrawService.GetWithdrawByUserIdAsync(user.Id) ?? new Withdraw { UserId = user.Id };
+        //    withdraw.transactionPassword = model.TransactionPassword; // Set withdrawal password
+        //    withdraw.Status = 0; // Pending by default
+        //    withdraw.Date = DateTime.UtcNow;
+        //    if (await _withdrawService.GetWithdrawByUserIdAsync(user.Id) == null)
+        //    {
+        //        await _withdrawService.CreateWithdrawAsync(withdraw);
+        //    }
+        //    else
+        //    {
+        //        await _withdrawService.UpdateWithdrawAsync(withdraw);
+        //    }
 
-            await _upiDetailsService.CreateUpiDetailAsync(model.UpiDetails);
-            return RedirectToAction("AccountDetails");
-        }
+        //    await _upiDetailsService.CreateUpiDetailAsync(model.UpiDetails);
+        //    return RedirectToAction("AccountDetails");
+        //}
 
         // View and edit account details
         //public async Task<IActionResult> AccountDetails()
@@ -200,7 +208,68 @@ namespace NewRefApp.Controllers
         // ... (other controller code remains unchanged)
 
         // ... (other controller code remains unchanged)
+        public async Task<IActionResult> CreateAccount()
+        {
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            if (string.IsNullOrEmpty(userPhone))
+            {
+                return RedirectToAction("Login", "User");
+            }
 
+            var user = await _userService.GetByPhoneAsync(userPhone);
+            var bankDetails = await _bankDetailsService.GetBankDetailsByUserIdAsync(user.Id);
+            var upiDetails = await _upiDetailsService.GetUpiDetailsByUserIdAsync(user.Id);
+            if (bankDetails != null && upiDetails != null)
+            {
+                return RedirectToAction("AccountDetails");
+            }
+            return View(new AccountDetailsViewModel
+            {
+                BankDetails = new BankDetails { UserId = user.Id },
+                UpiDetails = new UpiDetails { UserId = user.Id, Status = true },
+                TransactionPassword = user.WithdrawnPassword
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateAccount(AccountDetailsViewModel model)
+        {
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            if (string.IsNullOrEmpty(userPhone))
+            {
+                return RedirectToAction("Login", "User");
+            }
+
+            var user = await _userService.GetByPhoneAsync(userPhone);
+            model.BankDetails.UserId = user.Id;
+            model.UpiDetails.UserId = user.Id;
+            model.UpiDetails.Status = true; // Set as active for user
+
+            //if (!ModelState.IsValid)
+            //{
+            //    return View(model);
+            //}
+
+            await _bankDetailsService.CreateBankDetailAsync(model.BankDetails,false);
+
+            // Create or update Withdraw record with transactionPassword
+            var withdraw = await _withdrawService.GetWithdrawByUserIdAsync(user.Id) ?? new Withdraw { UserId = user.Id };
+            withdraw.transactionPassword = model.TransactionPassword; // Set withdrawal password
+            withdraw.Status = 0; // Pending by default
+            withdraw.Date = DateTime.UtcNow;
+            if (await _withdrawService.GetWithdrawByUserIdAsync(user.Id) == null)
+            {
+                await _withdrawService.CreateWithdrawAsync(withdraw);
+            }
+            else
+            {
+                await _withdrawService.UpdateWithdrawAsync(withdraw);
+            }
+            TempData["SuccessMessage"] = "Account details created successfully!";
+            await _upiDetailsService.CreateUpiDetailAsync(model.UpiDetails);
+            return RedirectToAction("AccountDetails");
+        }
         public async Task<IActionResult> AccountDetails()
         {
             var userPhone = HttpContext.Session.GetString("UserPhone");
@@ -283,7 +352,7 @@ namespace NewRefApp.Controllers
             {
                 await _withdrawService.UpdateWithdrawAsync(withdraw);
             }
-
+            TempData["SuccessMessage"] = "Details update successfully!";
             return RedirectToAction("AccountDetails");
         }
 
@@ -299,14 +368,15 @@ namespace NewRefApp.Controllers
             }
 
             var user = await _userService.GetByPhoneAsync(userPhone);
-            var balance = await _depositService.CalculateUserBalanceAsync(user.Id);
+            var balance = await _transactionService.CalculateUserBalanceAsync(user.Id);
             var bankDetails = await _bankDetailsService.GetBankDetailsByUserIdAsync(user.Id);
             var upiDetails = await _upiDetailsService.GetUpiDetailsByUserIdAsync(user.Id);
             if (bankDetails == null || upiDetails == null)
             {
                 return RedirectToAction("CreateAccount");
             }
-
+            var minAmount = _configuration.GetValue<decimal>("WithdrawSettings:MinimumAmount");
+            ViewBag.MinAmount = minAmount;
             var withdraw = await _withdrawService.GetWithdrawByUserIdAsync(user.Id) ?? new Withdraw { UserId = user.Id };
             ViewBag.Balance = balance;
             ViewBag.BankDetails = bankDetails;
@@ -318,6 +388,13 @@ namespace NewRefApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> WithdrawMoney(Withdraw withdraw)
         {
+            var minAmount = _configuration.GetValue<decimal>("WithdrawSettings:MinimumAmount");
+
+            if (withdraw.Amount < minAmount)
+            {
+                ModelState.AddModelError("Amount", $"Minimum withdrawal amount is ₹{minAmount}");
+            }
+
             var userPhone = HttpContext.Session.GetString("UserPhone");
             if (string.IsNullOrEmpty(userPhone))
             {
@@ -325,7 +402,7 @@ namespace NewRefApp.Controllers
             }
 
             var user = await _userService.GetByPhoneAsync(userPhone);
-            var balance = await _depositService.CalculateUserBalanceAsync(user.Id);
+            var balance = await _transactionService.CalculateUserBalanceAsync(user.Id);
             var bankDetails = await _bankDetailsService.GetBankDetailsByUserIdAsync(user.Id);
             var upiDetails = await _upiDetailsService.GetUpiDetailsByUserIdAsync(user.Id);
             if (bankDetails == null || upiDetails == null)

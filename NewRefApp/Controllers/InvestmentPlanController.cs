@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NewRefApp.Interfaces;
+using NewRefApp.Middlewares;
 using NewRefApp.Models;
 
 namespace NewRefApp.Controllers
 {
+    [ServiceFilter(typeof(AdminFilter))]
     public class InvestmentPlanController : Controller
     {
         private readonly IInvestmentPlanService _investmentPlanService;

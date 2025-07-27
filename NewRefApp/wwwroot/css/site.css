@@ -33,3 +33,6 @@ body {
 .cursor-pointer{
     cursor:pointer;
 }
+.ajs-success {
+    color:#fff;
+}

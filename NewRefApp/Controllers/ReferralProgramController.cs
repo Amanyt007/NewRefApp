@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NewRefApp.Interfaces;
+using NewRefApp.Middlewares;
 using NewRefApp.Models;
 
 namespace NewRefApp.Controllers
 {
     //[Authorize(Roles = "Admin")]
+    [ServiceFilter(typeof(AdminFilter))]
     public class ReferralProgramController : Controller
     {
         private readonly IReferralProgramService _referralProgramService;

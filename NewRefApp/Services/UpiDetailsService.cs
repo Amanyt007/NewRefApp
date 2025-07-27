@@ -71,8 +71,18 @@ namespace NewRefApp.Services
 
         public string GenerateUpiQrCode(string upiId, decimal amount)
         {
-            // Placeholder implementation
-            return $"upi://pay?pa={upiId}&am={amount}&tn=Payment";
+            string upiUrl = $"upi://pay?pa={upiId}&pn=YourName&am={amount}&cu=INR&tn=Payment";
+
+            using (var qrGenerator = new QRCodeGenerator())
+            {
+                var qrCodeData = qrGenerator.CreateQrCode(upiUrl, QRCodeGenerator.ECCLevel.Q);
+                var pngQrCode = new PngByteQRCode(qrCodeData);
+                byte[] qrCodeBytes = pngQrCode.GetGraphic(20); // 20 is pixel-per-module
+
+                return Convert.ToBase64String(qrCodeBytes); // Can be used in <img src="data:image/png;base64,...">
+            }
         }
+
+
     }
 }

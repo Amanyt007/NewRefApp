@@ -48,11 +48,15 @@
                 <input asp-for="UpiDetails.UpiId" class="form-control" />
                 <span asp-validation-for="UpiDetails.UpiId" class="text-danger"></span>
             </div>
+
             <h4 class="mt-4">Security</h4>
-            <div class="form-group">
+            <div class="form-group position-relative">
                 <label asp-for="TransactionPassword" class="control-label">Withdrawal Password</label>
-                <input asp-for="TransactionPassword" type="password" class="form-control" />
-                <span asp-validation-for="TransactionPassword" class="text-danger"></span>
+                <input id="transactionPassword" asp-for="TransactionPassword" type="password" class="form-control pr-5" />
+                <span id="togglePassword" style="position: absolute; top: 38px; right: 15px; cursor: pointer;">
+                    <i class="fa fa-eye text-primary" id="eyeIcon"></i>
+                </span>
+                <span asp-validation-for="TransactionPassword" class="text-danger" id="TransactionPassword-error"></span>
             </div>
             <div class="form-group mt-3">
                 <input type="submit" value="Create Account" class="btn btn-primary" />
@@ -69,6 +73,87 @@
     <script>
         $(document).ready(function () {
             $('[data-toggle="tooltip"]').tooltip();
+
+            // Password toggle functionality
+            $('#togglePassword').on('click', function () {
+                const passwordInput = $('#transactionPassword');
+                const eyeIcon = $('#eyeIcon');
+                if (passwordInput.attr('type') === 'password') {
+                    passwordInput.attr('type', 'text');
+                    eyeIcon.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    passwordInput.attr('type', 'password');
+                    eyeIcon.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
+            });
+
+            $('form').on('submit', function (e) {
+                let isValid = true;
+
+                // Validate Account Number
+                if (!$('#BankDetails_AccountNumber').val()) {
+                    $('#BankDetails_AccountNumber').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#BankDetails_AccountNumber').removeClass('is-invalid');
+                }
+
+                // Validate IFSC Code
+                if (!$('#BankDetails_IFSCCode').val()) {
+                    $('#BankDetails_IFSCCode').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#BankDetails_IFSCCode').removeClass('is-invalid');
+                }
+
+                // Validate Account Holder Name
+                if (!$('#BankDetails_AccountName').val()) {
+                    $('#BankDetails_AccountName').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#BankDetails_AccountName').removeClass('is-invalid');
+                }
+
+                // Validate Bank Name
+                if (!$('#BankDetails_BankName').val()) {
+                    $('#BankDetails_BankName').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#BankDetails_BankName').removeClass('is-invalid');
+                }
+
+                // Validate Bank Location
+                if (!$('#BankDetails_BankLocation').val()) {
+                    $('#BankDetails_BankLocation').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#BankDetails_BankLocation').removeClass('is-invalid');
+                }
+
+                // Validate UPI ID
+                if (!$('#UpiDetails_UpiId').val()) {
+                    $('#UpiDetails_UpiId').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#UpiDetails_UpiId').removeClass('is-invalid');
+                }
+
+                // Validate Transaction Password
+                if (!$('#transactionPassword').val()) {
+                    $('#transactionPassword').addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    $('#transactionPassword').removeClass('is-invalid');
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    return;
+                }
+
+                // Show loader modal
+                $('#loaderModal').modal('show');
+            });
         });
     </script>
 }

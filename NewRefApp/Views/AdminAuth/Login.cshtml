@@ -85,6 +85,7 @@
 		};
 
 		try {
+			$('#loaderModal').modal('show');
 			const response = await fetch('/admin/api/login', {
 				method: 'POST',
 				headers: {
@@ -95,6 +96,7 @@
 
 			const result = await response.json();
 			if (response.ok) {
+				$('#loaderModal').modal('hide');
 				showMessage('success-message', 'Login successful!', true);
 				//document.getElementById('login-form').reset();
 				sessionStorage.setItem("rareentAdmin", result.user.phoneNumber);

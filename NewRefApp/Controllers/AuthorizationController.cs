@@ -33,10 +33,12 @@ namespace NewRefApp.Controllers
             try
             {
                 var registeredUser = await _userService.RegisterAsync(registrationDto);
+                TempData["SuccessMessage"] = "Registration done successfully!";
                 return Ok(new { Message = "Registration successful", User = registeredUser });
             }
             catch (Exception ex)
             {
+                TempData["ErrorMessage"] = "Something went wrong.";
                 return BadRequest(new { Message = ex.Message });
             }
         }
@@ -50,10 +52,12 @@ namespace NewRefApp.Controllers
                 HttpContext.Session.SetString("UserPhone", request.PhoneNumber);
 
                 var user = await _userService.LoginAsync(request.PhoneNumber, request.Password);
+                TempData["SuccessMessage"] = "Login successfully!";
                 return Ok(new { Message = "Login successful", User = user });
             }
             catch (Exception ex)
             {
+                TempData["ErrorMessage"] = "Something went wrong.";
                 return BadRequest(new { Message = ex.Message });
             }
         }
@@ -72,5 +76,5 @@ namespace NewRefApp.Controllers
             }
         }
     }
-    
+
 }

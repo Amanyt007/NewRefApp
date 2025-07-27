@@ -126,6 +126,7 @@
         };
 
         try {
+            $('#loaderModal').modal('show');
             const response = await fetch('/admin/api/register', {
                 method: 'POST',
                 headers: {
@@ -135,13 +136,14 @@
             });
 
             const result = await response.json();
+            $('#loaderModal').modal('hide');
             if (response.ok) {
                 // Store mobile number in sessionStorage
                 sessionStorage.setItem('phoneNumber', userData.PhoneNumber);
                 showMessage('success-message', 'Registration successful!', true);
                 //document.getElementById('registration-form').reset();
                 refercode.value = "";
-                withdrawnPassword.value = "";
+                //withdrawnPassword.value = "";
                 password.value ="";
                 mobileno.value = "";
                 fullname.value = "";

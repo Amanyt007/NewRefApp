@@ -1,15 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NewRefApp.Interfaces;
+using NewRefApp.Middlewares;
 using NewRefApp.Models;
+using NewRefApp.Services;
 
 namespace NewRefApp.Controllers
 {
+    [ServiceFilter(typeof(AdminFilter))]
     public class BankDetailsController : Controller
     {
         private readonly IBankDetailsService _bankService;
+        private readonly IUserService _userService;
 
-        public BankDetailsController(IBankDetailsService bankService)
+        public BankDetailsController(IBankDetailsService bankService,IUserService userService)
         {
+            _userService = userService;
             _bankService = bankService;
             ViewData["Layout"] = "~/Views/Shared/_AdminLayout.cshtml";
         }
@@ -28,13 +33,20 @@ namespace NewRefApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(BankDetails bankDetails)
         {
-            if (ModelState.IsValid)
+            try
             {
-                bankDetails.UserId = 1; // Replace with actual user logic
-                await _bankService.CreateBankDetailAsync(bankDetails);
+                var userPhone = HttpContext.Session.GetString("UserPhone");
+                var user = !string.IsNullOrEmpty(userPhone) ? await _userService.GetByPhoneAsync(userPhone) : null;
+                bankDetails.UserId = user.Id; // Replace with actual user logic
+                await _bankService.CreateBankDetailAsync(bankDetails, true);
                 return RedirectToAction(nameof(Index));
             }
-            return View(bankDetails);
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
         }
 
         public async Task<IActionResult> Details(int id)
@@ -60,17 +72,26 @@ namespace NewRefApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(int id, BankDetails bankDetails)
         {
-            if (id != bankDetails.Id)
+            try
             {
-                return NotFound();
-            }
+                if (id != bankDetails.Id)
+                {
+                    return NotFound();
+                }
 
-            if (ModelState.IsValid)
-            {
+                var userPhone = HttpContext.Session.GetString("UserPhone");
+                var user = !string.IsNullOrEmpty(userPhone) ? await _userService.GetByPhoneAsync(userPhone) : null;
+                bankDetails.UserId = user.Id;
                 await _bankService.UpdateBankDetailAsync(bankDetails);
                 return RedirectToAction(nameof(Index));
             }
-            return View(bankDetails);
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+
         }
 
         public async Task<IActionResult> Delete(int id)

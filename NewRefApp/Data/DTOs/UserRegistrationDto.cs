@@ -35,14 +35,24 @@ namespace NewRefApp.Data.DTOs
         public LevelData Level2 { get; set; }
         public LevelData Level3 { get; set; }
     }
+
     public class LevelData
     {
-        public int Rebate { get; set; }
-        public int Percentage { get; set; }
         public int TotalInvites { get; set; }
         public int ActiveInvites { get; set; }
-        public decimal TotalInvestmentAmount { get; set; } // Added property
+        public decimal TotalInvestmentAmount { get; set; }
+        public int Percentage { get; set; }
+        public decimal Rebate { get; set; }
+
+        public List<ReferralBonusEntry> BonusEntries { get; set; } = new();
     }
+
+    public class ReferralBonusEntry
+    {
+        public decimal Amount { get; set; }
+        public DateTime Date { get; set; }
+    }
+
     public class TeamMemberDataDto
     {
         public List<TeamMemberDetail> Level1 { get; set; } = new List<TeamMemberDetail>();

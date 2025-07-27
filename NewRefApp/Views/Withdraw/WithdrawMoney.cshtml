@@ -22,11 +22,17 @@
                 </select>
                 <span asp-validation-for="PaymentType" class="text-danger"></span>
             </div> *@
-            <div class="form-group">
+            @* <div class="form-group">
                 <label asp-for="Amount" class="control-label">Amount</label>
                 <input asp-for="Amount" class="form-control" />
                 <span asp-validation-for="Amount" class="text-danger"></span>
+            </div> *@
+            <div class="form-group">
+                <label asp-for="Amount" class="control-label">Amount</label>
+                <input asp-for="Amount" class="form-control" id="amountInput" />
+                <small id="amountError" class="text-danger d-none"></small>
             </div>
+
             <div class="form-group">
                 <label asp-for="transactionPassword" class="control-label">Transaction Password</label>
                 <input asp-for="transactionPassword" type="password" class="form-control" />
@@ -40,7 +46,39 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        $(document).ready(function () {
+            const minAmount = parseFloat('@ViewBag.MinAmount');
+
+            $("#amountInput").on("input", function () {
+                const amount = parseFloat($(this).val());
+                if (isNaN(amount) || amount < minAmount) {
+                    $("#amountError")
+                        .text("Minimum withdrawal amount is ₹" + minAmount.toFixed(2))
+                        .removeClass("d-none");
+                } else {
+                    $("#amountError").addClass("d-none").text("");
+                }
+            });
+
+            $("form").on("submit", function (e) {
+                const amountVal = $("#amountInput").val();
+                const amount = parseFloat(amountVal);
+
+                if (!amountVal || isNaN(amount) || amount < minAmount) {
+                    e.preventDefault();
+                    $("#amountError")
+                        .text("Minimum withdrawal amount is ₹" + minAmount.toFixed(2))
+                        .removeClass("d-none");
+                    alert("Please enter an amount greater than or equal to ₹" + minAmount.toFixed(2));
+                    return false;
+                }
+
+                $("#amountError").addClass("d-none").text("");
+            });
+        });
+    </script>
 }
+
+

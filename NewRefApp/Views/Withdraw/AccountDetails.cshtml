@@ -154,6 +154,7 @@
 
             // Confirm button in modal
             document.getElementById("confirmBtn").addEventListener("click", function () {
+                $('#loaderModal').modal('show');
                 document.getElementById("accountForm").submit();
             });
         });

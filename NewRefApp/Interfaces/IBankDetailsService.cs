@@ -6,7 +6,7 @@ namespace NewRefApp.Interfaces
     {
         Task<BankDetails> GetBankDetailByIdAsync(int id);
         Task<IEnumerable<BankDetails>> GetAllBankDetailsAsync();
-        Task CreateBankDetailAsync(BankDetails bankDetails);
+        Task CreateBankDetailAsync(BankDetails bankDetails,bool isAdmin);
         Task UpdateBankDetailAsync(BankDetails bankDetails);
         Task DeleteBankDetailAsync(int id);
         Task<BankDetails> GetFirstActiveAdminBankAsync();

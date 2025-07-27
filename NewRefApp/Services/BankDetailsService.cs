@@ -29,8 +29,16 @@ namespace NewRefApp.Services
                 .ToListAsync();
         }
 
-        public async Task CreateBankDetailAsync(BankDetails bankDetails)
+        public async Task CreateBankDetailAsync(BankDetails bankDetails,bool isAdmin = false)
         {
+            if (isAdmin)
+            {
+                bankDetails.IsAdmin = true; // Assuming you want to set IsAdmin to true for admin users
+            }
+            else
+            {
+                bankDetails.IsAdmin = false; // Set to false for non-admin users
+            }
             _context.BankDetails.Add(bankDetails);
             await _context.SaveChangesAsync();
         }

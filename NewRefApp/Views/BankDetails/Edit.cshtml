@@ -34,7 +34,7 @@
         <input asp-for="BankLocation" class="form-control" />
         <span asp-validation-for="BankLocation" class="text-danger"></span>
     </div>
-    <div class="form-group">
+   @*  <div class="form-group">
         <label asp-for="IsAdmin" class="control-label"></label>
         <input asp-for="IsAdmin" class="form-control" />
         <span asp-validation-for="IsAdmin" class="text-danger"></span>
@@ -42,6 +42,11 @@
     <div class="form-group">
         <label asp-for="Status" class="control-label"></label>
         <input asp-for="Status" class="form-control" />
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div> *@
+    <div class="form-group form-check">
+        <input asp-for="Status" class="form-check-input" />
+        <label asp-for="Status" class="form-check-label"></label>
         <span asp-validation-for="Status" class="text-danger"></span>
     </div>
     <div class="form-group">

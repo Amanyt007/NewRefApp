@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NewRefApp.Data;
 using NewRefApp.Interfaces;
+using NewRefApp.Middlewares;
 using NewRefApp.Models;
 using NewRefApp.Services;
 
 namespace NewRefApp.Controllers
 {
+    [ServiceFilter(typeof(AdminFilter))]
     public class UpiDetailsController : Controller
     {
         private readonly IUpiDetailsService _upiDetailsService;
@@ -49,7 +51,7 @@ namespace NewRefApp.Controllers
                     {
                         upiDetails.UserId = user.Id;
                         upiDetails.IsAdmin = user.IsAdmin; // Set based on user role
-                        upiDetails.Status = true; // Set status based on user activity, default to true
+                        //upiDetails.Status = true; // Set status based on user activity, default to true
                     }
                     else
                     {
@@ -64,7 +66,7 @@ namespace NewRefApp.Controllers
                     Console.WriteLine("Error fetching user: " + ex.Message);
                     upiDetails.UserId = 1; // Fallback
                     upiDetails.IsAdmin = false;
-                    upiDetails.Status = true;
+                    upiDetails.Status = false;
                 }
                 await _upiDetailsService.CreateUpiDetailAsync(upiDetails);
                 return RedirectToAction(nameof(Index));
@@ -109,12 +111,11 @@ namespace NewRefApp.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                await _upiDetailsService.UpdateUpiDetailAsync(upiDetails);
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            var user = !string.IsNullOrEmpty(userPhone) ? await _userService.GetByPhoneAsync(userPhone) : null;
+            upiDetails.UserId = user.Id;
+            await _upiDetailsService.UpdateUpiDetailAsync(upiDetails);
                 return RedirectToAction(nameof(Index));
-            }
-            return View(upiDetails);
         }
 
         public async Task<IActionResult> Delete(int id)

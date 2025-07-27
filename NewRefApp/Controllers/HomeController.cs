@@ -21,8 +21,9 @@ namespace NewRefApp.Controllers
         private readonly ITransactionDetailsService _transactionDetailsService;
         private readonly IInvestmentPlanService _investmentPlanService;
         private readonly IUserInvestmentService _userInvestmentService;
+        private readonly ITransactionService _transactionService;
 
-        public HomeController(ILogger<HomeController> logger, IUserService userService, IUpiDetailsService upiDetailsService, IDepositService depositService, IBankDetailsService bankService, ITransactionDetailsService transactionDetailsService, IInvestmentPlanService investmentPlanService, IUserInvestmentService userInvestmentService)
+        public HomeController(ILogger<HomeController> logger, IUserService userService, IUpiDetailsService upiDetailsService, IDepositService depositService, IBankDetailsService bankService, ITransactionDetailsService transactionDetailsService, IInvestmentPlanService investmentPlanService, IUserInvestmentService userInvestmentService,ITransactionService transactionService)
         {
             _logger = logger;
             //_investmentPlanService = investmentPlanService;
@@ -33,6 +34,7 @@ namespace NewRefApp.Controllers
             _transactionDetailsService = transactionDetailsService;
             _investmentPlanService = investmentPlanService;
             _userInvestmentService = userInvestmentService;
+            _transactionService = transactionService;
         }
 
         public async Task<IActionResult> Index()
@@ -48,7 +50,7 @@ namespace NewRefApp.Controllers
                     user = await _userService.GetByPhoneAsync(userPhone);
                     if (user != null)
                     {
-                        balance = await _depositService.CalculateUserBalanceAsync(user.Id);
+                        balance = await _transactionService.CalculateUserBalanceAsync(user.Id);
                     }
                 }
                 catch (Exception ex)
@@ -123,8 +125,29 @@ namespace NewRefApp.Controllers
 
             return View(teamMembers);
         }
-        public IActionResult Recharge()
+        public async Task<IActionResult> Recharge()
         {
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            User user = null;
+            decimal balance = 0;
+
+            if (!string.IsNullOrEmpty(userPhone))
+            {
+                try
+                {
+                    user = await _userService.GetByPhoneAsync(userPhone);
+                    if (user != null)
+                    {
+                        balance = await _transactionService.CalculateUserBalanceAsync(user.Id);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Optional: log or handle error
+                    Console.WriteLine("Error fetching user or balance: " + ex.Message);
+                }
+            }
+            ViewBag.Balance = balance;
             return View();
         }
         public async Task<IActionResult> Payment(decimal? amount, string paymentType)
@@ -229,7 +252,7 @@ namespace NewRefApp.Controllers
             }
 
             // Fetch user's current balance
-            var balance = await _depositService.CalculateUserBalanceAsync(user.Id);
+            var balance = await _transactionService.CalculateUserBalanceAsync(user.Id);
             var plan = await _investmentPlanService.GetInvestmentPlanByIdAsync(planId);
             if (plan == null)
             {
@@ -241,13 +264,14 @@ namespace NewRefApp.Controllers
             {
                 return Json(new { success = false, message = "Insufficient wallet balance." });
             }
-
+            var setdays = 1;
             var userInvestment = new UserInvestment
             {
                 UserId = user.Id,
                 PlanId = planId,
                 PurchaseQuantity = quantity,
-                StartDate = DateTime.UtcNow,
+                //StartDate = DateTime.UtcNow,
+                StartDate = DateTime.UtcNow.AddDays(setdays),
                 EndDate = DateTime.UtcNow.AddDays(int.TryParse(System.Text.RegularExpressions.Regex.Match(plan.RevenueDurationValue ?? "30", @"\d+").Value, out int days) ? days : 30),
                 status = 1 // Purchased
             };
@@ -286,5 +310,36 @@ namespace NewRefApp.Controllers
             var dailyEarnings = investment.InvestmentPlan.DailyEarningsPerUnit ?? 0;
             return dailyEarnings * investment.PurchaseQuantity * fullDays;
         }
+
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            // Clear authentication cookies
+            Response.Cookies.Delete("rareentUser", new CookieOptions { Path = "/" });
+            Response.Cookies.Delete("rareentAdmin", new CookieOptions { Path = "/" });
+            Response.Cookies.Delete("findUser", new CookieOptions { Path = "/" });
+
+            // Clear session if needed
+            HttpContext.Session.Clear();
+
+            // Optionally, clear any other server-side session/authentication data
+
+            return Json(new { success = true });
+        }
+        [HttpGet]
+        public async Task<IActionResult> AllTransactions()
+        {
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            if (string.IsNullOrEmpty(userPhone))
+                return RedirectToAction("Login");
+
+            var user = await _depositService.GetUserByPhoneAsync(userPhone);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            var viewModel = await _transactionService.GetUserTransactionsAsync(user.Id);
+            return View(viewModel);
+        }
+
     }
 }

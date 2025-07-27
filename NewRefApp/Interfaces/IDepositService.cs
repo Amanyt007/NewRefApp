@@ -1,4 +1,5 @@
-﻿using NewRefApp.Models;
+﻿using NewRefApp.Data.DTOs;
+using NewRefApp.Models;
 
 namespace NewRefApp.Interfaces
 {
@@ -12,6 +13,8 @@ namespace NewRefApp.Interfaces
         Task<User> GetUserByPhoneAsync(string phoneNumber);
         //Task UpdateUserAsync(User user);
         //Task CreateUserInvestmentAsync(UserInvestment userInvestment);
-        Task<decimal> CalculateUserBalanceAsync(int userId);
+        //Task<decimal> CalculateUserBalanceAsync(int userId);
+        //Task<UserTransactionsViewModel> GetUserTransactionsAsync(int userId);
+
     }
 }

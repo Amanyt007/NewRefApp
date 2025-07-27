@@ -80,6 +80,7 @@
 		};
 
 		try {
+			$('#loaderModal').modal('show');
 			const response = await fetch('/api/login', {
 				method: 'POST',
 				headers: {
@@ -89,6 +90,7 @@
 			});
 
 			const result = await response.json();
+			$('#loaderModal').modal('hide');
 			if (response.ok) {
 				showMessage('success-message', 'Login successful!', true);
 				//document.getElementById('login-form').reset();

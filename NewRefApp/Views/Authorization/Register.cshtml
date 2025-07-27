@@ -102,10 +102,10 @@
         }
 
         // Withdrawn Password matching validation
-        if (password.value !== withdrawnPassword.value) {
-            showError('withdrawn-password', 'Passwords do not match');
-            isValid = false;
-        }
+        // if (password.value !== withdrawnPassword.value) {
+        //     showError('withdrawn-password', 'Passwords do not match');
+        //     isValid = false;
+        // }
 
         if (!isValid) return;
 
@@ -120,6 +120,7 @@
         };
 
         try {
+            $('#loaderModal').modal('show');
             const response = await fetch('/api/register', {
                 method: 'POST',
                 headers: {
@@ -129,6 +130,7 @@
             });
 
             const result = await response.json();
+            $('#loaderModal').modal('hide');
             if (response.ok) {
                 // Store mobile number in sessionStorage
                 sessionStorage.setItem('phoneNumber', userData.PhoneNumber);
