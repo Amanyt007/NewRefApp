@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NewRefApp.Data;
+using NewRefApp.Data.DTOs;
 using NewRefApp.Interfaces;
 using NewRefApp.Middlewares;
 using NewRefApp.Models;
@@ -11,16 +12,16 @@ namespace NewRefApp.Controllers
     [ServiceFilter(typeof(AdminFilter))]
     public class AdminController : Controller
     {
+        private readonly IAdminService _adminService;
         private readonly IDepositService _depositService;
-        private readonly ApplicationDbContext _context;
         private readonly IUserService _userService;
         private readonly ITransactionService _transactionService;
 
-        public AdminController(IDepositService depositService, ApplicationDbContext context, IUserService userService, ITransactionService transactionService)
+        public AdminController(IAdminService adminService, IDepositService depositService, IUserService userService, ITransactionService transactionService)
         {
-            ViewData["Layout"] = "~/Views/Shared/_AdminLayout.cshtml";
+            _adminService = adminService;
             _depositService = depositService;
-            _context = context;
+            ViewData["Layout"] = "~/Views/Shared/_AdminLayout.cshtml";
             _userService = userService;
             _transactionService = transactionService;
         }
@@ -28,33 +29,24 @@ namespace NewRefApp.Controllers
         public async Task<IActionResult> Index()
         {
             var userPhone = HttpContext.Session.GetString("UserPhone");
-            User user = null;
-            decimal balance = 0;
 
-            if (!string.IsNullOrEmpty(userPhone))
-            {
-                try
-                {
-                    user = await _userService.GetByPhoneAsync(userPhone);
-                    if (user != null)
-                    {
-                        balance = await _transactionService.CalculateUserBalanceAsync(user.Id);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Optional: log or handle error
-                    Console.WriteLine("Error fetching user or balance: " + ex.Message);
-                }
-            }
+            if (string.IsNullOrEmpty(userPhone))
+                return RedirectToAction("Login", "Account");
+
+            var user = await _adminService.GetLoggedInUserAsync(userPhone);
+            if (user == null)
+                return RedirectToAction("Login", "Account");
+
+            var balance = await _adminService.GetUserBalanceAsync(user.Id);
 
             ViewBag.User = user;
             ViewBag.Balance = balance;
             return View(user);
         }
+
         public async Task<IActionResult> SettleTransactions()
         {
-            var deposits = await _depositService.GetAllDepositsAsync();
+            var deposits = await _adminService.GetPendingDepositsAsync();
             return View(deposits);
         }
 
@@ -63,11 +55,9 @@ namespace NewRefApp.Controllers
         {
             var deposit = await _depositService.GetDepositByIdAsync(id);
             if (deposit == null)
-            {
                 return Json(new { success = false, message = "Transaction not found." });
-            }
 
-            deposit.Status = 1; // Approve (Completed)
+            deposit.Status = 1; // Approved
             await _depositService.UpdateDepositAsync(deposit);
             return Json(new { success = true, message = "Transaction approved successfully." });
         }
@@ -77,87 +67,79 @@ namespace NewRefApp.Controllers
         {
             var deposit = await _depositService.GetDepositByIdAsync(id);
             if (deposit == null)
-            {
                 return Json(new { success = false, message = "Transaction not found." });
-            }
 
-            deposit.Status = 2; // Cancel (Failed)
+            deposit.Status = 2; // Cancelled
             await _depositService.UpdateDepositAsync(deposit);
             return Json(new { success = true, message = "Transaction canceled successfully." });
         }
 
-        // SettleWithdraw action
         public async Task<IActionResult> SettleWithdraw()
         {
-            var withdrawals = await _context.Withdraw.Where(w => w.Status == 0).ToListAsync(); // Show only pending withdrawals
+            var withdrawals = await _adminService.GetPendingWithdrawsAsync();
             return View(withdrawals);
         }
 
         [HttpPost]
         public async Task<IActionResult> ShowSuccessWithdrawConfirmation(int id)
         {
-            var withdraw = await _context.Withdraw.FindAsync(id);
+            var withdraw = await _adminService.GetWithdrawByIdAsync(id);
             if (withdraw != null)
             {
                 withdraw.Status = 1; // Completed
-                await _context.SaveChangesAsync();
+                await _depositService.SaveChangesAsync(); // Add this to DepositService
             }
             return RedirectToAction("SettleWithdraw");
         }
-
-        //[HttpPost]
-        //public async Task<IActionResult> SuccessWithdraw(int id)
-        //{
-        //    var withdraw = await _context.Withdraw.FindAsync(id);
-        //    if (withdraw != null)
-        //    {
-        //        withdraw.Status = 1; // Completed
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    return RedirectToAction("SettleWithdraw");
-        //}
 
         [HttpPost]
         public async Task<IActionResult> ShowCancelWithdrawConfirmation(int id)
         {
-            var withdraw = await _context.Withdraw.FindAsync(id);
+            var withdraw = await _adminService.GetWithdrawByIdAsync(id);
             if (withdraw != null)
             {
                 withdraw.Status = 2; // Failed
-                await _context.SaveChangesAsync();
+                await _depositService.SaveChangesAsync(); // Use same SaveChangesAsync method
             }
             return RedirectToAction("SettleWithdraw");
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> CancelWithdraw(int id)
-        //{
-            
-        //}
-
         [HttpPost]
         public IActionResult Logout()
         {
-            // Clear authentication cookies
             Response.Cookies.Delete("rareentUser", new CookieOptions { Path = "/" });
             Response.Cookies.Delete("rareentAdmin", new CookieOptions { Path = "/" });
             Response.Cookies.Delete("findUser", new CookieOptions { Path = "/" });
-
-            // Clear session if needed
             HttpContext.Session.Clear();
-
-            // Optionally, clear any other server-side session/authentication data
 
             return Json(new { success = true });
         }
-        //// SuccessfulWithdraws action
-        //public async Task<IActionResult> SuccessfulWithdraws()
-        //{
-        //    var successfulWithdraws = await _withdrawService.GetSuccessfulWithdrawsAsync();
-        //    var successfulDeposits = await _transactionService.GetSuccessfulTransactionsAsync();
-        //    ViewBag.SuccessfulWithdraws = successfulWithdraws;
-        //    ViewBag.SuccessfulDeposits = successfulDeposits;
-        //    return View();
-        //}
+
+        public async Task<IActionResult> AllUsers(string filter)
+        {
+            var users = string.IsNullOrEmpty(filter)
+                ? await _adminService.GetAllUsersAsync()
+                : await _adminService.GetFilteredUsersAsync(filter);
+
+            ViewBag.Filter = filter;
+            return View(users);
+        }
+
+        public async Task<IActionResult> UserDetails(int id)
+        {
+            var user = await _adminService.GetUserByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var transactions = await _transactionService.GetUserTransactionsAsync(user.Id);
+
+            var viewModel = new UserDetailWithTransactionsViewModel
+            {
+                User = user,
+                TransactionsData = transactions
+            };
+
+            return View(viewModel);
+        }
+
     }
 }

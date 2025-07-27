@@ -63,6 +63,12 @@ namespace NewRefApp.Services
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
         }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
         //public async Task<decimal> CalculateUserBalanceAsync(int userId)
         //{
         //    try
@@ -90,7 +96,7 @@ namespace NewRefApp.Services
         //        throw;
         //    }
         //}
-        
-        
+
+
     }
 }

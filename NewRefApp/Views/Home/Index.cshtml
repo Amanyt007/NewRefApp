@@ -12,7 +12,28 @@
         <p>Phone: @Model.PhoneNumber</p>
         <p>Balance: ₹@(ViewBag.Balance >= 0 ? ViewBag.Balance.ToString("F2") : "0.00")</p>
         <p>Referral Code: @Model.ReferralCode</p>
-        <p>Joined On: @Model.CreatedAt.ToString("MMMM dd, yyyy")</p>
+        @*  <p>Joined On: @Model.CreatedAt.ToString("MMMM dd, yyyy")</p> *@
+        <p class="d-flex gap-4 justify-content-center">Share Code: <span id="currentUrl"></span><i class="fas fa-copy copy-icon" id="copyBtn" title="Copy URL"></i></p>
+        <div class="copied-message" id="copiedMsg" style="display:none;">Copied!</div>
+
+        <script>
+            // Get current URL and set to div
+            var referralCode = "@Model.ReferralCode";
+            const currentUrl = window.location.host;
+            var crcUrl = currentUrl + "/User/register?refCode=" + referralCode;
+            document.getElementById('currentUrl').innerHTML = crcUrl;
+
+            // Copy to clipboard on icon click
+            document.getElementById('copyBtn').addEventListener('click', () => {
+                navigator.clipboard.writeText(crcUrl).then(() => {
+                    const msg = document.getElementById('copiedMsg');
+                    msg.style.display = 'block';
+                    setTimeout(() => {
+                        msg.style.display = 'none';
+                    }, 2000);
+                });
+            });
+        </script>
     }
     else
     {
@@ -21,3 +42,4 @@
 
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+

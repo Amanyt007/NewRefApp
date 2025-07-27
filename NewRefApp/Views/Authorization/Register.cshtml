@@ -23,7 +23,7 @@
         </div>
         <div class="mb-3">
             <label for="refercode" class="form-label">Refer Code (Optional)</label>
-            <input type="text" class="form-control" id="refercode" name="refercode" onchange="clearValidation('refercode')">
+            <input type="text" class="form-control" id="refercode" name="refercode" value="@ViewBag.ReferralCode" onchange="clearValidation('refercode')" disabled>
         </div>
         <button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Sign up</button>
         <div id="success-message" class="text-success mt-3" style="display: none;"></div>

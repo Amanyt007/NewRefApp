@@ -1,0 +1,47 @@
+﻿@model NewRefApp.Data.DTOs.UserDetailWithTransactionsViewModel
+
+@{
+    ViewData["Title"] = "User Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-4">
+
+    <div class="card p-3 bg-light mb-4">
+        <h4>User Information</h4>
+        <p><strong>ID:</strong> @Model.User.Id</p>
+        <p><strong>Name:</strong> @Model.User.FullName</p>
+        <p><strong>Phone:</strong> @Model.User.PhoneNumber</p>
+        <p><strong>Type:</strong> @(Model.User.IsAdmin ? "Admin" : "User")</p>
+        <p><strong>Purchased:</strong> @(Model.User.IsPurchased ? "Yes" : "No")</p>
+        <p><strong>Referral Code:</strong> @Model.User.ReferralCode</p>
+        <p><strong>Created At:</strong> @Model.User.CreatedAt.ToLocalTime().ToString("g")</p>
+    </div>
+
+    <div class="card bg-dark text-white p-3 mb-3">
+        <h5>All Transactions</h5>
+        <p>Current Balance: ₹@Model.TransactionsData.UserBalance</p>
+    </div>
+
+    <div class="card bg-secondary text-white p-3">
+        <table class="table table-dark table-striped">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tx in Model.TransactionsData.Transactions)
+                {
+                    <tr>
+                        <td>@tx.TransactionType</td>
+                        <td>₹@tx.Amount</td>
+                        <td>@tx.TransactionDate.ToString("dd-MM-yyyy HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

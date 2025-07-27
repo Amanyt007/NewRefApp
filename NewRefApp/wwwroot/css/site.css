@@ -36,3 +36,18 @@ body {
 .ajs-success {
     color:#fff;
 }
+.copy-icon {
+    cursor: pointer;
+    color: #333;
+    margin-left: 10px;
+}
+
+    .copy-icon:hover {
+        color: #007BFF;
+    }
+
+.copied-message {
+    color: green;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}

@@ -16,8 +16,9 @@ namespace NewRefApp.Controllers
             _userService = userService;
         }
         [HttpGet("/User/register")]
-        public IActionResult Register()
+        public IActionResult Register(string refCode)
         {
+            ViewBag.ReferralCode = refCode;
             return View();
         }
 
