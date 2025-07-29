@@ -43,7 +43,6 @@ namespace NewRefApp.Services
         {
             return await _context.Withdraw
                 .Include(w => w.User)
-                .Include(w => w.BankDetail)
                 .Where(w => w.UserId == userId)
                 .OrderByDescending(w => w.Date)
                 .ToListAsync();

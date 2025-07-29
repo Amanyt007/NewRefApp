@@ -199,6 +199,7 @@ namespace NewRefApp.Controllers
 
             var deposit = new Deposit
             {
+                User = user,
                 UserId = user.Id,
                 Amount = amount,
                 BonusPercentage = 0,
@@ -264,7 +265,7 @@ namespace NewRefApp.Controllers
             {
                 return Json(new { success = false, message = "Insufficient wallet balance." });
             }
-            var setdays = 1;
+            var setdays = 0;
             var userInvestment = new UserInvestment
             {
                 UserId = user.Id,

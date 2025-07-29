@@ -436,20 +436,21 @@ namespace NewRefApp.Controllers
             withdraw.Status = 0; // Pending
             withdraw.Date = DateTime.UtcNow;
             withdraw.transactionPassword = existingWithdraw.transactionPassword; // Preserve the password
+            await _withdrawService.CreateWithdrawAsync(withdraw);
 
-            if (existingWithdraw == null)
-            {
-                await _withdrawService.CreateWithdrawAsync(withdraw);
-            }
-            else
-            {
-                existingWithdraw.Amount = withdraw.Amount;
-                existingWithdraw.PaymentType = withdraw.PaymentType;
-                existingWithdraw.BankDetailId = withdraw.BankDetailId;
-                existingWithdraw.UpiDetailId = withdraw.UpiDetailId;
-                existingWithdraw.Status = 0;
-                await _withdrawService.UpdateWithdrawAsync(existingWithdraw);
-            }
+            //if (existingWithdraw == null)
+            //{
+            //    await _withdrawService.CreateWithdrawAsync(withdraw);
+            //}
+            //else
+            //{
+            //    existingWithdraw.Amount = withdraw.Amount;
+            //    existingWithdraw.PaymentType = withdraw.PaymentType;
+            //    existingWithdraw.BankDetailId = withdraw.BankDetailId;
+            //    existingWithdraw.UpiDetailId = withdraw.UpiDetailId;
+            //    existingWithdraw.Status = 0;
+            //    await _withdrawService.UpdateWithdrawAsync(existingWithdraw);
+            //}
 
             return RedirectToAction("WithdrawalHistory");
         }
