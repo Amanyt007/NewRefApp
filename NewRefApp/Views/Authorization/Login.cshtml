@@ -1,118 +1,138 @@
-﻿<div class="container mt-5">
-	<h2>Login</h2>
-	<div id="login-form">
-		<div class="mb-3">
-			<label for="mobileno" class="form-label">Mobile Number</label>
-			<input type="text" class="form-control" id="mobileno" name="mobileno" onchange="clearValidation('mobileno')">
-			<div id="mobileno-error" class="error"></div>
-		</div>
-		<div class="mb-3">
-			<label for="password" class="form-label">Password</label>
-			<input type="password" class="form-control" id="password" name="password" onchange="clearValidation('password')">
-			<div id="password-error" class="error"></div>
-		</div>
-		<button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Login</button>
-		<div id="success-message" class="text-success mt-3" style="display: none;"></div>
-		<div id="error-message" class="text-danger mt-3" style="display: none;"></div>
-	</div>
+﻿<!-- Bootstrap 5 CDN -->
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+
+<div class="container mt-5">
+    <div class="form-container wildcraft-card">
+        <div class="text-center mb-3">
+            <img src="/images/logo.png" alt="Wildcraft Logo" class="img-fluid" style="max-width: 120px;">
+        </div>
+
+        <div class="wildcraft-tabs mb-4">
+            <div class="wildcraft-tab active"><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="login">Sign In</a></div>
+            <div class="wildcraft-tab "><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="register">Register</a></div>
+        </div>
+
+        <div id="login-form">
+            <div class="mb-3">
+                <label for="mobileno" class="form-label">Mobile Number (10 digits)</label>
+                <input type="text" class="form-control" id="mobileno" onchange="clearValidation('mobileno')">
+                <div id="mobileno-error" class="error"></div>
+            </div>
+
+            <div class="mb-3 position-relative">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" onchange="clearValidation('password')">
+                <span class="eye-icon" onclick="toggleVisibility('password')">&#128065;</span>
+                <div id="password-error" class="error"></div>
+            </div>
+
+            <button type="button" class="btn btn-login w-100" onclick="validateAndSubmit()">Login</button>
+
+            <div id="success-message" class="text-success mt-3" style="display: none;"></div>
+            <div id="error-message" class="text-danger mt-3" style="display: none;"></div>
+        </div>
+    </div>
 </div>
 
 <script>
-	function clearValidation(fieldId) {
-		const input = document.getElementById(fieldId);
-		const error = document.getElementById(fieldId + '-error');
-		input.classList.remove('is-invalid');
-		if (error) {
-			error.style.display = 'none';
-			error.textContent = '';
-		}
-	}
+    function toggleVisibility(fieldId) {
+        const field = document.getElementById(fieldId);
+        field.type = field.type === 'password' ? 'text' : 'password';
+    }
 
-	function showError(fieldId, message) {
-		const input = document.getElementById(fieldId);
-		const error = document.getElementById(fieldId + '-error');
-		error.textContent = message;
-		error.style.display = 'block';
-		input.classList.add('is-invalid');
-	}
+    function clearValidation(fieldId) {
+        const input = document.getElementById(fieldId);
+        const error = document.getElementById(fieldId + '-error');
+        input.classList.remove('is-invalid');
+        if (error) {
+            error.style.display = 'none';
+            error.textContent = '';
+        }
+    }
 
-	function showMessage(elementId, message, isSuccess) {
-		const messageElement = document.getElementById(elementId);
-		messageElement.textContent = message;
-		messageElement.style.display = 'block';
-		messageElement.classList.remove(isSuccess ? 'text-danger' : 'text-success');
-		messageElement.classList.add(isSuccess ? 'text-success' : 'text-danger');
-	}
+    function showError(fieldId, message) {
+        const input = document.getElementById(fieldId);
+        const error = document.getElementById(fieldId + '-error');
+        error.textContent = message;
+        error.style.display = 'block';
+        input.classList.add('is-invalid');
+    }
 
-	async function validateAndSubmit() {
-		let isValid = true;
-		const mobileno = document.getElementById('mobileno');
-		const password = document.getElementById('password');
+    function showMessage(elementId, message, isSuccess) {
+        const messageElement = document.getElementById(elementId);
+        messageElement.textContent = message;
+        messageElement.style.display = 'block';
+        messageElement.classList.remove(isSuccess ? 'text-danger' : 'text-success');
+        messageElement.classList.add(isSuccess ? 'text-success' : 'text-danger');
+    }
 
-		// Reset error states
-		document.querySelectorAll('.error').forEach(error => {
-			error.style.display = 'none';
-			error.textContent = '';
-		});
-		document.querySelectorAll('.form-control').forEach(input => input.classList.remove('is-invalid'));
-		document.getElementById('success-message').style.display = 'none';
-		document.getElementById('error-message').style.display = 'none';
+    async function validateAndSubmit() {
+        let isValid = true;
+        const mobileno = document.getElementById('mobileno');
+        const password = document.getElementById('password');
 
-		// Mobile Number validation (10 digits)
-		const mobileRegex = /^\d{10}$/;
-		if (!mobileRegex.test(mobileno.value.trim())) {
-			showError('mobileno', 'Please enter a valid 10-digit mobile number');
-			isValid = false;
-		}
+        document.querySelectorAll('.error').forEach(error => {
+            error.style.display = 'none';
+            error.textContent = '';
+        });
+        document.querySelectorAll('.form-control').forEach(input => input.classList.remove('is-invalid'));
+        document.getElementById('success-message').style.display = 'none';
+        document.getElementById('error-message').style.display = 'none';
 
-		// Password validation (non-empty)
-		if (!password.value.trim()) {
-			showError('password', 'Password is required');
-			isValid = false;
-		}
+        const mobileRegex = /^\d{10}$/;
 
-		if (!isValid) return;
+        if (!mobileRegex.test(mobileno.value.trim())) {
+            showError('mobileno', 'Please enter a valid 10-digit mobile number');
+            isValid = false;
+        }
 
-		// Prepare data for API
-		const loginData = {
-			PhoneNumber: mobileno.value,
-			Password: password.value
-		};
+        if (!password.value.trim()) {
+            showError('password', 'Password is required');
+            isValid = false;
+        }
 
-		try {
-			$('#loaderModal').modal('show');
-			const response = await fetch('/api/login', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(loginData)
-			});
+        if (!isValid) return;
 
-			const result = await response.json();
-			$('#loaderModal').modal('hide');
-			if (response.ok) {
-				showMessage('success-message', 'Login successful!', true);
-				//document.getElementById('login-form').reset();
-				sessionStorage.setItem("rareentUser", result.user.phoneNumber);
-				const rareentUser = sessionStorage.getItem("rareentUser"); // changed to sessionStorage
+        const loginData = {
+            PhoneNumber: mobileno.value,
+            Password: password.value
+        };
 
-				const expireDate = new Date();
-				expireDate.setTime(expireDate.getTime() + (1 * 60 * 60 * 1000)); // 1 hour in ms
+        try {
+            $('#loaderModal').modal('show');
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginData)
+            });
 
-				if (rareentUser) {
-					// Set a session cookie (no expires means session cookie)
-					document.cookie = `rareentUser=${rareentUser}; expires=${expireDate.toUTCString()}; path=/`;
-				} else {
-					// Clear the cookie if no value found
-					document.cookie = "rareentUser=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-				}
-				window.location.href = '/Home';
-			} else {
-				showMessage('error-message', result.message || 'Login failed', false);
-			}
-		} catch (error) {
-			showMessage('error-message', 'An error occurred. Please try again.', false);
-		}
-	}
+            const result = await response.json();
+            $('#loaderModal').modal('hide');
+            if (response.ok) {
+                showMessage('success-message', 'Login successful!', true);
+                sessionStorage.setItem("rareentUser", result.user.phoneNumber);
+
+                const expireDate = new Date();
+                expireDate.setTime(expireDate.getTime() + (1 * 60 * 60 * 1000)); // 1 hour
+
+                if (result.user.phoneNumber) {
+                    document.cookie = `rareentUser=${result.user.phoneNumber}; expires=${expireDate.toUTCString()}; path=/`;
+                } else {
+                    document.cookie = "rareentUser=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                }
+
+                window.location.href = '/Home';
+            } else {
+                showMessage('error-message', result.message || 'Login failed', false);
+            }
+        } catch (error) {
+            showMessage('error-message', 'An error occurred. Please try again.', false);
+        }
+    }
 </script>

@@ -1,4 +1,9 @@
-﻿<div class="container mt-5">
+﻿@{
+    ViewData["Title"] = "Register";
+    Layout = null;
+}
+
+@* <div class="container mt-5">
     <h2>Registration</h2>
     <div id="registration-form">
         <div class="mb-3">
@@ -141,6 +146,251 @@
                 password.value ="";
                 mobileno.value = "";
                 fullname.value = "";
+                window.location.href = '/User/login';
+            } else {
+                showMessage('error-message', result.message || 'Registration failed', false);
+            }
+        } catch (error) {
+            showMessage('error-message', 'An error occurred. Please try again.', false);
+        }
+    }
+</script> *@
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+<!-- Bootstrap 5 CDN -->
+<style>
+    body {
+        background-color: #f1f1f1;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wildcraft-card {
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+        padding: 1.5rem;
+    }
+
+    .wildcraft-tabs {
+        background-color: #e9ecef;
+        border-radius: 10px 10px 0 0;
+        display: flex;
+        overflow: hidden;
+    }
+
+    .wildcraft-tab {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+        .wildcraft-tab.active {
+            background-color: #3a3a3a;
+            color: white;
+        }
+
+    .form-control {
+        border-radius: 25px;
+        padding: 12px 20px;
+        background-color: #f8f9fa;
+        border: none;
+    }
+
+    .form-label {
+        font-weight: bold;
+    }
+
+    .btn-register {
+        background-color: #3a3a3a;
+        color: white;
+        padding: 12px;
+        border-radius: 30px;
+        font-weight: bold;
+    }
+
+        .btn-register:hover {
+            background-color: #2b2b2b;
+        }
+
+    .form-container {
+        max-width: 450px;
+        margin: auto;
+    }
+
+    .error {
+        color: red;
+        font-size: 0.9rem;
+    }
+
+    .eye-icon {
+        position: absolute;
+        right: 26px;
+        top: 32px;
+        cursor: pointer;
+        font-size: 22px;
+    }
+
+    .position-relative {
+        position: relative;
+    }
+
+</style>
+
+<div class="container mt-5">
+    <div class="form-container wildcraft-card">
+        <div class="text-center mb-3">
+            <img src="/images/logo.png" alt="Wildcraft Logo" class="img-fluid" style="max-width: 120px;">
+        </div>
+
+        <div class="wildcraft-tabs mb-4">
+            <div class="wildcraft-tab"><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="login">Sign In</a></div>
+            <div class="wildcraft-tab active"><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="register">Register</a></div>
+        </div>
+
+        <div id="registration-form">
+            <div class="mb-3">
+                <label for="fullname" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="fullname" onchange="clearValidation('fullname')">
+                <div id="fullname-error" class="error"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="mobileno" class="form-label">Mobile Number (10 digits)</label>
+                <input type="text" class="form-control" id="mobileno" onchange="clearValidation('mobileno')">
+                <div id="mobileno-error" class="error"></div>
+            </div>
+
+            <div class="mb-3 position-relative">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" onchange="clearValidation('password')">
+                <span class="eye-icon" onclick="toggleVisibility('password')">&#128065;</span>
+                <div id="password-error" class="error"></div>
+            </div>
+
+            <div class="mb-3 position-relative">
+                <label for="withdrawn-password" class="form-label">Withdrawal Password (6 digits)</label>
+                <input type="password" class="form-control" id="withdrawn-password" onchange="clearValidation('withdrawn-password')">
+                <span class="eye-icon" onclick="toggleVisibility('withdrawn-password')">&#128065;</span>
+                <div id="withdrawn-password-error" class="error"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="refercode" class="form-label">Invitation Code (Optional)</label>
+                <input type="text" class="form-control" id="refercode" value="@ViewBag.ReferralCode">
+            </div>
+
+            <button type="button" class="btn btn-register w-100" onclick="validateAndSubmit()">Register</button>
+
+            <div id="success-message" class="text-success mt-3" style="display: none;"></div>
+            <div id="error-message" class="text-danger mt-3" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleVisibility(fieldId) {
+        const field = document.getElementById(fieldId);
+        field.type = field.type === 'password' ? 'text' : 'password';
+    }
+
+    function clearValidation(fieldId) {
+        const input = document.getElementById(fieldId);
+        const error = document.getElementById(fieldId + '-error');
+        input.classList.remove('is-invalid');
+        if (error) {
+            error.style.display = 'none';
+            error.textContent = '';
+        }
+    }
+
+    function showError(fieldId, message) {
+        const input = document.getElementById(fieldId);
+        const error = document.getElementById(fieldId + '-error');
+        error.textContent = message;
+        error.style.display = 'block';
+        input.classList.add('is-invalid');
+    }
+
+    function showMessage(elementId, message, isSuccess) {
+        const messageElement = document.getElementById(elementId);
+        messageElement.textContent = message;
+        messageElement.style.display = 'block';
+        messageElement.classList.remove(isSuccess ? 'text-danger' : 'text-success');
+        messageElement.classList.add(isSuccess ? 'text-success' : 'text-danger');
+    }
+
+    async function validateAndSubmit() {
+        let isValid = true;
+        const fullname = document.getElementById('fullname');
+        const mobileno = document.getElementById('mobileno');
+        const password = document.getElementById('password');
+        const withdrawnPassword = document.getElementById('withdrawn-password');
+        const refercode = document.getElementById('refercode');
+
+        document.querySelectorAll('.error').forEach(error => {
+            error.style.display = 'none';
+            error.textContent = '';
+        });
+        document.querySelectorAll('.form-control').forEach(input => input.classList.remove('is-invalid'));
+        document.getElementById('success-message').style.display = 'none';
+        document.getElementById('error-message').style.display = 'none';
+
+        const mobileRegex = /^\d{10}$/;
+        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+
+        if (!fullname.value.trim()) {
+            showError('fullname', 'Full Name is required');
+            isValid = false;
+        }
+
+        if (!mobileRegex.test(mobileno.value.trim())) {
+            showError('mobileno', 'Please enter a valid 10-digit mobile number');
+            isValid = false;
+        }
+
+        if (!passwordRegex.test(password.value)) {
+            showError('password', 'Password must be at least 8 characters, including a number, uppercase, and lowercase letter');
+            isValid = false;
+        }
+
+        if (!passwordRegex.test(withdrawnPassword.value)) {
+            showError('withdrawn-password', 'Withdrawal Password must be at least 8 characters, including a number, uppercase, and lowercase letter');
+
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        const userData = {
+            FullName: fullname.value,
+            PhoneNumber: mobileno.value,
+            Password: password.value,
+            WithdrawnPassword: withdrawnPassword.value,
+            ReferralCode: refercode.value,
+            ReferredBy: refercode.value || null
+        };
+
+        try {
+            $('#loaderModal').modal('show');
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userData)
+            });
+
+            const result = await response.json();
+            $('#loaderModal').modal('hide');
+            if (response.ok) {
+                sessionStorage.setItem('phoneNumber', userData.PhoneNumber);
+                showMessage('success-message', 'Registration successful!', true);
+                fullname.value = mobileno.value = password.value = withdrawnPassword.value = "";
                 window.location.href = '/User/login';
             } else {
                 showMessage('error-message', result.message || 'Registration failed', false);
