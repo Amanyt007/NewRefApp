@@ -1,0 +1,75 @@
+﻿@model IEnumerable<NewRefApp.Models.ReferralProgram>
+@{
+    ViewData["Title"] = "Invite Friends";
+    var referralCode = ViewBag.UserData as string;
+    //var fullReferralUrl = $"https://yourdomain.com/User/register?refCode={referralCode}";
+}
+
+<div class="container mt-4">
+    <div class="text-center mb-4 d-flex align-items-center gap-3">
+        <input type="text" class="form-control bg-light border-0 rounded-pill px-4 py-2" id="referralLink" value="" readonly />
+        <button class="btn btn-pink rounded-pill px-4" onclick="copyToClipboard('referralLink', this)">Copy</button>
+    </div>
+
+    <div class="text-center mb-4 d-flex align-items-center gap-3">
+        <input type="text" class="form-control bg-light border-0 rounded-pill px-4 py-2" id="referralCode" value="@referralCode" readonly />
+        <button class="btn btn-pink rounded-pill px-4" onclick="copyToClipboard('referralCode', this)">Copy</button>
+    </div>
+
+    <div class="mb-3">
+        @foreach (var level in Model)
+        {
+            <input type="text" class="form-control border border-pink text-center text-dark rounded-pill mb-2"
+                   value="Level-@level.Level=@level.Percent%" readonly />
+        }
+    </div>
+
+
+    <div>
+        <input type="text" class="form-control border border-pink text-center text-dark rounded-pill" value="Share your exclusive invitation link to get up to 30% commission" readonly />
+    </div>
+</div>
+
+<style>
+    .btn-pink {
+        background-color: #d60087;
+        color: white;
+    }
+
+        .btn-pink:hover {
+            background-color: #c20078;
+            color: white;
+        }
+
+    .border-pink {
+        border: 1.5px solid #d60087 !important;
+    }
+
+    input[readonly] {
+        background-color: #f8f9fa !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+
+        var referralCode = "@referralCode";
+        const currentUrl = window.location.host;
+        var crcUrl = `${currentUrl}/User/register?refCode=${referralCode}`;
+        document.getElementById('referralLink').value = crcUrl;
+
+        function copyToClipboard(inputId, btn) {
+            const input = document.getElementById(inputId);
+            navigator.clipboard.writeText(input.value).then(() => {
+                btn.innerText = 'Copied!';
+                btn.classList.remove('btn-pink');
+                btn.classList.add('btn-success');
+                setTimeout(() => {
+                    btn.innerText = 'Copy';
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-pink');
+                }, 2000);
+            });
+        }
+    </script>
+}

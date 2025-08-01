@@ -190,8 +190,8 @@ namespace NewRefApp.Controllers
             {
                 return Json(new { success = false, message = "Invalid UTR number. Must be 6-12 alphanumeric characters." });
             }
-
-            var user = !string.IsNullOrEmpty(userId) ? await _depositService.GetUserByPhoneAsync(userId) : null;
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            var user = !string.IsNullOrEmpty(userPhone) ? await _depositService.GetUserByPhoneAsync(userPhone) : null;
             if (user == null)
             {
                 return Json(new { success = false, message = "User not found." });
@@ -227,6 +227,18 @@ namespace NewRefApp.Controllers
             return View(transactions);
         }
 
+        public async Task<IActionResult> Invite()
+        {
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+            if (string.IsNullOrEmpty(userPhone))
+            {
+                return RedirectToAction("Login", "User"); // Adjust as per your auth logic
+            }
+            var userdata = await _userService.GetByPhoneAsync(userPhone);
+            var invite = await _userService.GetInviteData();
+            ViewBag.UserData = userdata.ReferralCode;
+            return View(invite);
+        }
         public async Task<IActionResult> TransactionDetail(int id)
         {
             var transaction = await _transactionDetailsService.GetTransactionByIdAsync(id);

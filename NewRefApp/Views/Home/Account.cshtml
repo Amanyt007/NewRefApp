@@ -1,4 +1,4 @@
-﻿<ul class="navbar-nav flex-grow-1">
+﻿@* <ul class="navbar-nav flex-grow-1">
     <li class="nav-item">
         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AllTransactions">My Transactions</a>
     </li>
@@ -20,4 +20,86 @@
     <li class="nav-item">
         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Transactions">Transaction Details</a>
     </li>
-</ul>
+</ul> *@
+
+
+@* 
+@{
+    ViewData["Title"] = "Dashboard";
+} *@
+
+<div class="container-fluid p-0">
+    <!-- Profile Header -->
+    <div class="position-relative text-white text-center" style="background: url('/images/rice-bg.jpg'); background-size: cover; background-position: center; padding: 40px 0;">
+        <div class="position-absolute top-0 start-0 p-3">
+            <img src="/images/profile.jpg" class="rounded-circle border border-white" width="60" height="60" alt="Profile" />
+        </div>
+        <div class="pt-3">
+            <div class="fs-6">ID: 7309GP77</div>
+            <span class="badge bg-primary rounded-pill">VIP0</span>
+        </div>
+
+        <!-- 3 Cards -->
+        <div class="d-flex justify-content-around text-dark mt-4">
+            <div class="bg-white p-3 rounded shadow-sm w-25">
+                <div class="fs-5 fw-bold">₹ 0.00</div>
+                <small>Balance</small>
+            </div>
+            <div class="bg-white p-3 rounded shadow-sm w-25">
+                <div class="fs-5 fw-bold">₹ 0.00</div>
+                <small>Total income</small>
+            </div>
+            <div class="bg-white p-3 rounded shadow-sm w-25">
+                <div class="fs-5 fw-bold">₹ 0.00</div>
+                <small>Recharge</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pink Buttons Section -->
+    <div class="container my-4">
+        <div class="row g-3">
+            <div class="col-6">
+                <a asp-controller="Withdraw" asp-action="WithdrawMoney" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
+                    <i class="fas fa-wallet"></i> Withdrawable amount
+                </a>
+            </div>
+            <div class="col-6">
+                <a asp-controller="Home" asp-action="MyInvestments" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
+                    <i class="fas fa-box"></i> My product
+                </a>
+            </div>
+            <div class="col-6">
+                <a asp-controller="Withdraw" asp-action="CreateAccount" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
+                    <i class="fas fa-university"></i> Receiving account
+                </a>
+            </div>
+            <div class="col-6">
+                <a asp-controller="Withdraw" asp-action="CreateAccount" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
+                    <i class="fas fa-lock"></i> Password and Security
+                </a>
+            </div>
+            <div class="col-6">
+                <a asp-controller="Withdraw" asp-action="AllTransactions" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
+                    <i class="fas fa-file-invoice-dollar"></i> Financial details
+                </a>
+            </div>
+            <div class="col-6">
+                <a href="#" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
+                    <i class="fas fa-info-circle"></i> About Us
+                </a>
+            </div>
+            @* <div class="col-6">
+                <a href="#" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
+                    <i class="fas fa-download"></i> Download
+                </a>
+            </div> *@
+            <div class="col-6">
+                <a href="#" class="btn btn-pink w-100 d-flex align-items-center justify-content-between text-danger">
+                    <span>Log out</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

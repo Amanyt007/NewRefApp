@@ -329,6 +329,9 @@ namespace NewRefApp.Services
 
             return user;
         }
-
+        public async Task<IEnumerable<ReferralProgram>> GetInviteData()
+        {
+            return await _context.ReferralProgram.ToListAsync();
+        }
     }
 }

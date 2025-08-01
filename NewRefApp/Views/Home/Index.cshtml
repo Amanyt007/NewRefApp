@@ -1,36 +1,145 @@
 ﻿@model NewRefApp.Models.User
 
 @{
-    ViewData["Title"] = "Home Page";
+    //ViewData["Title"] = "Home Page";
+    //var moblie = @Model.PhoneNumber.Substring(0, 3) + "***" + @Model.PhoneNumber.Substring(@Model.PhoneNumber.Length - 3);
 }
+<style>
+    .card {
+        border-radius: 1rem;
+    }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome @Model?.FullName</h1>
+    .btn {
+        border-radius: 1rem;
+        padding: 0.375rem 1rem;
+    }
 
-    @if (Model != null)
+</style>
+<div class="container-fluid mt-3">
+     @if (Model != null)
     {
-        <p>Phone: @Model.PhoneNumber</p>
-        <p>Balance: ₹@(ViewBag.Balance >= 0 ? ViewBag.Balance.ToString("F2") : "0.00")</p>
-        <p>Referral Code: @Model.ReferralCode</p>
-        @*  <p>Joined On: @Model.CreatedAt.ToString("MMMM dd, yyyy")</p> *@
-        <p class="d-flex gap-4 justify-content-center">Share Code: <span id="currentUrl"></span><i class="fas fa-copy copy-icon" id="copyBtn" title="Copy URL"></i></p>
-        <div class="copied-message" id="copiedMsg" style="display:none;">Copied!</div>
+    @* <div class="text-center mb-3">
+        <img src="/images/banner.jpg" alt="Wildcraft Banner" class="header-img">
+    </div> *@
+        @* <div class="">
+         <div class="d-flex">
+            <div><i class="fa-solid fa-user"></i></div>
+            <div class="d-flex flex-column">
+                <div>@Model.FullName</div>
+                <div>@Model.PhoneNumber</div>
+            </div>
+        </div> 
+    </div>*@
+    <!-- Icons -->
+        <div class="icon-grid d-flex justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <div class="align-self-center">
+                    <i class="fa-solid fa-user h6" style="font-size: 30px;"></i>
+                </div>
+                <div class="d-flex flex-column">
+                    <div>Ankus</div>
+                    <div>8445899123</div>
+                </div>
+            </div>
+            <div class="d-flex flex-column">
+        <div>Your Balance</div>
+        <div class="fw-bold">₹@(ViewBag.Balance >= 0 ? ViewBag.Balance.ToString("F2") : "0.00")</div>
+            </div>
+        </div>
+    <div class="icon-grid">
+        <a class="nav-link text-dark" asp-area="" asp-controller="home" asp-action="Recharge">
+        <div class="icon-item">
+            <i class="fa-solid fa-plus"></i>
+            <div>Recharge</div>
+        </div>
+        </a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Withdraw" asp-action="WithdrawMoney">
+        <div class="icon-item">
+            <i class="fa-solid fa-wallet"></i>
+            <div>Withdraw</div>
+        </div>
+        </a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Withdraw" asp-action="WithdrawMoney">
+        <div class="icon-item">
+            <i class="fa-solid fa-user"></i>
+            <div>Online</div>
+        </div>
+        </a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Withdraw" asp-action="WithdrawMoney">
+        <div class="icon-item">
+            <i class="fa-solid fa-paper-plane"></i>
+            <div>Channel</div>
+        </div>
+        </a>
+    </div>
+        <div class="container mt-4">
 
+            <!-- Inviting Friends -->
+            <div class="card mb-3 bg-light text-dark shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Inviting friends</h5>
+                    <p class="card-text">Inviting friends to earn commissions</p>
+                    <a asp-controller="home" asp-action="invite" class="btn btn-primary btn-sm">Go →</a>
+                </div>
+            </div>
+
+            <!-- Task Reward Top -->
+            <div class="card mb-3 bg-warning-subtle text-dark shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Task reward</h5>
+                    <p class="card-text">Receive commission for completing tasks</p>
+                    <a asp-controller="home" asp-action="referrals" class="btn btn-warning btn-sm">Go →</a>
+                </div>
+            </div>
+
+            <!-- My Team -->
+            <div class="card mb-3 bg-info-subtle text-dark shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">My Team</h5>
+                    <p class="card-text">Build your own team and make more money</p>
+                    <a asp-controller="home" asp-action="TeamMembers" class="btn btn-primary btn-sm">Go →</a>
+                </div>
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <p>Please <a href="/User/login">log in</a> to see your details.</p>
+    }
+
+</div>
+@* <div class="text-center">
+   @if (Model != null)
+    {
+        <div class="card bg-gradient p-3 text-white mb-4 shadow">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3 class="mb-0">Welcome, @Model.FullName</h3>
+                    <p class="mb-1">Phone: @Model.PhoneNumber</p>
+                    <p class="mb-1">Balance: ₹@(ViewBag.Balance >= 0 ? ViewBag.Balance.ToString("F2") : "0.00")</p>
+                    <p class="mb-0">Referral Code: @Model.ReferralCode</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <p class="d-flex align-items-center justify-content-md-end justify-content-start gap-2 mb-0">
+                        Share Code: <span id="currentUrl" class="fw-bold"></span>
+                        <i class="fas fa-copy copy-icon text-info" id="copyBtn" title="Copy URL" style="cursor:pointer;"></i>
+                    </p>
+                    <small id="copiedMsg" class="text-success" style="display:none;">Copied!</small>
+                </div>
+            </div>
+        </div>
         <script>
-            // Get current URL and set to div
             var referralCode = "@Model.ReferralCode";
             const currentUrl = window.location.host;
-            var crcUrl = currentUrl + "/User/register?refCode=" + referralCode;
-            document.getElementById('currentUrl').innerHTML = crcUrl;
+            var crcUrl = `${currentUrl}/User/register?refCode=${referralCode}`;
+            document.getElementById('currentUrl').innerText = crcUrl;
 
-            // Copy to clipboard on icon click
             document.getElementById('copyBtn').addEventListener('click', () => {
                 navigator.clipboard.writeText(crcUrl).then(() => {
                     const msg = document.getElementById('copiedMsg');
-                    msg.style.display = 'block';
-                    setTimeout(() => {
-                        msg.style.display = 'none';
-                    }, 2000);
+                    msg.style.display = 'inline';
+                    setTimeout(() => msg.style.display = 'none', 2000);
                 });
             });
         </script>
@@ -40,6 +149,7 @@
         <p>Please <a href="/User/login">log in</a> to see your details.</p>
     }
 
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+</div> *@
+
+
 

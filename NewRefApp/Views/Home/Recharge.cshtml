@@ -16,18 +16,19 @@
         </div>
         <div class="form-group">
             <label>Quick amount</label>
-            <div class="d-flex justify-content-around mb-3">
-                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="290">290</button>
-                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="750">750</button>
-                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="1950">1950</button>
-                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="2750">2750</button>
+            <div class="d-flex justify-content-center my-3 flex-wrap gap-3">
+                <button class="btn amount-btn" data-amount="290">290</button>
+                <button class="btn amount-btn" data-amount="750">750</button>
+                <button class="btn amount-btn" data-amount="1950">1950</button>
+                <button class="btn amount-btn" data-amount="2750">2750</button>
+                <button class="btn amount-btn" data-amount="4320">4320</button>
+                <button class="btn amount-btn" data-amount="11320">11320</button>
+                <button class="btn amount-btn" data-amount="24450">24450</button>
+                <button class="btn amount-btn" data-amount="71150">71150</button>
             </div>
-            <div class="d-flex justify-content-around">
-                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="4320">4320</button>
-                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="11320">11320</button>
-                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="24450">24450</button>
-                <button class="btn btn-outline-primary rounded-circle amount-btn" data-amount="71150">71150</button>
-            </div>
+            @* <div class="d-flex justify-content-around">
+                
+            </div> *@
         </div>
     </div>
     <div class="card p-3 mt-3">
@@ -48,7 +49,7 @@
         </div>
         
     </div>
-    <button id="rechargeNow" class="btn btn-primary mt-3 w-100 p-3 fw-bold">Recharge Now</button>
+    <button id="rechargeNow" class="btn mt-3 w-100 p-3 fw-bold">Recharge Now</button>
 </div>
 
 @section Scripts {
@@ -99,12 +100,34 @@
 }
 
 <style>
+    .bg-primary {
+        background-color: #ff4da6 !important;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .card {
+        border-radius: 10px;
+        background-color: #fff0f5;
+    }
     .amount-btn {
-        width: 60px;
-        height: 60px;
         display: flex;
         align-items: center;
         justify-content: center;
+        background-color: #ffe6f0;
+        color: #d63384;
+        border: 2px solid #ff66b2;
+        width: 100px;
+        height: 50px;
+        border-radius: 12px;
+        font-weight: bold;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .amount-btn:hover {
+        background-color: #ffb3d9;
+        color: #fff;
+        border-color: #ff4da6;
     }
     .card {
         border-radius: 10px;
@@ -113,4 +136,18 @@
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
     }
+
+    #rechargeNow {
+        background-color: #ff4da6;
+        border: none;
+        color: white;
+        font-size: 1.1rem;
+        padding: 10px 0;
+        border-radius: 10px;
+        transition: all 0.3s ease-in-out;
+    }
+
+        #rechargeNow:hover {
+            background-color: #e60073;
+        }
 </style>

@@ -37,8 +37,8 @@ if (!string.IsNullOrEmpty(plan.RevenueDurationValue))
     }
 }
                             var totalIncome = (plan.DailyEarningsPerUnit ?? plan.HourlyEarningsPerUnit ?? 0) * duration;
-                            var maxInvestment = 2; // As per your example
-                            <div class="col">
+                            var maxInvestment = 100; // As per your example
+                            @* <div class="col">
                                 <div class="card h-100 bg-dark text-white">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">@plan.Name</h5>
@@ -51,6 +51,40 @@ if (!string.IsNullOrEmpty(plan.RevenueDurationValue))
                                         <button type="button" class="btn btn-primary invest-btn" data-id="@plan.Id" data-name="@plan.Name" data-amount="@plan.InvestmentAmount" data-duration="@plan.RevenueDurationValue" data-daily="@(plan.DailyEarningsPerUnit ?? 0)" data-max="@maxInvestment" data-toggle="modal" data-target="#investModal">Invest Now</button>
                                     </div>
                                 </div>
+                            </div> *@
+
+                            <div class="col">
+                            <div class="card tile-card">
+                                <div class="tile-header text-center">
+                                        <h5 class="plan-title">@plan.Name</h5>
+                                </div>
+                                <div class="tile-image">
+                                    <img src="/assets/images/investment_tile.png" alt="Plan Image" class="img-fluid">
+                                </div>
+                                <div class="tile-body">
+                                    <div class="tile-grid">
+                                        <div class="tile-box">
+                                            <div class="tile-value">₹ ₹@plan.InvestmentAmount</div>
+                                            <div class="tile-label">Price</div>
+                                        </div>
+                                        <div class="tile-box">
+                                            <div class="tile-value">₹ @(plan.DailyEarningsPerUnit ?? 0)</div>
+                                            <div class="tile-label">Daily profit</div>
+                                        </div>
+                                        <div class="tile-box">
+                                            <div class="tile-value">@plan.RevenueDurationValue @(plan.HourlyEarningsPerUnit.HasValue ? "Hour(s)" : "Day(s)")</div>
+                                            <div class="tile-label">Day</div>
+                                        </div>
+                                        <div class="tile-box">
+                                            <div class="tile-value">₹ ₹@totalIncome</div>
+                                            <div class="tile-label">Total profit</div>
+                                        </div>
+                                    </div>
+                                    <button class="presale-btn invest-btn" data-id="@plan.Id" data-name="@plan.Name" data-amount="@plan.InvestmentAmount" data-duration="@plan.RevenueDurationValue" data-daily="@(plan.DailyEarningsPerUnit ?? 0)" data-max="@maxInvestment" data-toggle="modal" data-target="#investModal">
+                                        Invest Now
+                                    </button>
+                                </div>
+                            </div>
                             </div>
                         }
                     </div>
@@ -270,5 +304,67 @@ if (!string.IsNullOrEmpty(plan.RevenueDurationValue))
     }
     @@media (min-width: 992px) {
         .row-cols-lg-3 { flex: 33.33%; }
+    }
+</style>
+
+<style>
+    .tile-card {
+        border-radius: 16px;
+        background: linear-gradient(145deg, #f5f5f5, #ffffff);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        overflow: hidden;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .tile-header .plan-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #d60087;
+    }
+
+    .tile-image img {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+
+    .tile-body {
+        padding: 0.5rem;
+    }
+
+    .tile-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 1rem;
+    }
+
+    .tile-box {
+        background: #f0f0f0;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .tile-value {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #d60087;
+    }
+
+    .tile-label {
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .presale-btn {
+        background: linear-gradient(to right, #555, #222);
+        border: none;
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 6px;
+        width: 100%;
     }
 </style>

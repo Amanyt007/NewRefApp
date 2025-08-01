@@ -12,5 +12,6 @@ namespace NewRefApp.Services
         Task<ReferralDto> GetReferralDataAsync(int userId);
         Task<TeamMemberDataDto> GetAllTeamMembersAsync(int userId);
         Task<User> UpdateToPurchased(string phoneNumber);
+        Task<IEnumerable<ReferralProgram>> GetInviteData();
     }
 }

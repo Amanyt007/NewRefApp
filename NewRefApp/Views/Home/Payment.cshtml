@@ -9,15 +9,17 @@
     var bankDetail = ViewBag.BankDetail;
 }
 
-<div class="container mt-4">
-    <div class="card bg-dark text-white p-3 mb-3">
-        <h5>Transaction Details</h5>
-        <p>Amount: ₹@amount</p>
-        <p>Payment Type: @paymentType</p>
+<div class="container py-5">
+    <div class="bg-[#1f1f1f] text-black rounded-3 shadow p-4 mb-4 bg-white">
+        <h4 class="text-xl font-semibold mb-2">Transaction Summary</h4>
+        <div class="flex justify-between flex-wrap">
+            <p>Amount: <strong>₹@amount</strong></p>
+            <p>Payment Type: <strong>@paymentType</strong></p>
+        </div>
     </div>
 
-    <div class="tab-wrapper">
-        <div class="tabs">
+    <div class="">
+        <div class="flex flex-wrap gap-2 mb-4">
             <button class="tab active" data-tab="details">Payment Details</button>
             @if (paymentType == "UPI" && !string.IsNullOrEmpty(qrCode))
             {
@@ -25,11 +27,10 @@
             }
         </div>
 
+        <!-- Tab Content -->
         <div class="tab-content" id="details">
-            <div class="card bg-secondary text-white p-3">
-                <h4>Payment Information</h4>
-                <p><strong>Amount:</strong> ₹@amount</p>
-                <p><strong>Payment Method:</strong> @paymentType</p>
+            <div class="bg-[#2a2a2a] text-white p-2 rounded-xl">
+                <h5 class="text-lg font-semibold mb-3">Payment Information</h5>
                 @if (paymentType == "UPI" && !string.IsNullOrEmpty(upiId) && upiId != "No active admin UPI found")
                 {
                     <p><strong>UPI ID:</strong> @upiId</p>
@@ -51,33 +52,33 @@
         @if (paymentType == "UPI" && !string.IsNullOrEmpty(qrCode))
         {
             <div class="tab-content" id="qr" style="display: none;">
-                <div class="card bg-secondary text-white p-3 text-center">
-                    <h4>Scan to Pay</h4>
-                    <img src="data:image/png;base64,@ViewBag.QrCode" alt="QR Code" style="width: 200px; height: 200px;" />
-                    <p>Scan the QR code with your UPI app to pay ₹@amount to @upiId</p>
+                <div class="bg-[#2a2a2a] text-white text-center rounded-xl">
+                    <h5 class="text-lg font-semibold mb-3">Scan & Pay</h5>
+                    <img src="data:image/png;base64,@qrCode" alt="QR Code" class="w-48 h-48 mx-auto rounded mb-3" />
+                    <p>Scan with your UPI app to pay ₹@amount to <strong>@upiId</strong></p>
                 </div>
             </div>
         }
 
-        <!-- Confirmation Section Moved Outside Tabs -->
-        <div class="card bg-secondary text-white p-3 mt-3">
-            <h4>Transaction Confirmation</h4>
+        <!-- Confirmation Form -->
+        <div class="bg-[#2a2a2a] text-white p-2 my-2 rounded-xl">
+            <h5 class="text-lg font-semibold mb-3">Confirm Transaction</h5>
             <form id="utrForm" asp-action="SubmitDeposit" asp-controller="Home" method="post">
                 <div class="form-group">
                     <label for="utrNumber">UTR Number</label>
-                    <input type="text" class="form-control" id="utrNumber" name="utrNumber"
+                    <input type="text" placeholder="UTR Number" class="form-control bg-[#1f1f1f] text-white border border-pink-500 mt-1"
+                           id="utrNumber" name="utrNumber"
                            pattern="^[0-9A-Za-z]{6,12}$" required
                            oninput="validateUtr()" />
                     <small class="text-danger" id="utrError"></small>
                 </div>
-                <button type="submit" id="submitBtn" class="btn btn-primary mt-3" disabled>Submit</button>
+                <button type="submit" id="submitBtn" class="btn mt-3 px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded" disabled>Submit</button>
             </form>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const tabs = document.querySelectorAll(".tab");
@@ -103,7 +104,7 @@
                 const isValid = /^[0-9A-Za-z]{6,12}$/.test(utrValue);
                 submitBtn.disabled = !utrValue || !isValid;
                 utrError.textContent = !utrValue ? "UTR is required" :
-                    (!isValid ? "UTR must be 6-12 alphanumeric characters" : "");
+                    (!isValid ? "UTR must be 6–12 alphanumeric characters" : "");
                 utrError.style.display = utrError.textContent ? "block" : "none";
             }
 
@@ -125,11 +126,9 @@
                             userId: rareentUser
                         },
                         success: function (response) {
+                            alert(response.message);
                             if (response.success) {
-                                alert(response.message);
-                                window.location.href = "/Home/Index";
-                            } else {
-                                alert(response.message);
+                                window.location.href = "/Home/Transactions";
                             }
                         },
                         error: function (xhr, status, error) {
@@ -143,62 +142,63 @@
 }
 
 <style>
-    body {
-        background: #111;
+   /*  body {
+        background-color: #111;
+        font-family: 'Segoe UI', sans-serif;
         color: #eee;
-        margin: 0;
-        padding: 80px 20px;
-        font-family: sans-serif;
-    }
+    } */
 
     .tab-wrapper {
-        max-width: 600px;
-        width: 100%;
-    }
-
-    .tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
+        max-width: 700px;
+        margin: 0 auto;
     }
 
     .tab {
-        flex: 1;
-        padding: 12px;
-        background: #1f1f1f;
-        color: #eee;
+        flex: 1 1 auto;
+        padding: 10px 15px;
         border: none;
+        background: #2a2a2a;
+        color: #eee;
         border-radius: 6px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: 0.3s ease;
+        text-align: center;
+        font-weight: 500;
     }
 
-        .tab.active {
-            background: #00ffd5;
-            color: #111;
-        }
+    .tab.active {
+        background-color: #ff69b4;
+            color: #ffffff;
+        font-weight: bold;
+    }
 
     .tab-content {
-        background: #222;
-        padding: 20px;
-        border-radius: 6px;
         display: none;
     }
 
-        .tab-content#details {
-            display: block;
-        }
-
-    .card {
-        border-radius: 10px;
+    .tab-content#details {
+        display: block;
     }
 
-    .bg-dark {
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
+    .btn:disabled {
+        background-color: #555 !important;
+        cursor: not-allowed;
     }
 
     #utrError {
         display: none;
+    }
+
+    .bg-pink-600 {
+        background: #ff69b4;
+    }
+
+    img.h-48{
+        height: 40vw;
+    }
+    @@media (max-width: 600px) {
+        .flex {
+            flex-direction: column;
+        }
     }
 </style>

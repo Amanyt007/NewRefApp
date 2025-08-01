@@ -6,8 +6,13 @@ html {
   html {
     font-size: 16px;
   }
+    
 }
-
+@media (max-width: 768px){
+    .eye-icon {
+        font-size: 16px !important;
+    }
+}
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
@@ -51,3 +56,126 @@ body {
     font-size: 0.9rem;
     margin-top: 5px;
 }
+body {
+    background-color: #999999;
+    font-family: 'Segoe UI', sans-serif;
+}
+.header-img {
+    max-width: 300px;
+    border-radius: 12px;
+}
+
+.icon-grid {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 20px 10px;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.icon-item {
+    text-align: center;
+    color: #333;
+}
+
+    .icon-item i {
+        font-size: 28px;
+        background: #e3eaf0;
+        padding: 12px;
+        border-radius: 50%;
+        margin-bottom: 8px;
+        color: #4d4d4d;
+    }
+
+.tab-bar {
+    display: flex;
+    justify-content: center;
+    background-color: #d7e3f4;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+    .tab-bar div {
+        padding: 10px 20px;
+        font-weight: bold;
+        color: #333;
+        border-right: 1px solid #ccc;
+    }
+
+        .tab-bar div:last-child {
+            border-right: none;
+        }
+
+.product-card {
+    background-color: #fff;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+}
+
+.product-img {
+    width: 80px;
+    border-radius: 10px;
+}
+
+.buy-btn {
+    background-color: #333;
+    color: #fff;
+    border-radius: 30px;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+}
+
+.footer-nav {
+    background: #fff;
+    border-top: 1px solid #ddd;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+
+    .footer-nav a {
+        text-align: center;
+        color: #333;
+        font-size: 14px;
+        text-decoration: none;
+    }
+
+    .footer-nav i {
+        display: block;
+        font-size: 20px;
+    }
+.bg-gradient {
+    background: linear-gradient(135deg, #1f1f1f, #333);
+    border-radius: 12px;
+}
+
+.copy-icon:hover {
+    color: #00ffd5 !important;
+}
+.btn-pink {
+    background: linear-gradient(135deg, #fca4cd, #f863a7);
+    color: #fff;
+    font-weight: 500;
+    border-radius: 12px;
+    padding: 14px 18px;
+    box-shadow: 0 4px 8px rgba(248, 99, 167, 0.2);
+    text-align: left;
+}
+
+    .btn-pink i {
+        margin-right: 10px;
+        font-size: 1.1rem;
+    }
+
+    .btn-pink:hover {
+        opacity: 0.9;
+        color: white;
+    }
