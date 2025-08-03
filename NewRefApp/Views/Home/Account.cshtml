@@ -29,7 +29,11 @@
     var data = ViewBag.UserData as NewRefApp.Data.DTOs.BalanceDetailsDto;
     var newUserId = "450" + data.userId;
 }
-
+<div class="container-fluid p-0">
+    <div class="card bg-pink-gradient text-center text-white p-3 mb-3">
+        <h1>Account</h1>
+    </div>
+</div>
 <div class="container-fluid p-0">
     <!-- Profile Header -->
     <div class="position-relative text-white text-center" style="background: url('/images/rice-bg.jpg'); background-size: cover; background-position: center; padding: 40px 0;">
@@ -45,64 +49,70 @@
                 </div>
 
                 <!-- 3 Cards -->
-                <div class="d-flex justify-content-around text-dark mt-4">
-                    <div class="bg-white p-3 rounded shadow-sm w-25">
-                        <div class="fs-5 fw-bold">₹ @data.totalBalance</div>
-                        <small>Balance</small>
+                <div class="row justify-content-around text-dark mt-4 px-sm-5 px-3">
+                    <div class="col-4">
+                        <div class="bg-white p-3 rounded shadow-sm">
+                            <div class="fs-5 fw-bold">₹@data.totalBalance.ToString("F0")</div>
+                            <small>Balance</small>
+                        </div>
                     </div>
-                    <div class="bg-white p-3 rounded shadow-sm w-25">
-                        <div class="fs-5 fw-bold">₹ @data.earningBalance</div>
-                        <small>Total income</small>
+                    <div class="col-4">
+                        <div class="bg-white p-3 rounded shadow-sm">
+                            <div class="fs-5 fw-bold">₹@data.earningBalance.ToString("F0")</div>
+                            <small>Total income</small>
+                        </div>
                     </div>
-                    <div class="bg-white p-3 rounded shadow-sm w-25">
-                        <div class="fs-5 fw-bold">₹ @data.rechargeBalance</div>
-                        <small>Recharge</small>
+                    <div class="col-4">
+                        <div class="bg-white p-3 rounded shadow-sm">
+                            <div class="fs-5 fw-bold">₹@data.rechargeBalance.ToString("F0")</div>
+                            <small>Recharge</small>
+                        </div>
                     </div>
                 </div>
             }
         }
-        
+
     </div>
 
     <!-- Pink Buttons Section -->
     <div class="container my-4">
         <div class="row g-3">
-            <div class="col-6">
+            <div class="col-sm-6">
                 <a asp-controller="Withdraw" asp-action="WithdrawMoney" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
                     <i class="fas fa-wallet"></i> Withdrawable amount
                 </a>
             </div>
-            <div class="col-6">
+            <div class="col-sm-6">
                 <a asp-controller="Home" asp-action="MyInvestments" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
                     <i class="fas fa-box"></i> My product
                 </a>
             </div>
-            <div class="col-6">
+            <div class="col-sm-6">
                 <a asp-controller="Withdraw" asp-action="CreateAccount" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
                     <i class="fas fa-university"></i> Receiving account
                 </a>
             </div>
-            <div class="col-6">
+            <div class="col-sm-6">
                 <a asp-controller="Withdraw" asp-action="CreateAccount" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
                     <i class="fas fa-lock"></i> Password and Security
                 </a>
             </div>
-            <div class="col-6">
+            <div class="col-sm-6">
                 <a asp-controller="home" asp-action="AllTransactions" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
                     <i class="fas fa-file-invoice-dollar"></i> Financial details
                 </a>
             </div>
-            <div class="col-6">
+            <div class="col-sm-6">
                 <a href="#" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
                     <i class="fas fa-info-circle"></i> About Us
                 </a>
             </div>
             @* <div class="col-6">
-                <a href="#" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
-                    <i class="fas fa-download"></i> Download
-                </a>
+            <a href="#" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
+            <i class="fas fa-download"></i> Download
+            </a>
             </div> *@
-            <div class="col-6">
+            <div class="col-sm-6">
                 <a href="#" id="logout" class="btn btn-pink w-100 d-flex align-items-center justify-content-between text-white">
                     <span>Log out</span>
                     <i class="fas fa-arrow-right"></i>

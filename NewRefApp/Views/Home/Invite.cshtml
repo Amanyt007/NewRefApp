@@ -7,30 +7,30 @@
 <div class="container-fluid text-center h1 bg-pink-gradient text-white py-3">Invite</div>
 <div class="container mt-4">
     <div class="text-center mb-4 d-flex align-items-center gap-3">
-        <input type="text" class="form-control bg-light border-0 rounded-pill px-4 py-2" id="referralLink" value="" readonly />
+        <input type="text" class="form-control border-pink bg-light border-0 rounded-pill px-4 py-2" id="referralLink" value="" readonly />
         <button class="btn btn-pink rounded-pill px-4" onclick="copyToClipboard('referralLink', this)">Copy</button>
     </div>
 
     <div class="text-center mb-4 d-flex align-items-center gap-3">
-        <input type="text" class="form-control bg-light border-0 rounded-pill px-4 py-2" id="referralCode" value="@referralCode" readonly />
+        <input type="text" class="form-control border-pink bg-light border-0 rounded-pill px-4 py-2" id="referralCode" value="@referralCode" readonly />
         <button class="btn btn-pink rounded-pill px-4" onclick="copyToClipboard('referralCode', this)">Copy</button>
     </div>
 
     <div class="mb-3">
         @foreach (var level in Model)
         {
-            <input type="text" class="form-control border border-pink text-center text-dark rounded-pill mb-2"
+            <input type="text" class="form-control border border-pink text-center rounded-pill mb-2"
                    value="Level-@level.Level=@level.Percent%" readonly />
         }
     </div>
 
 
     <div>
-        <input type="text" class="form-control border border-pink text-center text-dark rounded-pill" value="Share your exclusive invitation link to get up to 30% commission" readonly />
+        <input type="text" class="form-control border border-pink text-center rounded-pill" value="Share your exclusive invitation link to get up to 30% commission" readonly />
     </div>
 </div>
 
-<style>
+@* <style>
     .btn-pink {
         background-color: #d60087;
         color: white;
@@ -48,7 +48,7 @@
     input[readonly] {
         background-color: #f8f9fa !important;
     }
-</style>
+</style> *@
 
 @section Scripts {
     <script>

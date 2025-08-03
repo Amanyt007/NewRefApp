@@ -13,18 +13,18 @@
 
         <div class="wildcraft-tabs mb-4">
             <div class="wildcraft-tab active"><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="login">Sign In</a></div>
-            <div class="wildcraft-tab "><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="register">Register</a></div>
+            <div class="wildcraft-tab "><a class="nav-link text-pink" asp-area="" asp-controller="User" asp-action="register">Register</a></div>
         </div>
 
         <div id="login-form">
             <div class="mb-3">
-                <label for="mobileno" class="form-label">Mobile Number (10 digits)</label>
+                <label for="mobileno" class="text-pink form-label">Mobile Number (10 digits)</label>
                 <input type="text" class="form-control" id="mobileno" onchange="clearValidation('mobileno')">
                 <div id="mobileno-error" class="error"></div>
             </div>
 
             <div class="mb-3 position-relative">
-                <label for="password" class="form-label">Password</label>
+                <label for="password" class="text-pink form-label">Password</label>
                 <input type="password" class="form-control" id="password" onchange="clearValidation('password')">
                 <span class="eye-icon" onclick="toggleVisibility('password')">&#128065;</span>
                 <div id="password-error" class="error"></div>

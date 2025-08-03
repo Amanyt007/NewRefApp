@@ -161,7 +161,7 @@
     Layout = "~/Views/Shared/_AuthLayout.cshtml";
 }
 <!-- Bootstrap 5 CDN -->
-<style>
+@* <style>
     body {
         background-color: #f1f1f1;
         font-family: 'Segoe UI', sans-serif;
@@ -240,7 +240,7 @@
     }
 
 </style>
-
+ *@
 <div class="container mt-5">
     <div class="form-container wildcraft-card">
         <div class="text-center mb-3">
@@ -248,39 +248,39 @@
         </div>
 
         <div class="wildcraft-tabs mb-4">
-            <div class="wildcraft-tab"><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="login">Sign In</a></div>
+            <div class="wildcraft-tab"><a class="nav-link text-pink" asp-area="" asp-controller="User" asp-action="login">Sign In</a></div>
             <div class="wildcraft-tab active"><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="register">Register</a></div>
         </div>
 
         <div id="registration-form">
             <div class="mb-3">
-                <label for="fullname" class="form-label">Full Name</label>
+                <label for="fullname" class="text-pink form-label">Full Name</label>
                 <input type="text" class="form-control" id="fullname" onchange="clearValidation('fullname')">
                 <div id="fullname-error" class="error"></div>
             </div>
 
             <div class="mb-3">
-                <label for="mobileno" class="form-label">Mobile Number (10 digits)</label>
+                <label for="mobileno" class="text-pink form-label">Mobile Number (10 digits)</label>
                 <input type="text" class="form-control" id="mobileno" onchange="clearValidation('mobileno')">
                 <div id="mobileno-error" class="error"></div>
             </div>
 
             <div class="mb-3 position-relative">
-                <label for="password" class="form-label">Password</label>
+                <label for="password" class="text-pink form-label">Password</label>
                 <input type="password" class="form-control" id="password" onchange="clearValidation('password')">
                 <span class="eye-icon" onclick="toggleVisibility('password')">&#128065;</span>
                 <div id="password-error" class="error"></div>
             </div>
 
             <div class="mb-3 position-relative">
-                <label for="withdrawn-password" class="form-label">Withdrawal Password (6 digits)</label>
-                <input type="password" class="form-control" id="withdrawn-password" onchange="clearValidation('withdrawn-password')">
+                <label for="withdrawn-password" class="form-label text-pink">Withdrawal Password (6 digits)</label>
+                <input type="password" class="text-pink form-control" id="withdrawn-password" onchange="clearValidation('withdrawn-password')">
                 <span class="eye-icon" onclick="toggleVisibility('withdrawn-password')">&#128065;</span>
                 <div id="withdrawn-password-error" class="error"></div>
             </div>
 
             <div class="mb-3">
-                <label for="refercode" class="form-label">Invitation Code (Optional)</label>
+                <label for="refercode" class="text-pink form-label">Invitation Code (Optional)</label>
                 <input type="text" class="form-control" id="refercode" value="@ViewBag.ReferralCode">
             </div>
 

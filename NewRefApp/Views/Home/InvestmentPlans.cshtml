@@ -6,7 +6,7 @@
 }
 <div class="container-fluid p-0">
     <div class="card bg-pink-gradient text-center text-white p-3 mb-3">
-        <h5>Investment Opportunities</h5>
+        <h1>Investment Opportunities</h1>
     </div>
 </div>
 <div class="container mt-4">
@@ -23,8 +23,8 @@
         @foreach (var category in categories)
         {
             <div class="tab-content @(category == categories.First() ? "active" : "")" id="@category" style="display: @(category == categories.First() ? "block" : "none");">
-                <div class="card bg-secondary text-white p-3">
-                    <h4>@category Plans</h4>
+                <div class="card p-3">
+                    <h4 class="text-center py-2 text-dark">@category Plans</h4>
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                         @foreach (var plan in Model.Where(p => p.Category == category))
                         {
@@ -228,7 +228,7 @@
     </script>
 }
 
-<style>
+@* <style>
     .tab-wrapper {
         max-width: 1200px;
         width: 100%;
@@ -318,4 +318,4 @@
         color: white;
         border: none;
     }
-</style>
+</style> *@
