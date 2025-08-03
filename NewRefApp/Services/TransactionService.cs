@@ -9,7 +9,6 @@ namespace NewRefApp.Services
     public class TransactionService : ITransactionService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IUserService _userService;
         private readonly IDepositService _depositService;
         private readonly IReferralProgramService _referralProgramService;
 
