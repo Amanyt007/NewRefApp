@@ -23,10 +23,12 @@
 </ul> *@
 
 
-@* 
+@model NewRefApp.Data.DTOs.BalanceDetailsDto;
 @{
     ViewData["Title"] = "Dashboard";
-} *@
+    var data = ViewBag.UserData as NewRefApp.Data.DTOs.BalanceDetailsDto;
+    var newUserId = "450" + data.userId;
+}
 
 <div class="container-fluid p-0">
     <!-- Profile Header -->
@@ -34,26 +36,32 @@
         <div class="position-absolute top-0 start-0 p-3">
             <img src="/images/profile.jpg" class="rounded-circle border border-white" width="60" height="60" alt="Profile" />
         </div>
-        <div class="pt-3">
-            <div class="fs-6">ID: 7309GP77</div>
-            <span class="badge bg-primary rounded-pill">VIP0</span>
-        </div>
+        @{
+            if (data != null)
+            {
+                <div class="pt-3">
+                    <div class="fs-6">ID: @newUserId</div>
+                    <span class="badge bg-primary rounded-pill">VIP @data.vipLevel</span>
+                </div>
 
-        <!-- 3 Cards -->
-        <div class="d-flex justify-content-around text-dark mt-4">
-            <div class="bg-white p-3 rounded shadow-sm w-25">
-                <div class="fs-5 fw-bold">₹ 0.00</div>
-                <small>Balance</small>
-            </div>
-            <div class="bg-white p-3 rounded shadow-sm w-25">
-                <div class="fs-5 fw-bold">₹ 0.00</div>
-                <small>Total income</small>
-            </div>
-            <div class="bg-white p-3 rounded shadow-sm w-25">
-                <div class="fs-5 fw-bold">₹ 0.00</div>
-                <small>Recharge</small>
-            </div>
-        </div>
+                <!-- 3 Cards -->
+                <div class="d-flex justify-content-around text-dark mt-4">
+                    <div class="bg-white p-3 rounded shadow-sm w-25">
+                        <div class="fs-5 fw-bold">₹ @data.totalBalance</div>
+                        <small>Balance</small>
+                    </div>
+                    <div class="bg-white p-3 rounded shadow-sm w-25">
+                        <div class="fs-5 fw-bold">₹ @data.earningBalance</div>
+                        <small>Total income</small>
+                    </div>
+                    <div class="bg-white p-3 rounded shadow-sm w-25">
+                        <div class="fs-5 fw-bold">₹ @data.rechargeBalance</div>
+                        <small>Recharge</small>
+                    </div>
+                </div>
+            }
+        }
+        
     </div>
 
     <!-- Pink Buttons Section -->
@@ -80,7 +88,7 @@
                 </a>
             </div>
             <div class="col-6">
-                <a asp-controller="Withdraw" asp-action="AllTransactions" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
+                <a asp-controller="home" asp-action="AllTransactions" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
                     <i class="fas fa-file-invoice-dollar"></i> Financial details
                 </a>
             </div>
@@ -95,7 +103,7 @@
                 </a>
             </div> *@
             <div class="col-6">
-                <a href="#" class="btn btn-pink w-100 d-flex align-items-center justify-content-between text-danger">
+                <a href="#" id="logout" class="btn btn-pink w-100 d-flex align-items-center justify-content-between text-white">
                     <span>Log out</span>
                     <i class="fas fa-arrow-right"></i>
                 </a>

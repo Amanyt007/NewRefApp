@@ -1,59 +1,49 @@
-﻿@model InvestmentPlan
+﻿@model NewRefApp.Data.DTOs.InvestmentPlanViewModel;
 
 @{
     ViewData["Title"] = "Create Investment Plan";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-
 <div class="container mt-4">
-    <div class="card bg-dark text-white p-3 mb-3">
-        <h5>Create New Investment Plan</h5>
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-    </div>
-
-    <div class="card bg-secondary text-white p-3">
-        <form asp-action="Create" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+    <h2>Create Investment Plan</h2>
+    <form asp-action="Create" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Category"></label>
+                    <input asp-for="Category" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="RevenueDurationValue"></label>
+                    <input asp-for="RevenueDurationValue" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="VipLevel"></label>
+                    <input asp-for="VipLevel" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="DailyEarningsPerUnit"></label>
+                    <input asp-for="DailyEarningsPerUnit" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="HourlyEarningsPerUnit"></label>
+                    <input asp-for="HourlyEarningsPerUnit" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="InvestmentAmount"></label>
+                    <input asp-for="InvestmentAmount" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ImageFile">Upload Image</label>
+                    <input asp-for="ImageFile" type="file" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary">Create</button>
             </div>
-            <div class="form-group">
-                <label asp-for="Category" class="control-label"></label>
-                <input asp-for="Category" class="form-control" />
-                <span asp-validation-for="Category" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RevenueDurationValue" class="control-label"></label>
-                <input asp-for="RevenueDurationValue" class="form-control" />
-                <span asp-validation-for="RevenueDurationValue" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VipLevel" class="control-label"></label>
-                <input asp-for="VipLevel" class="form-control" />
-                <span asp-validation-for="VipLevel" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DailyEarningsPerUnit" class="control-label"></label>
-                <input asp-for="DailyEarningsPerUnit" class="form-control" />
-                <span asp-validation-for="DailyEarningsPerUnit" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="HourlyEarningsPerUnit" class="control-label"></label>
-                <input asp-for="HourlyEarningsPerUnit" class="form-control" />
-                <span asp-validation-for="HourlyEarningsPerUnit" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InvestmentAmount" class="control-label"></label>
-                <input asp-for="InvestmentAmount" class="form-control" />
-                <span asp-validation-for="InvestmentAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group mt-3">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
 
 @section Scripts {

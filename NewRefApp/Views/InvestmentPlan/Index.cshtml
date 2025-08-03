@@ -1,69 +1,45 @@
 ﻿@model IEnumerable<InvestmentPlan>
-
 @{
     ViewData["Title"] = "Investment Plans";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-
 <div class="container mt-4">
-    <div class="card bg-dark text-white p-3 mb-3">
-        <h5>Investment Plans</h5>
-        <a asp-action="Create" class="btn btn-primary">Create New</a>
-    </div>
-
-    <div class="card bg-secondary text-white p-3">
-        <h4>Plans List</h4>
-        @if (Model.Any())
-        {
-            <table class="table table-dark table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Revenue Duration</th>
-                        <th>VIP Level</th>
-                        <th>Daily Earnings</th>
-                        <th>Hourly Earnings</th>
-                        <th>Investment Amount</th>
-                        <th>Created At</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>@item.Id</td>
-                            <td>@item.Name</td>
-                            <td>@item.Category</td>
-                            <td>@item.RevenueDurationValue</td>
-                            <td>@(item.VipLevel ?? 0)</td>
-                            <td>₹@(item.DailyEarningsPerUnit ?? 0)</td>
-                            <td>₹@(item.HourlyEarningsPerUnit ?? 0)</td>
-                            <td>₹@item.InvestmentAmount</td>
-                            <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")</td>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <p class="text-warning">No investment plans found.</p>
-        }
-    </div>
+    <h2>Investment Plans</h2>
+    <a asp-action="Create" class="btn btn-primary mb-3">Create New Plan</a>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>VIP</th>
+                <th>Duration</th>
+                <th>Daily Earning</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var plan in Model)
+            {
+                <tr>
+                    <td>@plan.Name</td>
+                    <td>@plan.Category</td>
+                    <td>@plan.InvestmentAmount</td>
+                    <td>@plan.VipLevel</td>
+                    <td>@plan.RevenueDurationValue</td>
+                    <td>@plan.DailyEarningsPerUnit</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(plan.ImagePath))
+                        {
+                            <img src="@plan.ImagePath" width="100" />
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@plan.Id" class="btn btn-warning btn-sm">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@plan.Id" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
-
-<style>
-    .table-dark {
-        color: #eee;
-    }
-    .btn-sm {
-        margin-right: 5px;
-    }
-</style>

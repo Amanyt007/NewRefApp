@@ -3,16 +3,18 @@
 @{
     ViewData["Title"] = "My Investments";
 }
-
-<div class="container mt-4">
-    <div class="card bg-dark text-white p-3 mb-3">
+<div class="container-fluid p-0">
+    <div class="card bg-dark text-white bg-pink-gradient text-center p-3 mb-3">
         <h5>My Investments</h5>
     </div>
+</div>
+<div class="container mt-4">
+    
 
-    <div class="card bg-secondary text-white p-3">
+    <div class="card bg-light p-3 investment-list">
         @if (Model != null && Model.Any())
         {
-            <div class="list-group">
+            <div class="row row-cols-1 row-cols-md-2 g-3">
                 @foreach (var item in Model)
                 {
                     var investment = item.Investment;
@@ -20,16 +22,26 @@
                     var daysElapsed = (DateTime.UtcNow - investment.StartDate).TotalDays;
                     var progress = totalDays > 0 ? Math.Min(100, (daysElapsed / totalDays) * 100) : 0;
                     var status = DateTime.UtcNow > investment.EndDate ? "Finished" : "Running";
-                    <div class="list-group-item bg-dark text-white mb-2">
-                        <h5 class="mb-1">@investment.InvestmentPlan.Name</h5>
-                        <p class="mb-1"><strong>Quantity:</strong> @investment.PurchaseQuantity</p>
-                        <p class="mb-1"><strong>Start Date:</strong> @investment.StartDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
-                        <p class="mb-1"><strong>End Date:</strong> @investment.EndDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
-                        <p class="mb-1"><strong>Invested Amount:</strong> ₹@item.InvestedAmount.ToString("F2")</p>
-                        <p class="mb-1"><strong>Calculated Amount:</strong> ₹@item.CalculatedAmount.ToString("F2")</p>
-                        <p class="mb-1"><strong>Status:</strong> @status</p>
-                        <div class="progress">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: @progress%;" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100">@progress.ToString("F0")%</div>
+
+                    <div class="col">
+                        <div class="card pink-tile shadow-sm">
+                            <div class="card-body">
+                                <div class="tile-image">
+                                    <img src="@investment.InvestmentPlan.ImagePath" alt="Plan Image" class="img-fluid">
+                                </div>
+                                <h5 class="tile-title">@investment.InvestmentPlan.Name</h5>
+                                <div class="tile-details">
+                                    <div><strong>Qty:</strong> @investment.PurchaseQuantity</div>
+                                    <div><strong>Start:</strong> @investment.StartDate.ToString("dd-MM-yyyy HH:mm:ss")</div>
+                                    <div><strong>End:</strong> @investment.EndDate.ToString("dd-MM-yyyy HH:mm:ss")</div>
+                                    <div><strong>Invested:</strong> ₹@item.InvestedAmount.ToString("F2")</div>
+                                    <div><strong>Returns:</strong> ₹@item.CalculatedAmount.ToString("F2")</div>
+                                    <div><strong>Status:</strong> @status</div>
+                                </div>
+                                <div class="progress mt-2">
+                                    <div class="progress-bar bg-pink" role="progressbar" style="width: @progress%;" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100">@progress.ToString("F0")%</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 }
@@ -37,10 +49,52 @@
         }
         else
         {
-            <p class="text-warning">No investments found.</p>
+            <p class="text-danger">No investments found.</p>
         }
     </div>
 </div>
+
+<style>
+    .pink-tile {
+        background: linear-gradient(to bottom right, #ffe6f0, #fff0f5);
+        border-radius: 12px;
+        border: 1px solid #f9d6e5;
+        padding: 1rem;
+    }
+
+    .tile-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #d60087;
+        margin-bottom: 0.75rem;
+    }
+
+    .tile-details {
+        font-size: 0.95rem;
+        color: #444;
+        line-height: 1.6;
+    }
+
+    .progress {
+        height: 20px;
+        background-color: #ffbad5;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .tile-image img {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    .progress-bar.bg-pink {
+        background-color: #d60087;
+        font-weight: bold;
+        color: white;
+    }
+</style>
+
 
 @section Scripts {
     @{

@@ -13,5 +13,6 @@ namespace NewRefApp.Services
         Task<TeamMemberDataDto> GetAllTeamMembersAsync(int userId);
         Task<User> UpdateToPurchased(string phoneNumber);
         Task<IEnumerable<ReferralProgram>> GetInviteData();
+        //Task<BalanceDetailsDto> GetUserDetails(string phoneNumber);
     }
 }

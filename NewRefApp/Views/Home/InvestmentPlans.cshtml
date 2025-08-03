@@ -4,11 +4,13 @@
     ViewData["Title"] = "Investment Plans";
     var categories = Model.Select(p => p.Category).Distinct().ToList();
 }
-
-<div class="container mt-4">
-    <div class="card bg-dark text-white p-3 mb-3">
+<div class="container-fluid p-0">
+    <div class="card bg-pink-gradient text-center text-white p-3 mb-3">
         <h5>Investment Opportunities</h5>
     </div>
+</div>
+<div class="container mt-4">
+    
 
     <div class="tab-wrapper">
         <div class="tabs">
@@ -27,64 +29,49 @@
                         @foreach (var plan in Model.Where(p => p.Category == category))
                         {
                             int duration = 0;
-if (!string.IsNullOrEmpty(plan.RevenueDurationValue))
-{
-    // This pulls out the number (e.g., "49" from "49 Days")
-    var match = System.Text.RegularExpressions.Regex.Match(plan.RevenueDurationValue, @"\d+");
-    if (match.Success)
-    {
-        duration = int.Parse(match.Value);
-    }
-}
+                            if (!string.IsNullOrEmpty(plan.RevenueDurationValue))
+                            {
+                                var match = System.Text.RegularExpressions.Regex.Match(plan.RevenueDurationValue, @"\d+");
+                                if (match.Success)
+                                {
+                                    duration = int.Parse(match.Value);
+                                }
+                            }
                             var totalIncome = (plan.DailyEarningsPerUnit ?? plan.HourlyEarningsPerUnit ?? 0) * duration;
-                            var maxInvestment = 100; // As per your example
-                            @* <div class="col">
-                                <div class="card h-100 bg-dark text-white">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">@plan.Name</h5>
-                                        <p class="card-text"><strong>Each Price:</strong> ₹@plan.InvestmentAmount</p>
-                                        <p class="card-text"><strong>Revenue Duration:</strong> @plan.RevenueDurationValue @(plan.HourlyEarningsPerUnit.HasValue ? "Hour(s)" : "Day(s)")</p>
-                                        <p class="card-text"><strong>Daily Earnings:</strong> ₹@(plan.DailyEarningsPerUnit ?? 0)</p>
-                                        <p class="card-text"><strong>Total Income:</strong> ₹@totalIncome</p>
-                                        <p class="card-text"><strong>Max Investment:</strong> @maxInvestment</p>
-                                        <p class="card-text"><strong>VIP Level:</strong> @plan.VipLevel</p>
-                                        <button type="button" class="btn btn-primary invest-btn" data-id="@plan.Id" data-name="@plan.Name" data-amount="@plan.InvestmentAmount" data-duration="@plan.RevenueDurationValue" data-daily="@(plan.DailyEarningsPerUnit ?? 0)" data-max="@maxInvestment" data-toggle="modal" data-target="#investModal">Invest Now</button>
-                                    </div>
-                                </div>
-                            </div> *@
+                            var maxInvestment = 100;
 
                             <div class="col">
-                            <div class="card tile-card">
-                                <div class="tile-header text-center">
+                                <div class="card tile-card">
+                                    <div class="tile-header text-center">
                                         <h5 class="plan-title">@plan.Name</h5>
-                                </div>
-                                <div class="tile-image">
-                                    <img src="/assets/images/investment_tile.png" alt="Plan Image" class="img-fluid">
-                                </div>
-                                <div class="tile-body">
-                                    <div class="tile-grid">
-                                        <div class="tile-box">
-                                            <div class="tile-value">₹ ₹@plan.InvestmentAmount</div>
-                                            <div class="tile-label">Price</div>
-                                        </div>
-                                        <div class="tile-box">
-                                            <div class="tile-value">₹ @(plan.DailyEarningsPerUnit ?? 0)</div>
-                                            <div class="tile-label">Daily profit</div>
-                                        </div>
-                                        <div class="tile-box">
-                                            <div class="tile-value">@plan.RevenueDurationValue @(plan.HourlyEarningsPerUnit.HasValue ? "Hour(s)" : "Day(s)")</div>
-                                            <div class="tile-label">Day</div>
-                                        </div>
-                                        <div class="tile-box">
-                                            <div class="tile-value">₹ ₹@totalIncome</div>
-                                            <div class="tile-label">Total profit</div>
-                                        </div>
                                     </div>
-                                    <button class="presale-btn invest-btn" data-id="@plan.Id" data-name="@plan.Name" data-amount="@plan.InvestmentAmount" data-duration="@plan.RevenueDurationValue" data-daily="@(plan.DailyEarningsPerUnit ?? 0)" data-max="@maxInvestment" data-toggle="modal" data-target="#investModal">
-                                        Invest Now
-                                    </button>
+                                    <div class="tile-image">
+                                        <img src="@plan.ImagePath" alt="Plan Image" class="img-fluid">
+                                    </div>
+                                    <div class="tile-body">
+                                        <div class="tile-grid">
+                                            <div class="tile-box">
+                                                <div class="tile-value">₹@plan.InvestmentAmount</div>
+                                                <div class="tile-label">Price</div>
+                                            </div>
+                                            <div class="tile-box">
+                                                <div class="tile-value">₹@(plan.DailyEarningsPerUnit ?? 0)</div>
+                                                <div class="tile-label">Daily profit</div>
+                                            </div>
+                                            <div class="tile-box">
+                                                <div class="tile-value">@plan.RevenueDurationValue @(plan.HourlyEarningsPerUnit.HasValue ? "Hour(s)" : "Day(s)")</div>
+                                                <div class="tile-label">Duration</div>
+                                            </div>
+                                            <div class="tile-box">
+                                                <div class="tile-value">₹@totalIncome</div>
+                                                <div class="tile-label">Total profit</div>
+                                            </div>
+                                        </div>
+                                        <button class="presale-btn invest-btn" data-id="@plan.Id" data-name="@plan.Name" data-amount="@plan.InvestmentAmount" data-duration="@plan.RevenueDurationValue" data-daily="@(plan.DailyEarningsPerUnit ?? 0)" data-max="@maxInvestment" data-toggle="modal" data-target="#investModal">
+                                            Invest Now
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
                             </div>
                         }
                     </div>
@@ -143,7 +130,7 @@ if (!string.IsNullOrEmpty(plan.RevenueDurationValue))
                         <label>Expected Total Revenue</label>
                         <input type="text" class="form-control" id="expectedRevenue" name="expectedRevenue" readonly />
                     </div>
-                    <button type="submit" id="investBtn" class="btn btn-primary">Invest Now</button>
+                    <button type="submit" id="investBtn" class="btn btn-pink">Invest Now</button>
                 </form>
             </div>
         </div>
@@ -242,76 +229,38 @@ if (!string.IsNullOrEmpty(plan.RevenueDurationValue))
 }
 
 <style>
-    /* body {
-        background: #111;
-        color: #eee;
-        margin: 0;
-        padding: 80px 20px;
-        font-family: sans-serif;
-    } */
     .tab-wrapper {
         max-width: 1200px;
         width: 100%;
     }
+
     .tabs {
         display: flex;
         gap: 10px;
         margin-bottom: 20px;
     }
+
     .tab {
         flex: 1;
         padding: 12px;
-        background: #1f1f1f;
-        color: #eee;
+        background: #ffc0cb;
+        color: #fff;
         border: none;
         border-radius: 6px;
         cursor: pointer;
         transition: all 0.3s ease;
+        font-weight: bold;
     }
-    .tab.active {
-        background: #00ffd5;
-        color: #111;
-    }
-    .tab-content {
-        background: #222;
-        padding: 20px;
-        border-radius: 6px;
-        display: none;
-    }
-    .tab-content.active {
-        display: block;
-    }
-    .card {
-        border-radius: 10px;
-    }
-    .bg-dark {
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-    }
-    .card-title {
-        font-size: 1.25rem;
-        margin-bottom: 10px;
-    }
-    .card-text {
-        margin-bottom: 5px;
-    }
-    .invest-btn {
-        width: 100%;
-    }
-    .row-cols-1 { flex: 100%; }
-    @@media (min-width: 768px) {
-        .row-cols-md-2 { flex: 50%; }
-    }
-    @@media (min-width: 992px) {
-        .row-cols-lg-3 { flex: 33.33%; }
-    }
-</style>
 
-<style>
+        .tab.active {
+            background: #d60087;
+            color: white;
+        }
+
     .tile-card {
         border-radius: 16px;
-        background: linear-gradient(145deg, #f5f5f5, #ffffff);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        background: linear-gradient(145deg, #ffe6ee, #ffffff);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         overflow: hidden;
         text-align: center;
         padding: 1rem;
@@ -330,10 +279,6 @@ if (!string.IsNullOrEmpty(plan.RevenueDurationValue))
         margin-bottom: 1rem;
     }
 
-    .tile-body {
-        padding: 0.5rem;
-    }
-
     .tile-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -342,7 +287,7 @@ if (!string.IsNullOrEmpty(plan.RevenueDurationValue))
     }
 
     .tile-box {
-        background: #f0f0f0;
+        background: #fff0f5;
         border-radius: 8px;
         padding: 10px;
     }
@@ -355,16 +300,22 @@ if (!string.IsNullOrEmpty(plan.RevenueDurationValue))
 
     .tile-label {
         font-size: 0.85rem;
-        color: #666;
+        color: #333;
     }
 
     .presale-btn {
-        background: linear-gradient(to right, #555, #222);
+        background: linear-gradient(to right, #ec407a, #d81b60);
         border: none;
         color: white;
         font-weight: bold;
         padding: 10px 20px;
         border-radius: 6px;
         width: 100%;
+    }
+
+    .btn-pink {
+        background-color: #d60087;
+        color: white;
+        border: none;
     }
 </style>

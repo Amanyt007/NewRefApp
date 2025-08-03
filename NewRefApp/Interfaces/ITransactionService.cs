@@ -6,5 +6,9 @@ namespace NewRefApp.Services
     {
         Task<UserTransactionsViewModel> GetUserTransactionsAsync(int userId);
         Task<decimal> CalculateUserBalanceAsync(int userId);
+        Task<BalanceDetailsDto> GetUserDetails(string phoneNumber);
+        Task<decimal> CalculateUserEarningAsync(int userId);
+        Task<ReferralDto> GetReferralDataAsync(int userId);
+        Task<decimal> ReferralAmuntAsync(int userId);
     }
 }

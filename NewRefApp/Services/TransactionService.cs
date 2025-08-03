@@ -9,15 +9,16 @@ namespace NewRefApp.Services
     public class TransactionService : ITransactionService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
         private readonly IDepositService _depositService;
         private readonly IReferralProgramService _referralProgramService;
 
-        public TransactionService(ApplicationDbContext context, IUserService userService, IDepositService depositService, IReferralProgramService referralProgramService)
+        public TransactionService(ApplicationDbContext context, IDepositService depositService, IReferralProgramService referralProgramService, IUserService userService)
         {
             _context = context;
-            _userService = userService;
             _depositService = depositService;
             _referralProgramService = referralProgramService;
+            _userService = userService;
         }
 
         public async Task<UserTransactionsViewModel> GetUserTransactionsAsync(int userId)
@@ -76,19 +77,19 @@ namespace NewRefApp.Services
                 {
                     TransactionType = "Investment Amount",
                     Amount = earning,
-                    TransactionDate = investment.EndDate,
+                    TransactionDate = investment.StartDate,
                     DetailsLink = "-"
                 });
             }
 
             foreach (var investment in completedInvestments)
             {
-                var fullDays = (int)((DateTime.UtcNow - investment.StartDate).TotalHours / 24);
-                if (fullDays > 0)
-                {
+                //var fullDays = (int)((DateTime.UtcNow - investment.StartDate).TotalHours / 24);
+                //var fullDays = investment.StartDate;
+               
                     var dailyEarnings = investment.InvestmentPlan.DailyEarningsPerUnit ?? 0;
                     var earningAmount = dailyEarnings * investment.PurchaseQuantity;
-                    var lastEarningDate = investment.StartDate.AddDays(fullDays - 1);
+                    var lastEarningDate = investment.StartDate.AddDays(int.Parse(investment.InvestmentPlan.RevenueDurationValue));
 
                     viewModel.Transactions.Add(new TransactionViewModel
                     {
@@ -97,7 +98,7 @@ namespace NewRefApp.Services
                         TransactionDate = lastEarningDate,
                         DetailsLink = "+"
                     });
-                }
+                
             }
 
 
@@ -174,7 +175,8 @@ namespace NewRefApp.Services
                     {
                         ui.PurchaseQuantity,
                         ui.StartDate,
-                        DailyEarnings = ui.InvestmentPlan.DailyEarningsPerUnit ?? 0
+                        DailyEarnings = ui.InvestmentPlan.DailyEarningsPerUnit ?? 0,
+                        duration = int.Parse(ui.InvestmentPlan.RevenueDurationValue) // Assuming this is the duration in days
                     })
                     .ToListAsync();
 
@@ -182,9 +184,9 @@ namespace NewRefApp.Services
 
                 foreach (var inv in investments)
                 {
-                    var hoursElapsed = (DateTime.UtcNow - inv.StartDate).TotalHours;
-                    var fullDays = (int)(hoursElapsed / 24);
-                    totalAccruedProfit += inv.DailyEarnings * inv.PurchaseQuantity * fullDays;
+                    //var hoursElapsed = (DateTime.UtcNow - inv.StartDate).TotalHours;
+                    //var fullDays = (int)(hoursElapsed / 24);
+                    totalAccruedProfit += inv.DailyEarnings * inv.PurchaseQuantity * inv.duration;
                 }
 
                 // Fetch referral data to calculate rebate amounts
@@ -206,8 +208,129 @@ namespace NewRefApp.Services
                 throw;
             }
         }
+        //public async Task<BalanceDetailsDto> GetUserDetails(string phoneNumber)
+        //{
+        //    try
+        //    {
+        //        var user = await _context.Users
+        //        .FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+        //        var totalAmount = await CalculateUserBalanceAsync(user.Id);
+        //        var totalEarning = await CalculateUserEarningAsync(user.Id);
+        //        var totalRecharge = await _context.Deposit
+        //            .Where(d => d.UserId == user.Id)
+        //            .SumAsync(d => d.Amount);
+        //        BalanceDetailsDto balanceDetailsDto = new BalanceDetailsDto
+        //        {
+        //            userId = user.Id,
+        //            vipLevel = user.VipLevel,
+        //            totalBalance = totalAmount,
+        //            earningBalance = totalEarning,
+        //            rechargeBalance = totalRecharge
+        //        };
+        //        return balanceDetailsDto;
+        //    }
+        //    catch (Exception ex)
+        //    {
 
+        //        throw;
+        //    }
 
+        //}
+        public async Task<BalanceDetailsDto> GetUserDetails(string phoneNumber)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(phoneNumber))
+                    throw new ArgumentException("Phone number is required");
+
+                var user = await _context.Users.Where(u => u.PhoneNumber == phoneNumber)
+                    .FirstOrDefaultAsync();
+
+                if (user == null)
+                    throw new InvalidOperationException("User not found");
+
+                var totalAmount = await CalculateUserBalanceAsync(user.Id);
+                var totalEarning = await CalculateUserEarningAsync(user.Id);
+
+                var totalRecharge = await _context.Deposit
+                    .Where(d => d.UserId == user.Id && d.Status ==1)
+                    .SumAsync(d => (decimal?)d.Amount) ?? 0;
+
+                return new BalanceDetailsDto
+                {
+                    userId = user.Id,
+                    vipLevel = user.VipLevel,
+                    totalBalance = totalAmount,
+                    earningBalance = totalEarning,
+                    rechargeBalance = totalRecharge
+                };
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            
+        }
+
+        public async Task<decimal> CalculateUserEarningAsync(int userId)
+        {
+            try
+            {
+               
+                // Accrued Profit (calculate in memory)
+                var investments = await _context.UserInvestment
+                    .Where(ui => ui.UserId == userId && ui.status == 1)
+                    .Select(ui => new
+                    {
+                        ui.PurchaseQuantity,
+                        ui.StartDate,
+                        DailyEarnings = ui.InvestmentPlan.DailyEarningsPerUnit ?? 0,
+                        duration = int.Parse(ui.InvestmentPlan.RevenueDurationValue) // Assuming this is the duration in days
+                    })
+                    .ToListAsync();
+
+                decimal totalAccruedProfit = 0;
+
+                foreach (var inv in investments)
+                {
+                    //var hoursElapsed = (DateTime.UtcNow - inv.StartDate).TotalHours;
+                    //var fullDays = (int)(hoursElapsed / 24);
+                    totalAccruedProfit += inv.DailyEarnings * inv.PurchaseQuantity * inv.duration;
+                }
+
+                // Fetch referral data to calculate rebate amounts
+                var referralData = await GetReferralDataAsync(userId);
+                decimal totalReferralRebate = 0;
+                if (referralData != null)
+                {
+                    totalReferralRebate = (referralData.Level1?.Rebate ?? 0) +
+                                         (referralData.Level2?.Rebate ?? 0) +
+                                         (referralData.Level3?.Rebate ?? 0);
+                }
+
+                // Final Balance
+                var grossBalance = totalAccruedProfit + totalReferralRebate;
+                return grossBalance;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<decimal> ReferralAmuntAsync(int userId)
+        {
+            var referralData = await GetReferralDataAsync(userId);
+            decimal totalReferralRebate = 0;
+            if (referralData != null)
+            {
+                totalReferralRebate = (referralData.Level1?.Rebate ?? 0) +
+                                     (referralData.Level2?.Rebate ?? 0) +
+                                     (referralData.Level3?.Rebate ?? 0);
+            }
+            return totalReferralRebate;
+        }
 
         public async Task<ReferralDto> GetReferralDataAsync(int userId)
         {

@@ -31,11 +31,11 @@ namespace NewRefApp.Controllers
             var userPhone = HttpContext.Session.GetString("UserPhone");
 
             if (string.IsNullOrEmpty(userPhone))
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "Admin");
 
             var user = await _adminService.GetLoggedInUserAsync(userPhone);
             if (user == null)
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "Admin");
 
             var balance = await _adminService.GetUserBalanceAsync(user.Id);
 

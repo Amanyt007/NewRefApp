@@ -69,8 +69,19 @@ namespace NewRefApp.Controllers
         //{
         //    return View();
         //}
-        public IActionResult Account()
+        public async Task<IActionResult> Account()
         {
+            var userPhone = HttpContext.Session.GetString("UserPhone");
+
+            if (userPhone !=null)
+            {
+                ViewBag.UserData = await _transactionService.GetUserDetails(userPhone);
+            }
+            else
+            {
+                return RedirectToAction("Login", "User"); // Adjust as per your auth logic
+            }
+            
             return View();
         }
         public async Task<IActionResult> Investments()
@@ -115,6 +126,7 @@ namespace NewRefApp.Controllers
                     if (user != null)
                     {
                         teamMembers = await _userService.GetAllTeamMembersAsync(user.Id);
+                        ViewBag.ReferralData = await _transactionService.ReferralAmuntAsync(user.Id);
                     }
                 }
                 catch (Exception ex)
@@ -318,10 +330,10 @@ namespace NewRefApp.Controllers
         }
         private decimal CalculateAccruedProfit(UserInvestment investment)
         {
-            var hoursElapsed = (DateTime.UtcNow - investment.StartDate).TotalHours;
-            var fullDays = (int)(hoursElapsed / 24);
+            //var hoursElapsed = (DateTime.UtcNow - investment.StartDate).TotalHours;
+            //var fullDays = (int)(hoursElapsed / 24);
             var dailyEarnings = investment.InvestmentPlan.DailyEarningsPerUnit ?? 0;
-            return dailyEarnings * investment.PurchaseQuantity * fullDays;
+            return dailyEarnings * investment.PurchaseQuantity * int.Parse(investment.InvestmentPlan.RevenueDurationValue);
         }
 
         [HttpPost]

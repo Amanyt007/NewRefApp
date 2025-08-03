@@ -9,13 +9,13 @@
 
 <div class="container my-4">
     <div class="row text-center bg-white shadow-sm p-4 rounded mb-3">
-       @*  <div class="col border-end">
-            <div class="text-muted">Team Recharge</div>
-            <div class="fw-bold fs-5 text-pink">@totalMoney</div>
-        </div> *@
+        <div class="col border-end">
+            <div class="text-muted">Referral Earning</div>
+            <div class="fw-bold fs-5 text-pink">₹@ViewBag.ReferralData</div>
+        </div>
         <div class="col">
             <div class="text-muted">Team Size</div>
-            <div class="fw-bold fs-5 text-pink">@totalInvite</div>
+            <div class="fw-bold fs-5 text-pink" id="teamSize">@totalInvite</div>
         </div>
     </div>
 
@@ -124,3 +124,7 @@
         border: none !important;
     }
 </style>
+<script>
+    // Set totalInvite value from Razor to JavaScript
+    document.getElementById("teamSize").innerText = "@totalInvite";
+</script>
