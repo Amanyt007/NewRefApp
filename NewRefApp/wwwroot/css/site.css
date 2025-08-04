@@ -21,6 +21,9 @@
     --tile-card-start: #dcf8ff;
     --tile-card-end: #dfeef2;
     --tile-box: #dcf6ff;
+    --amount-btn: #a8ebff;
+    --amount-btn-hover: #20b8e6;
+    --recharge-btn-hover: #3d95b4;
     --font-family-base: 'Segoe UI', sans-serif;
 }
 
@@ -454,23 +457,46 @@ input[readonly] {
     position: relative;
 }
 
-
-/*.btn-pink {
-    background-color: #d60087;
-    color: white;
+.recharge-card {
+    background: linear-gradient(318deg, var(--tile-card-start), var(--tile-card-end));
+    border-radius: 10px;
 }
 
-    .btn-pink:hover {
-        background-color: #c20078;
-        color: white;
+.amount-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--amount-btn);
+    color: var(--bg-pink-gradient-end);
+    border: 2px solid var(--bg-pink-gradient-end);
+    width: 100px;
+    height: 50px;
+    border-radius: 12px;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+}
+
+    .amount-btn:hover {
+        background-color: var(--amount-btn-hover);
+        color: var(--secondary-color);
+        border-color: var(--bg-pink-gradient-end);
     }
 
-.border-pink {
-    border: 1.5px solid #d60087 !important;
-}*/
 
 
+#rechargeNow {
+    background-color: var(--bg-pink-gradient-end);
+    border: none;
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+    padding: 10px 0;
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
+}
 
+    #rechargeNow:hover {
+        background-color: var(--recharge-btn-hover);
+    }
 
 
 

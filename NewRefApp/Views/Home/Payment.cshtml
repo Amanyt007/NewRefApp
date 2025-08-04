@@ -23,7 +23,7 @@
             <button class="tab active" data-tab="details">Payment Details</button>
             @if (paymentType == "UPI" && !string.IsNullOrEmpty(qrCode))
             {
-                <button class="tab" data-tab="qr">QR Code</button>
+                <button class="tab ms-3" data-tab="qr">QR Code</button>
             }
         </div>
 
@@ -115,6 +115,7 @@
                 const utrNumber = utrInput.value.trim();
                 const rareentUser = sessionStorage.getItem("rareentUser");
                 if (/^[0-9A-Za-z]{6,12}$/.test(utrNumber)) {
+                    $('#loaderModal').modal('show');
                     $.ajax({
                         url: "/Home/SubmitDeposit",
                         type: "POST",
@@ -126,12 +127,14 @@
                             userId: rareentUser
                         },
                         success: function (response) {
+                            $('#loaderModal').modal('hide');
                             alert(response.message);
                             if (response.success) {
                                 window.location.href = "/Home/Transactions";
                             }
                         },
                         error: function (xhr, status, error) {
+                            $('#loaderModal').modal('hide');
                             alert("Error submitting deposit: " + error);
                         }
                     });
@@ -142,11 +145,9 @@
 }
 
 <style>
-   /*  body {
-        background-color: #111;
-        font-family: 'Segoe UI', sans-serif;
-        color: #eee;
-    } */
+    body {
+        background-color: var(--bg-pink-gradient-end);
+    }
 
     .tab-wrapper {
         max-width: 700px;
@@ -157,7 +158,7 @@
         flex: 1 1 auto;
         padding: 10px 15px;
         border: none;
-        background: #2a2a2a;
+        background: var(--bg-pink-gradient-start);
         color: #eee;
         border-radius: 6px;
         cursor: pointer;
@@ -167,7 +168,7 @@
     }
 
     .tab.active {
-        background-color: #ff69b4;
+            background-color: var(--amount-btn-hover);
             color: #ffffff;
         font-weight: bold;
     }
@@ -190,7 +191,7 @@
     }
 
     .bg-pink-600 {
-        background: #ff69b4;
+        background: var(--amount-btn-hover);
     }
 
     img.h-48{
