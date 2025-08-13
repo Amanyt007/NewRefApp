@@ -33,9 +33,7 @@
                         @{
                             if (ViewBag.isLoggedIn == false)
                             {
-                                // <li class="nav-item">
-                                //     <a class="nav-link text-dark" id="register" asp-area="" asp-controller="Admin" asp-action="Register">Register</a>
-                // </li>
+                                
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" id="login" asp-area="" asp-controller="Admin" asp-action="Login">Login</a>
                                 </li>
@@ -114,11 +112,7 @@
                 return null;
             }
 
-            // if (getCookie("rareentAdmin")) {
-            //     $("#register").hide();
-            //     $("#login").hide();
-            // }
-
+          
             // Logout click handler
             $("#logout").click(function (e) {
                 e.preventDefault();

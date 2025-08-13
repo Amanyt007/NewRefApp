@@ -36,7 +36,7 @@
 </div>
 <div class="container-fluid p-0">
     <!-- Profile Header -->
-    <div class="position-relative text-white text-center" style="background: url('/images/rice-bg.jpg'); background-size: cover; background-position: center; padding: 40px 0;">
+    <div class="position-relative text-white text-center" style="background: url('/images/a1.png'); background-size: cover; background-position: center; padding: 40px 0;">
         <div class="position-absolute top-0 start-0 p-3">
             <img src="/images/rareentLogo.jpg" class="rounded-circle border border-white" width="60" height="60" alt="Profile" />
         </div>
@@ -44,7 +44,7 @@
             if (data != null)
             {
                 <div class="pt-3">
-                    <div class="fs-6">ID: @newUserId</div>
+                    <div class="fs-6 fw-bolder">ID: @newUserId</div>
                     <span class="badge bg-pink rounded-pill">VIP @data.vipLevel</span>
                 </div>
 
@@ -80,13 +80,18 @@
     <div class="container my-4">
         <div class="row g-3">
             <div class="col-sm-6">
+                <a asp-controller="home" asp-action="AllTransactions" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
+                    <i class="fas fa-file-invoice-dollar"></i> Financial details
+                </a>
+            </div>
+            <div class="col-sm-6">
                 <a asp-controller="Withdraw" asp-action="WithdrawMoney" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
-                    <i class="fas fa-wallet"></i> Withdrawable amount
+                    <i class="fas fa-wallet"></i> Withdraw Money
                 </a>
             </div>
             <div class="col-sm-6">
                 <a asp-controller="Home" asp-action="MyInvestments" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
-                    <i class="fas fa-box"></i> My product
+                    <i class="fas fa-box"></i> My products
                 </a>
             </div>
             <div class="col-sm-6">
@@ -95,15 +100,21 @@
                 </a>
             </div>
             <div class="col-sm-6">
+                <a asp-controller="home" asp-action="Transactions" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
+                    <i class="fas fa-lock"></i> Deposit History
+                </a>
+            </div>
+            <div class="col-sm-6">
+                <a asp-controller="Withdraw" asp-action="WithdrawalHistory" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
+                    <i class="fas fa-lock"></i> Withdraw History
+                </a>
+            </div>
+            <div class="col-sm-6">
                 <a asp-controller="Withdraw" asp-action="CreateAccount" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
                     <i class="fas fa-lock"></i> Password and Security
                 </a>
             </div>
-            <div class="col-sm-6">
-                <a asp-controller="home" asp-action="AllTransactions" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
-                    <i class="fas fa-file-invoice-dollar"></i> Financial details
-                </a>
-            </div>
+            
             <div class="col-sm-6">
                 <a href="#" class="btn btn-pink w-100 d-flex align-items-center justify-content-between">
                     <i class="fas fa-info-circle"></i> About Us

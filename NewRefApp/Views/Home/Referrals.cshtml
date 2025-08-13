@@ -21,18 +21,18 @@
     }
 
     .level-1 {
-        background-color: #e91e63; /* Pink */
+        background-color: var(--bg-pink-gradient-end); /* Pink */
         color: white;
     }
 
     .level-2 {
-        background-color: #ec407a; /* Lighter pink */
+        background-color: var(--bg-pink-gradient-start); /* Lighter pink */
         color: white;
     }
 
     .level-3 {
-        background-color: #f8bbd0; /* Lightest pink */
-        color: #111;
+        background-color: var(--tile-card-start); /* Lightest pink */
+        color: var(--bg-pink-gradient-end);
         font-weight: 500;
     }
 
@@ -64,15 +64,20 @@
     }
 </style>
 <div class="container-fluid p-0">
-    <div class="card bg-dark text-white p-3 mb-3 bg-pink-gradient">
-        <h5 class="text-center mb-0">My Referral Program</h5>
+    <div class="card bg-pink-gradient text-center text-white p-3 h1">
+        Referral Income
     </div>
+</div>
+<div class="container-fluid p-0">
+    @* <div class="card bg-dark text-white p-3 mb-3 bg-pink-gradient">
+        <h5 class="text-center mb-0">My Referral Program</h5>
+    </div> *@
 </div>
 <div class="container mt-4">
     
 
     <div>
-        <a class="btn text-white mb-3" style="background-color: #e91e63;" asp-controller="Home" asp-action="TeamMembers">Referral Details</a>
+        <a class="btn btn-greendark mb-3" asp-controller="Home" asp-action="TeamMembers">Referral Details</a>
     </div>
 
     <div class="card bg-white text-white p-3">

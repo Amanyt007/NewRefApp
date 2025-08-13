@@ -37,10 +37,42 @@ namespace NewRefApp.Controllers
             _transactionService = transactionService;
         }
 
+        //public async Task<IActionResult> Index()
+        //{
+        //    var userPhone = HttpContext.Session.GetString("UserPhone");
+        //    User user = null;
+        //    IEnumerable<InvestmentPlan> investmentPlans = null;
+        //    decimal balance = 0;
+
+        //    if (!string.IsNullOrEmpty(userPhone))
+        //    {
+        //        try
+        //        {
+        //            user = await _userService.GetByPhoneAsync(userPhone);
+        //            if (user != null && investmentPlans !=null)
+        //            {
+        //                balance = await _transactionService.CalculateUserBalanceAsync(user.Id);
+        //                investmentPlans = await _investmentPlanService.GetAllInvestmentPlansAsync();
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            // Optional: log or handle error
+        //            Console.WriteLine("Error fetching user or balance: " + ex.Message);
+        //        }
+        //    }
+
+        //    ViewBag.User = user;
+        //    ViewBag.InvestmentPlans = investmentPlans;
+        //    ViewBag.Balance = balance;
+        //    return View(user);
+        //}
+
         public async Task<IActionResult> Index()
         {
             var userPhone = HttpContext.Session.GetString("UserPhone");
             User user = null;
+            IEnumerable<InvestmentPlan> investmentPlans = null;
             decimal balance = 0;
 
             if (!string.IsNullOrEmpty(userPhone))
@@ -48,22 +80,29 @@ namespace NewRefApp.Controllers
                 try
                 {
                     user = await _userService.GetByPhoneAsync(userPhone);
+
                     if (user != null)
                     {
                         balance = await _transactionService.CalculateUserBalanceAsync(user.Id);
+                        investmentPlans = await _investmentPlanService.GetAllInvestmentPlansAsync();
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Optional: log or handle error
-                    Console.WriteLine("Error fetching user or balance: " + ex.Message);
+                    Console.WriteLine("Error: " + ex.Message);
                 }
             }
 
+            var categories = investmentPlans?.Select(p => p.Category).Distinct().ToList() ?? new List<string>();
+
             ViewBag.User = user;
+            ViewBag.InvestmentPlans = investmentPlans;
+            ViewBag.Categories = categories;
             ViewBag.Balance = balance;
+
             return View(user);
         }
+
 
         //public IActionResult Privacy()
         //{

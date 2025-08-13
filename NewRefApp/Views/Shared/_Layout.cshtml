@@ -35,8 +35,8 @@
         </div>
     </div>
     <!-- Bottom Nav -->
-    <div class="footer-nav">
-        <a href="/">
+    @* <div class="footer-nav">
+        <a asp-controller="home">
             <i class="fafootericon fa-solid fa-house active"></i>
             Home
         </a>
@@ -56,7 +56,30 @@
             <i class="fafootericon fa-solid fa-user-lock"></i>
             My
         </a>
+    </div> *@
+    <div class="footer-nav">
+        <a class="footer-link" data-url="/home" asp-controller="home" asp-action="index">
+            <i class="fafootericon fa-solid fa-house"></i>
+            Home
+        </a>
+        <a class="footer-link" data-url="/home/invite" asp-controller="home" asp-action="invite">
+            <i class="fafootericon fa-solid fa-share-nodes"></i>
+            Share
+        </a>
+        <a class="footer-link" data-url="/home/investmentplans" asp-controller="home" asp-action="InvestmentPlans">
+            <i class="fafootericon fa-solid fa-hand-holding-dollar"></i>
+            Plans
+        </a>
+        <a class="footer-link" data-url="/home/teammembers" asp-controller="home" asp-action="TeamMembers">
+            <i class="fafootericon fa-solid fa-users"></i>
+            Team
+        </a>
+        <a class="footer-link" data-url="/home/account" asp-controller="home" asp-action="account">
+            <i class="fafootericon fa-solid fa-user-lock"></i>
+            My
+        </a>
     </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -115,6 +138,34 @@
             if (errorMessage) {
                 alertify.set('notifier', 'position', 'top-right');
                 alertify.error(successMessage);
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const currentPath = window.location.pathname.toLowerCase();
+            const navLinks = document.querySelectorAll(".footer-link");
+
+            let matched = false;
+
+            navLinks.forEach(link => {
+                const linkPath = link.getAttribute("data-url").toLowerCase();
+                if (currentPath === linkPath) {
+                    link.classList.add("active");
+                    link.querySelector("i").classList.add("active");
+                    matched = true;
+                } else {
+                    link.classList.remove("active");
+                    link.querySelector("i").classList.remove("active");
+                }
+            });
+
+            // Default to home if no match
+            if (!matched) {
+                const homeLink = document.querySelector('.footer-link[data-url="/home"]');
+                if (homeLink) {
+                    homeLink.classList.add("active");
+                    homeLink.querySelector("i").classList.add("active");
+                }
             }
         });
     </script>

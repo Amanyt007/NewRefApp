@@ -82,14 +82,45 @@ namespace NewRefApp.Services
                 });
             }
 
+            //foreach (var investment in completedInvestments)
+            //{
+            //    var fullDays = (int)((DateTime.UtcNow - investment.StartDate).TotalHours / 24);
+            //    //var fullDays = investment.StartDate;
+            //    var totalDays = int.Parse(investment.InvestmentPlan.RevenueDurationValue);
+            //    for (int i = 0; i < totalDays; i++)
+            //    {
+            //        var dailyEarnings = investment.InvestmentPlan.DailyEarningsPerUnit ?? 0;
+            //        var earningAmount = dailyEarnings * investment.PurchaseQuantity;
+            //        var lastEarningDate = investment.StartDate.AddDays(i);
+
+            //        viewModel.Transactions.Add(new TransactionViewModel
+            //        {
+            //            TransactionType = "Daily Earning",
+            //            Amount = earningAmount,
+            //            TransactionDate = lastEarningDate,
+            //            DetailsLink = "+"
+            //        });
+            //    }
+            //}
+
             foreach (var investment in completedInvestments)
             {
-                //var fullDays = (int)((DateTime.UtcNow - investment.StartDate).TotalHours / 24);
-                //var fullDays = investment.StartDate;
-               
+                var endDate = investment.StartDate.AddDays(int.Parse(investment.InvestmentPlan.RevenueDurationValue));
+                var timeSpan = (investment.StartDate.AddDays(int.Parse(investment.InvestmentPlan.RevenueDurationValue)) - investment.StartDate).Days;
+                var timeSpanFromStartDate = DateTime.UtcNow - investment.StartDate;
+
+                // If the StartDate is in the future, then no days have passed yet
+                int daysPassed = (timeSpanFromStartDate.TotalDays < 0) ? 0 : (int)timeSpanFromStartDate.TotalDays;
+
+                //var timeSpan = investment.InvestmentPlan.RevenueDurationValue - investment.StartDate;
+                //var fullDays = timeSpan.Days; // Number of complete days elapsed
+                //var totalDays = int.Parse(investment.InvestmentPlan.RevenueDurationValue);
+
+                for (int i = 0; i < daysPassed; i++) // Limit to totalDays
+                {
                     var dailyEarnings = investment.InvestmentPlan.DailyEarningsPerUnit ?? 0;
                     var earningAmount = dailyEarnings * investment.PurchaseQuantity;
-                    var lastEarningDate = investment.StartDate.AddDays(int.Parse(investment.InvestmentPlan.RevenueDurationValue));
+                    var lastEarningDate = investment.StartDate.AddDays(i+1);
 
                     viewModel.Transactions.Add(new TransactionViewModel
                     {
@@ -98,7 +129,7 @@ namespace NewRefApp.Services
                         TransactionDate = lastEarningDate,
                         DetailsLink = "+"
                     });
-                
+                }
             }
 
 
@@ -169,6 +200,26 @@ namespace NewRefApp.Services
                     .SumAsync(w => w.Amount);
 
                 // Accrued Profit (calculate in memory)
+                //var investments = await _context.UserInvestment
+                //    .Where(ui => ui.UserId == userId && ui.status == 1)
+                //    .Select(ui => new
+                //    {
+                //        ui.PurchaseQuantity,
+                //        ui.StartDate,
+                //        DailyEarnings = ui.InvestmentPlan.DailyEarningsPerUnit ?? 0,
+                //        duration = int.Parse(ui.InvestmentPlan.RevenueDurationValue) // Assuming this is the duration in days
+                //    })
+                //    .ToListAsync();
+
+                //decimal totalAccruedProfit = 0;
+
+                //foreach (var inv in investments)
+                //{
+                //    //var hoursElapsed = (DateTime.UtcNow - inv.StartDate).TotalHours;
+                //    //var fullDays = (int)(hoursElapsed / 24);
+                //    totalAccruedProfit += inv.DailyEarnings * inv.PurchaseQuantity * inv.duration;
+                //}
+
                 var investments = await _context.UserInvestment
                     .Where(ui => ui.UserId == userId && ui.status == 1)
                     .Select(ui => new
@@ -176,19 +227,19 @@ namespace NewRefApp.Services
                         ui.PurchaseQuantity,
                         ui.StartDate,
                         DailyEarnings = ui.InvestmentPlan.DailyEarningsPerUnit ?? 0,
-                        duration = int.Parse(ui.InvestmentPlan.RevenueDurationValue) // Assuming this is the duration in days
-                    })
-                    .ToListAsync();
+                        Duration = int.Parse(ui.InvestmentPlan.RevenueDurationValue)
+                    }).ToListAsync();
 
                 decimal totalAccruedProfit = 0;
 
                 foreach (var inv in investments)
                 {
-                    //var hoursElapsed = (DateTime.UtcNow - inv.StartDate).TotalHours;
-                    //var fullDays = (int)(hoursElapsed / 24);
-                    totalAccruedProfit += inv.DailyEarnings * inv.PurchaseQuantity * inv.duration;
-                }
+                    var timeSpan = DateTime.UtcNow - inv.StartDate;
+                    var fullDays = timeSpan.Days;
+                    var accruedDays = Math.Min(fullDays, inv.Duration);
 
+                    totalAccruedProfit += inv.DailyEarnings * inv.PurchaseQuantity * accruedDays;
+                }
                 // Fetch referral data to calculate rebate amounts
                 var referralData = await GetReferralDataAsync(userId);
                 decimal totalReferralRebate = 0;
@@ -253,7 +304,7 @@ namespace NewRefApp.Services
                 var totalEarning = await CalculateUserEarningAsync(user.Id);
 
                 var totalRecharge = await _context.Deposit
-                    .Where(d => d.UserId == user.Id && d.Status ==1)
+                    .Where(d => d.UserId == user.Id && d.Status == 1)
                     .SumAsync(d => (decimal?)d.Amount) ?? 0;
 
                 return new BalanceDetailsDto
@@ -270,14 +321,14 @@ namespace NewRefApp.Services
 
                 throw;
             }
-            
+
         }
 
         public async Task<decimal> CalculateUserEarningAsync(int userId)
         {
             try
             {
-               
+
                 // Accrued Profit (calculate in memory)
                 var investments = await _context.UserInvestment
                     .Where(ui => ui.UserId == userId && ui.status == 1)
@@ -294,9 +345,13 @@ namespace NewRefApp.Services
 
                 foreach (var inv in investments)
                 {
+                    var timeSpanFromStartDate = DateTime.UtcNow - inv.StartDate;
+
+                    // If the StartDate is in the future, then no days have passed yet
+                    int daysPassed = (timeSpanFromStartDate.TotalDays < 0) ? 0 : (int)timeSpanFromStartDate.TotalDays;
                     //var hoursElapsed = (DateTime.UtcNow - inv.StartDate).TotalHours;
                     //var fullDays = (int)(hoursElapsed / 24);
-                    totalAccruedProfit += inv.DailyEarnings * inv.PurchaseQuantity * inv.duration;
+                    totalAccruedProfit += inv.DailyEarnings * inv.PurchaseQuantity * daysPassed;
                 }
 
                 // Fetch referral data to calculate rebate amounts
@@ -383,6 +438,7 @@ namespace NewRefApp.Services
                         Amount = Math.Round(dailyRebate, 2),
                         Date = inv.StartDate.AddDays(i)
                     });
+                    break;
                 }
             }
 
@@ -418,7 +474,9 @@ namespace NewRefApp.Services
                             Amount = Math.Round(dailyRebate, 2),
                             Date = inv.StartDate.AddDays(i)
                         });
+                        break;
                     }
+                    
                 }
             }
 
@@ -457,7 +515,9 @@ namespace NewRefApp.Services
                                 Amount = Math.Round(dailyRebate, 2),
                                 Date = inv.StartDate.AddDays(i)
                             });
+                            break;
                         }
+                        
                     }
                 }
             }

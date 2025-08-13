@@ -1,13 +1,21 @@
 ﻿@model NewRefApp.Data.DTOs.UserTransactionsViewModel
 
+<div class="container-fluid p-0">
+    <div class="card bg-pink-gradient text-center text-white p-3">
+        <div class="h1">
+            All Transactions
+        </div>
+        <p class="fw-bold">Current Balance: ₹@Model.UserBalance</p>
+    </div>
+</div>
 <div class="container mt-4">
-    <div class="card bg-dark text-white p-3 mb-3">
+    @* <div class="card bg-dark text-white p-3 mb-3">
         <h5>All Transactions</h5>
         <p>Current Balance: ₹@Model.UserBalance</p>
-    </div>
+    </div> *@
 
-    <div class="card bg-secondary text-white p-3">
-        <table class="table table-dark table-striped">
+    <div class="recharge-card color-darkBlue p-3">
+        <table class="table table-info table-bordered color-darkBlue font-11">
             <thead>
                 <tr>
                     <th>Type</th>

@@ -1,31 +1,374 @@
-﻿@model NewRefApp.Models.User
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    var plans = ViewBag.InvestmentPlans as IEnumerable<NewRefApp.Models.InvestmentPlan>;
+    var categories = ViewBag.Categories as List<string>;
+    var user = ViewBag.User as NewRefApp.Models.User;
+    decimal balance = ViewBag.Balance ?? 0;
+}
+
+<div class="container mt-4 home">
+    @*  <div class="card bg-dark text-white p-3 mb-4">
+    <h3>Welcome, @user?.FullName</h3>
+    <p>Your Balance: ₹@balance.ToString("F2")</p>
+    </div> *@
+    @if (user != null)
+    {
+        var catCount = 0;
+        <div class="icon-grid d-flex justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <div class="align-self-center">
+                    <i class="fa-solid fa-user fahomeiconcolor" style="font-size: 30px;"></i>
+                </div>
+                <div class="d-flex flex-column">
+                    <div>@user?.FullName</div>
+                    <div>@user?.PhoneNumber</div>
+                </div>
+            </div>
+            <div class="d-flex flex-column">
+                <div>Your Balance</div>
+                <div class="fw-bold">₹@((int)balance)</div>
+            </div>
+        </div>
+        <div class="icon-grid py-2">
+            <a class="nav-link text-dark" asp-area="" asp-controller="home" asp-action="Recharge">
+                <div class="icon-item">
+                    <i class="fa-solid fabgicon fa-plus"></i>
+                    <div>Recharge</div>
+                </div>
+            </a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Withdraw" asp-action="WithdrawMoney">
+                <div class="icon-item">
+                    <i class="fa-solid fabgicon fa-wallet"></i>
+                    <div>Withdraw</div>
+                </div>
+            </a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Withdraw" asp-action="WithdrawMoney">
+                <div class="icon-item">
+                    <i class="fa-solid fabgicon fa-user"></i>
+                    <div>Customer Support</div>
+                </div>
+            </a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Withdraw" asp-action="WithdrawMoney">
+                <div class="icon-item">
+                    <i class="fa-solid fabgicon fa-paper-plane"></i>
+                    <div>Channel</div>
+                </div>
+            </a>
+        </div>
+        @* Investment Plans Display *@
+        <div>
+            <div class="tab-wrapper">
+                <div class="tabs mb-3 text-center">
+                    @foreach (var category in categories)
+                    {
+                        if (catCount == 2)
+                        {
+                            break;
+                        }
+                        <button class="tab btn btn-outline-light mx-1 @(category == categories.First() ? "active" : "")" data-tab="@category">
+                            @category
+                        </button>
+                        catCount++;
+                    }
+                </div>
+
+                @foreach (var category in categories)
+                {
+                    <div class="tab-content @(category == categories.First() ? "active" : "")" id="@category" style="display: @(category == categories.First() ? "block" : "none");">
+                        <div class="card p-3">
+                            <h5 class="text-center text-dark">@category Plans</h5>
+                            <div class="row row-cols-2 row-cols-md-2 row-cols-lg-3 g-4">
+                                @foreach (var plan in plans.Where(p => p.Category == category))
+                                {
+                                    int duration = 0;
+                                    if (!string.IsNullOrEmpty(plan.RevenueDurationValue))
+                                    {
+                                        var match = System.Text.RegularExpressions.Regex.Match(plan.RevenueDurationValue, @"\d+");
+                                        if (match.Success)
+                                        {
+                                            duration = int.Parse(match.Value);
+                                        }
+                                    }
+
+                                    var earningsPerUnit = plan.DailyEarningsPerUnit ?? plan.HourlyEarningsPerUnit ?? 0;
+                                    var totalIncome = earningsPerUnit * duration;
+                                    var maxInvestment = 100;
+
+                                    <div class="col">
+                                        <div class="card tile-card p-sm-3 p-2 shadow-sm">
+                                            <div class="tile-header text-center p-2 rounded-top">
+                                                <h5 class="plan-title mb-0">@plan.Name</h5>
+                                            </div>
+                                            <div class="tile-image text-center p-2">
+                                                <img src="@plan.ImagePath" alt="Plan Image" class="img-fluid" style="max-height: 150px;">
+                                            </div>
+                                            <div class="tile-body p-2 pt-sm-2 pt-0">
+                                                <div class="row justify-content-around">
+                                                    <div class="tile-box col-6">
+                                                        <div class="tile-value">₹@((int)plan.InvestmentAmount)</div>
+                                                        <div class="tile-label">Price</div>
+                                                    </div>
+                                                    <div class="tile-box col-6">
+                                                        <div class="tile-value">₹@((int)earningsPerUnit)</div>
+                                                        <div class="tile-label">Daily Profit</div>
+                                                    </div>
+                                                    <div class="tile-box col-6">
+                                                        <div class="tile-value">@plan.RevenueDurationValue @(plan.HourlyEarningsPerUnit.HasValue ? "Hour(s)" : "Day(s)")</div>
+                                                        <div class="tile-label">Duration</div>
+                                                    </div>
+                                                    <div class="tile-box col-6">
+                                                        <div class="tile-value">₹@((int)totalIncome)</div>
+                                                        <div class="tile-label">Total Profit</div>
+                                                    </div>
+                                                </div>
+
+                                                <button class="presale-btn invest-btn btn btn-pink mt-3 w-100 text-center"
+                                                        data-id="@plan.Id"
+                                                        data-name="@plan.Name"
+                                                        data-amount="@plan.InvestmentAmount"
+                                                        data-duration="@plan.RevenueDurationValue"
+                                                        data-daily="@earningsPerUnit"
+                                                        data-max="@maxInvestment"
+                                                        data-toggle="modal"
+                                                        data-target="#investModal">
+                                                    Invest Now
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <!-- Inviting Friends -->
+        <div class="card my-3 bg-light text-dark shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Inviting friends</h5>
+                <p class="card-text">Inviting friends to earn commissions</p>
+                <a asp-controller="home" asp-action="invite" class="btn btn-greendark">Go →</a>
+            </div>
+        </div>
+
+        <!-- Task Reward Top -->
+        <div class="card mb-3 bg-warning-subtle text-dark shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Referral Earning</h5>
+                <p class="card-text">Receive commission for completing tasks</p>
+                <a asp-controller="home" asp-action="referrals" class="btn btn-greendark">Go →</a>
+            </div>
+        </div>
+
+        <!-- My Team -->
+        <div class="card mb-3 bg-info-subtle text-dark shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">My Team</h5>
+                <p class="card-text">Build your own team and make more money</p>
+                <a asp-controller="home" asp-action="TeamMembers" class="btn btn-greendark">Go →</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p class="text-center mt-5">Please <a href="/User/login">log in</a> to see your details.</p>
+    }
+</div>
+
+<!-- Modal HTML remains same as your original -->
+@* Include your #investModal code here *@
+<!-- Modal -->
+<div class="modal fade" id="investModal" tabindex="-1" aria-labelledby="investModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content color-darkBlue text-start tile-card">
+            <div class="modal-header">
+                <h5 class="modal-title" id="investModalLabel">Confirm Investment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="investForm" asp-action="Invest" asp-controller="Home" method="post">
+                    <input type="hidden" id="planId" name="planId" />
+                    <div class="form-group">
+                        <label class="my-1">Plan Name</label>
+                        <input type="text" class="form-control" id="planName" name="planName" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="my-1">Each Price</label>
+                        <input type="text" class="form-control" id="eachPrice" name="eachPrice" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="my-1">Revenue Duration</label>
+                        <input type="text" class="form-control" id="revenueDuration" name="revenueDuration" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="my-1">Daily Earnings</label>
+                        <input type="text" class="form-control" id="dailyEarnings" name="dailyEarnings" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="my-1">Total Income</label>
+                        <input type="text" class="form-control" id="totalIncome" name="totalIncome" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="my-1">Max Investment</label>
+                        <input type="text" class="form-control" id="maxInvestment" name="maxInvestment" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="my-2">Buy Share</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="2" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="my-2">Pay Money</label>
+                        <input type="text" class="form-control" id="payMoney" name="payMoney" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="my-2">Expected Total Revenue</label>
+                        <input type="text" class="form-control" id="expectedRevenue" name="expectedRevenue" readonly />
+                    </div>
+                    <button type="submit" id="investBtn" class="btn btn-pink mt-3">Invest Now</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .spinner-border.text-primary.text-white {
+        color: #000 !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tabs = document.querySelectorAll(".tab");
+            const contents = document.querySelectorAll(".tab-content");
+            const quantityInput = document.getElementById("quantity");
+            const investBtn = document.getElementById("investBtn");
+            const payMoney = document.getElementById("payMoney");
+            const expectedRevenue = document.getElementById("expectedRevenue");
+
+            tabs.forEach((tab) => {
+                tab.addEventListener("click", () => {
+                    tabs.forEach((t) => t.classList.remove("active"));
+                    tab.classList.add("active");
+
+                    const selected = tab.getAttribute("data-tab");
+                    contents.forEach((c) => {
+                        c.style.display = c.id === selected ? "block" : "none";
+                        if (c.id === selected) c.classList.add("active");
+                        else c.classList.remove("active");
+                    });
+                });
+            });
+
+            $('.invest-btn').on('click', function () {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+                const amount = $(this).data('amount');
+                const duration = $(this).data('duration');
+                const daily = $(this).data('daily');
+                const max = $(this).data('max');
+                const totalIncome = daily * duration;
+
+                $('#planId').val(id);
+                $('#planName').val(name);
+                $('#eachPrice').val('₹' + amount);
+                $('#revenueDuration').val(duration + (daily == 0 ? ' Hour(s)' : ' Day(s)'));
+                $('#dailyEarnings').val('₹' + daily);
+                $('#totalIncome').val('₹' + totalIncome);
+                $('#maxInvestment').val(max);
+                $('#quantity').val(1).attr('max', max);
+                $('#payMoney').val('₹' + amount);
+                $('#expectedRevenue').val('₹' + totalIncome);
+
+                $('#investModal').modal('show');
+            });
+
+            quantityInput.addEventListener("input", function () {
+                const qty = parseInt(this.value) || 1;
+                const amount = parseFloat($('#eachPrice').val().replace('₹', '')) || 0;
+                const daily = parseFloat($('#dailyEarnings').val().replace('₹', '')) || 0;
+                const duration = parseInt($('#revenueDuration').val().split(' ')[0]) || 0;
+                const max = parseInt($('#maxInvestment').val()) || 1;
+
+                if (qty > max) this.value = max;
+                const totalPay = amount * qty;
+                const totalRev = daily * duration * qty;
+                payMoney.value = '₹' + totalPay.toFixed(2);
+                expectedRevenue.value = '₹' + totalRev.toFixed(2);
+                investBtn.disabled = qty < 1 || qty > max;
+            });
+
+            $("#investForm").on("submit", function (e) {
+                e.preventDefault();
+                const quantity = parseInt(quantityInput.value);
+                $('#loaderModal').modal('show');
+                if (quantity > 0 && quantity <= parseInt($('#maxInvestment').val())) {
+                    $.ajax({
+                        url: "/Home/Invest",
+                        type: "POST",
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            $('#loaderModal').modal('hide');
+                            if (response.success) {
+                                alert(response.message);
+                                $('#investModal').modal('hide');
+                                location.reload();
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            alert("Error processing investment: " + error);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
+
+
+
+
+
+
+
+
+
+
+
+@* @model NewRefApp.Models.User *@
 
 @{
     //ViewData["Title"] = "Home Page";
     //var moblie = @Model.PhoneNumber.Substring(0, 3) + "***" + @Model.PhoneNumber.Substring(@Model.PhoneNumber.Length - 3);
 }
-<style>
+@* <style>
     body {
         background: var(--bg-pink-gradient-end);
     }
 </style>
 <div class="container-fluid mt-3">
      @if (Model != null)
-    {
-    @* <div class="text-center mb-3">
+    { *@
+@* <div class="text-center mb-3">
         <img src="/images/banner.jpg" alt="Wildcraft Banner" class="header-img">
     </div> *@
-        @* <div class="">
+@* <div class="">
          <div class="d-flex">
             <div><i class="fa-solid fa-user"></i></div>
             <div class="d-flex flex-column">
                 <div>@Model.FullName</div>
                 <div>@Model.PhoneNumber</div>
             </div>
-        </div> 
+        </div>
     </div>*@
-    <!-- Icons -->
-        <div class="icon-grid d-flex justify-content-between">
+<!-- Icons -->
+@*<div class="icon-grid d-flex justify-content-between">
             <div class="d-flex align-items-center gap-3">
                 <div class="align-self-center">
                     <i class="fa-solid fa-user fahomeiconcolor" style="font-size: 30px;"></i>
@@ -102,7 +445,7 @@
         <p>Please <a href="/User/login">log in</a> to see your details.</p>
     }
 
-</div>
+</div> *@
 @* <div class="text-center">
    @if (Model != null)
     {

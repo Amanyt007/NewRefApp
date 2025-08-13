@@ -3,13 +3,17 @@
 @{
     ViewData["Title"] = "Withdraw Money";
 }
-
-<div class="container mt-4">
-    <div class="card bg-dark text-white p-3 mb-3">
-        <h5>Withdraw Money</h5>
+<div class="container-fluid p-0">
+    <div class="card bg-pink-gradient text-center text-white p-3 h1">
+        Withdraw Money
     </div>
+</div>
+<div class="container mt-4">
+    @* <div class="card bg-dark text-white p-3 mb-3">
+        <h5>Withdraw Money</h5>
+    </div> *@
 
-    <div class="card bg-secondary text-white p-3">
+    <div class="recharge-card color-darkBlue fw-bold p-3">
         <p>Available Balance: ₹@(ViewBag.Balance >= 0 ? ViewBag.Balance.ToString("F2") : "0.00")</p>
         <form asp-action="WithdrawMoney" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -28,21 +32,22 @@
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div> *@
             <div class="form-group">
-                <label asp-for="Amount" class="control-label">Amount</label>
+                <label asp-for="Amount" class="control-label mb-2">Amount</label>
                 <input asp-for="Amount" class="form-control" id="amountInput" />
                 <small id="amountError" class="text-danger d-none"></small>
             </div>
 
             <div class="form-group">
-                <label asp-for="transactionPassword" class="control-label">Transaction Password</label>
-                <input asp-for="transactionPassword" type="password" class="form-control" />
+                <label asp-for="transactionPassword" class="control-label my-2">Transaction Password</label>
+                <input asp-for="transactionPassword" placeholder="XXXXXXXXXX" type="password" class="form-control" />
                 <span asp-validation-for="transactionPassword" class="text-danger"></span>
             </div>
             <div class="form-group mt-3">
-                <input type="submit" value="Withdraw" class="btn btn-primary" />
+                <input type="submit" value="Withdraw" class="btn btn-greendark" />
             </div>
         </form>
     </div>
+    <div class="bg-danger border-rounded p-2 px-3 mt-3 text-white"><span class="fw-bold">Note :</span>10% transaction fee.</div>
 </div>
 
 @section Scripts {

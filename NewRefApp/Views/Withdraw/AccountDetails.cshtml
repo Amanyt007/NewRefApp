@@ -3,13 +3,17 @@
 @{
     ViewData["Title"] = "Account Details";
 }
-
-<div class="container mt-4">
-    <div class="card bg-dark text-white p-3 mb-3">
-        <h5>Account Details</h5>
+<div class="container-fluid p-0">
+    <div class="card bg-pink-gradient text-center text-white p-3 h1">
+        Edit Or Update Account Details
     </div>
+</div>
+<div class="container mt-4">
+    @* <div class="card bg-dark text-white p-3 mb-3">
+        <h5>Account Details</h5>
+    </div> *@
 
-    <div class="card bg-secondary text-white p-3">
+    <div class="recharge-card color-darkBlue p-3">
         <form id="accountForm" asp-action="UpdateAccountDetails" method="post" novalidate>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
@@ -18,27 +22,27 @@
             <!-- Bank Details -->
             <h4>Bank Details</h4>
             <div class="form-group">
-                <label asp-for="AccountNumber" class="control-label">Account Number</label>
+                <label asp-for="AccountNumber" class="control-label my-2">Account Number</label>
                 <input asp-for="AccountNumber" class="form-control" id="AccountNumber" value="@Model.AccountNumber" />
                 <span asp-validation-for="AccountNumber" class="text-danger" id="AccountNumber-error"></span>
             </div>
             <div class="form-group">
-                <label asp-for="IFSCCode" class="control-label">IFSC Code</label>
+                <label asp-for="IFSCCode" class="control-label my-2">IFSC Code</label>
                 <input asp-for="IFSCCode" class="form-control" id="IFSCCode" value="@Model.IFSCCode" />
                 <span asp-validation-for="IFSCCode" class="text-danger" id="IFSCCode-error"></span>
             </div>
             <div class="form-group">
-                <label asp-for="AccountName" class="control-label">Account Holder Name</label>
+                <label asp-for="AccountName" class="control-label my-2">Account Holder Name</label>
                 <input asp-for="AccountName" class="form-control" id="AccountName" value="@Model.AccountName" />
                 <span asp-validation-for="AccountName" class="text-danger" id="AccountName-error"></span>
             </div>
             <div class="form-group">
-                <label asp-for="BankName" class="control-label">Bank Name</label>
+                <label asp-for="BankName" class="control-label my-2">Bank Name</label>
                 <input asp-for="BankName" class="form-control" id="BankName" value="@Model.BankName" />
                 <span asp-validation-for="BankName" class="text-danger" id="BankName-error"></span>
             </div>
             <div class="form-group">
-                <label asp-for="BankLocation" class="control-label">Bank Location</label>
+                <label asp-for="BankLocation" class="control-label my-2">Bank Location</label>
                 <input asp-for="BankLocation" class="form-control" id="BankLocation" value="@Model.BankLocation" />
                 <span asp-validation-for="BankLocation" class="text-danger" id="BankLocation-error"></span>
             </div>
@@ -46,7 +50,7 @@
             <!-- UPI Details -->
             <h4 class="mt-4">UPI Details</h4>
             <div class="form-group">
-                <label asp-for="UpiId" class="control-label">UPI ID <i class="fas fa-info-circle" data-toggle="tooltip" title="Enter your UPI ID (e.g., user@paytm, user@okicici)"></i></label>
+                <label asp-for="UpiId" class="control-label my-2">UPI ID <i class="fas fa-info-circle" data-toggle="tooltip" title="Enter your UPI ID (e.g., user@paytm, user@okicici)"></i></label>
                 <input asp-for="UpiId" class="form-control" id="UpiId" value="@Model.UpiId" />
                 <span asp-validation-for="UpiId" class="text-danger" id="UpiId-error"></span>
             </div>
@@ -57,13 +61,13 @@
                 <label asp-for="TransactionPassword" class="control-label">Withdrawal Password</label>
                 <input id="transactionPassword" asp-for="TransactionPassword" type="password" class="form-control pr-5" value="@Model.TransactionPassword" />
                 <span id="togglePassword" style="position: absolute; top: 38px; right: 15px; cursor: pointer;">
-                    <i class="fa fa-eye text-primary" id="eyeIcon"></i>
+                    <i class="fa fa-eye color-darkBlue" id="eyeIcon"></i>
                 </span>
                 <span asp-validation-for="TransactionPassword" class="text-danger" id="TransactionPassword-error"></span>
             </div>
 
             <div class="form-group mt-3">
-                <button type="button" id="submitBtn" class="btn btn-primary">Update All Changes</button>
+                <button type="button" id="submitBtn" class="btn btn-greendark mt-2">Update All Changes</button>
             </div>
         </form>
     </div>

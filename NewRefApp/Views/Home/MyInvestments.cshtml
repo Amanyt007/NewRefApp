@@ -24,7 +24,7 @@
                     var status = DateTime.UtcNow > investment.EndDate ? "Finished" : "Running";
 
                     <div class="col">
-                        <div class="card pink-tile shadow-sm">
+                        <div class="tile-card shadow-sm text-start">
                             <div class="card-body">
                                 <div class="tile-image">
                                     <img src="@investment.InvestmentPlan.ImagePath" alt="Plan Image" class="img-fluid">
@@ -65,7 +65,7 @@
     .tile-title {
         font-size: 1.2rem;
         font-weight: bold;
-        color: #d60087;
+        color: var(--bg-pink-gradient-end);
         margin-bottom: 0.75rem;
     }
 
@@ -77,7 +77,7 @@
 
     .progress {
         height: 20px;
-        background-color: #ffbad5;
+        background-color: var(--bg-pink-gradient-start);
         border-radius: 10px;
         overflow: hidden;
     }

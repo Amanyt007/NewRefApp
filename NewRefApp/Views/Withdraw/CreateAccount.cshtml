@@ -3,13 +3,17 @@
 @{
     ViewData["Title"] = "Create Account Details";
 }
-
+<div class="container-fluid p-0">
+    <div class="card bg-pink-gradient text-center text-white p-3 h1">
+        Add Account Details
+    </div>
+</div>
 <div class="container mt-4">
-    <div class="card bg-dark text-white p-3 mb-3">
+   @*  <div class="card bg-dark text-white p-3 mb-3">
         <h5>Create Account Details</h5>
     </div>
-
-    <div class="card bg-secondary text-white p-3">
+ *@
+    <div class="recharge-card color-darkBlue p-3">
         <form asp-action="CreateAccount" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="BankDetails.UserId" />
@@ -17,49 +21,49 @@
 
             <h4>Bank Details</h4>
             <div class="form-group">
-                <label asp-for="BankDetails.AccountNumber" class="control-label">Account Number</label>
+                <label asp-for="BankDetails.AccountNumber" class="control-label my-2">Account Number</label>
                 <input asp-for="BankDetails.AccountNumber" class="form-control" />
                 <span asp-validation-for="BankDetails.AccountNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="BankDetails.IFSCCode" class="control-label">IFSC Code</label>
+                <label asp-for="BankDetails.IFSCCode" class="control-label my-2">IFSC Code</label>
                 <input asp-for="BankDetails.IFSCCode" class="form-control" />
                 <span asp-validation-for="BankDetails.IFSCCode" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="BankDetails.AccountName" class="control-label">Account Holder Name</label>
+                <label asp-for="BankDetails.AccountName" class="control-label my-2">Account Holder Name</label>
                 <input asp-for="BankDetails.AccountName" class="form-control" />
                 <span asp-validation-for="BankDetails.AccountName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="BankDetails.BankName" class="control-label">Bank Name</label>
+                <label asp-for="BankDetails.BankName" class="control-label my-2">Bank Name</label>
                 <input asp-for="BankDetails.BankName" class="form-control" />
                 <span asp-validation-for="BankDetails.BankName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="BankDetails.BankLocation" class="control-label">Bank Location</label>
+                <label asp-for="BankDetails.BankLocation" class="control-label my-2">Bank Location</label>
                 <input asp-for="BankDetails.BankLocation" class="form-control" />
                 <span asp-validation-for="BankDetails.BankLocation" class="text-danger"></span>
             </div>
 
             <h4 class="mt-4">UPI Details</h4>
             <div class="form-group">
-                <label asp-for="UpiDetails.UpiId" class="control-label">UPI ID <i class="fas fa-info-circle" data-toggle="tooltip" title="Enter your UPI ID (e.g., user@paytm, user@okicici)"></i></label>
+                <label asp-for="UpiDetails.UpiId" class="control-label my-2">UPI Number <i class="fas fa-info-circle" data-toggle="tooltip" title="Enter your UPI Number (e.g., 9567856789@paytm, 9567856789@oksbi)"></i></label>
                 <input asp-for="UpiDetails.UpiId" class="form-control" />
                 <span asp-validation-for="UpiDetails.UpiId" class="text-danger"></span>
             </div>
 
             <h4 class="mt-4">Security</h4>
             <div class="form-group position-relative">
-                <label asp-for="TransactionPassword" class="control-label">Withdrawal Password</label>
+                <label asp-for="TransactionPassword" class="control-label my-2">Withdrawal Password</label>
                 <input id="transactionPassword" asp-for="TransactionPassword" type="password" class="form-control pr-5" />
                 <span id="togglePassword" style="position: absolute; top: 38px; right: 15px; cursor: pointer;">
-                    <i class="fa fa-eye text-primary" id="eyeIcon"></i>
+                    <i class="fa fa-eye color-darkBlue" id="eyeIcon"></i>
                 </span>
                 <span asp-validation-for="TransactionPassword" class="text-danger" id="TransactionPassword-error"></span>
             </div>
             <div class="form-group mt-3">
-                <input type="submit" value="Create Account" class="btn btn-primary" />
+                <input type="submit" value="Create Account" class="btn btn-greendark mt-2" />
             </div>
         </form>
     </div>

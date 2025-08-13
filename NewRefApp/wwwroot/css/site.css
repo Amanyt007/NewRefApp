@@ -25,6 +25,7 @@
     --amount-btn-hover: #20b8e6;
     --recharge-btn-hover: #3d95b4;
     --font-family-base: 'Segoe UI', sans-serif;
+    --bg-logo: #0c101b;
 }
 
 /* Base HTML font size */
@@ -33,7 +34,10 @@ html {
     position: relative;
     min-height: 100%;
 }
-
+.auth-logo {
+    background: var(--bg-logo);
+    border-radius: 15px 15px 0px 0px;
+}
 @media (min-width: 768px) {
     html {
         font-size: var(--font-size-desktop);
@@ -45,7 +49,9 @@ html {
         font-size: 16px !important;
     }
 }
-
+.color-darkBlue {
+    color: var(--bg-pink-gradient-end);
+}
 body {
     margin-bottom: 60px;
     background-color: var(--bg-body);
@@ -71,6 +77,7 @@ body {
 }
     .btn-greendark:hover {
         background: var(--fa-homeiconHover);
+        color: var(--secondary-color);
     }
 /* Focus outlines */
 .btn:focus,
@@ -318,6 +325,10 @@ input[readonly] {
     padding: 10px;
 }
 
+.home .tile-box {
+    padding: 0px;
+}
+
 .tile-value {
     font-size: 1.1rem;
     font-weight: bold;
@@ -498,9 +509,24 @@ input[readonly] {
         background-color: var(--recharge-btn-hover);
     }
 
+.footer-nav a.active{
+    color: var(--bg-pink-gradient-end);
+    font-weight:600;
+}
 
-
-
+@media (max-width: 576px) {
+    .tile-value {
+        font-size: .9rem;
+    }
+    .tile-image img {
+        margin-bottom: .4rem;
+    }
+}
+@media (max-width: 450px){
+    .font-11{
+        font-size:11px;
+    }
+}
 
 
 /*html {

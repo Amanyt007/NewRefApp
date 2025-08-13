@@ -3,13 +3,17 @@
 @{
     ViewData["Title"] = "Transaction Details";
 }
-
-<div class="container mt-4">
-    <div class="card bg-dark text-white p-3 mb-3">
-        <h5>Transaction Details</h5>
+<div class="container-fluid p-0">
+    <div class="card bg-pink-gradient text-center text-white p-3 h1">
+        Transaction Details
     </div>
+</div>
+<div class="container mt-4">
+  @*   <div class="card bg-dark text-white p-3 mb-3">
+        <h5>Transaction Details</h5>
+    </div> *@
 
-    <div class="card bg-secondary text-white p-3">
+    <div class="recharge-card color-darkBlue p-3">
         <h4>Transaction Information</h4>
         <p><strong>ID:</strong> @Model.Id</p>
         <p><strong>User Name:</strong> @Model.User.FullName</p>
