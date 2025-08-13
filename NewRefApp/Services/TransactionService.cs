@@ -347,7 +347,7 @@ namespace NewRefApp.Services
                 {
                     var timeSpanFromStartDate = DateTime.UtcNow - inv.StartDate;
 
-                    // If the StartDate is in the future, then no days have passed yet
+                    // If the StartDate is in the future, then no days have passed yet 
                     int daysPassed = (timeSpanFromStartDate.TotalDays < 0) ? 0 : (int)timeSpanFromStartDate.TotalDays;
                     //var hoursElapsed = (DateTime.UtcNow - inv.StartDate).TotalHours;
                     //var fullDays = (int)(hoursElapsed / 24);
