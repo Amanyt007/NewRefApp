@@ -326,9 +326,12 @@ input[readonly] {
 }
 
 .home .tile-box {
-    padding: 0px;
+    padding: 6px 0px;
 }
-
+.badge {
+    font-size: 1.2em;
+    margin-top:5px;
+}
 .tile-value {
     font-size: 1.1rem;
     font-weight: bold;
@@ -525,6 +528,19 @@ input[readonly] {
 @media (max-width: 450px){
     .font-11{
         font-size:11px;
+    }
+    .home .nav-link {
+        padding: .5rem .5rem;
+    }
+    .home .tile-header .plan-title {
+        font-size: 1.0rem;
+    }
+    .investmentplans .tab {
+        padding: 8px 0px;
+        font-size: .9rem !important;
+    }
+    .transaction .badge {
+        font-size: .8em;
     }
 }
 

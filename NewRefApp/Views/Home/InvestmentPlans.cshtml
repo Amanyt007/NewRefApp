@@ -3,20 +3,26 @@
 @{
     ViewData["Title"] = "Investment Plans";
     var categories = Model.Select(p => p.Category).Distinct().ToList();
+    var categoryCount = 0;
 }
 <div class="container-fluid p-0">
     <div class="card bg-pink-gradient text-center text-white p-3 h1">
         Investment Opportunities
     </div>
 </div>
-<div class="container mt-4">
+<div class="container mt-4 investmentplans">
     
 
     <div class="tab-wrapper">
         <div class="tabs">
             @foreach (var category in categories)
             {
+                categoryCount++;
                 <button class="tab @(category == categories.First() ? "active" : "")" data-tab="@category">@category</button>
+                if (categoryCount==4)
+                {
+                    break;
+                }
             }
         </div>
 
@@ -59,7 +65,7 @@
                                                 <div class="tile-label">Daily profit</div>
                                             </div>
                                             <div class="tile-box">
-                                                <div class="tile-value">@plan.RevenueDurationValue @(plan.HourlyEarningsPerUnit.HasValue ? "Hour(s)" : "Day(s)")</div>
+                                                <div class="tile-value">@plan.RevenueDurationValue @(plan.HourlyEarningsPerUnit.HasValue ? "Day(s)" : "Day(s)")</div>
                                                 <div class="tile-label">Duration</div>
                                             </div>
                                             <div class="tile-box">
@@ -84,59 +90,63 @@
 <!-- Modal -->
 <div class="modal fade" id="investModal" tabindex="-1" aria-labelledby="investModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content bg-dark text-white">
+        <div class="modal-content color-darkBlue text-start tile-card">
             <div class="modal-header">
                 <h5 class="modal-title" id="investModalLabel">Confirm Investment</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    @* <span aria-hidden="true">×</span> *@
                 </button>
             </div>
             <div class="modal-body">
                 <form id="investForm" asp-action="Invest" asp-controller="Home" method="post">
                     <input type="hidden" id="planId" name="planId" />
                     <div class="form-group">
-                        <label>Plan Name</label>
+                        <label class="my-1">Plan Name</label>
                         <input type="text" class="form-control" id="planName" name="planName" readonly />
                     </div>
                     <div class="form-group">
-                        <label>Each Price</label>
+                        <label class="my-1">Each Price</label>
                         <input type="text" class="form-control" id="eachPrice" name="eachPrice" readonly />
                     </div>
                     <div class="form-group">
-                        <label>Revenue Duration</label>
+                        <label class="my-1">Revenue Duration</label>
                         <input type="text" class="form-control" id="revenueDuration" name="revenueDuration" readonly />
                     </div>
                     <div class="form-group">
-                        <label>Daily Earnings</label>
+                        <label class="my-1">Daily Earnings</label>
                         <input type="text" class="form-control" id="dailyEarnings" name="dailyEarnings" readonly />
                     </div>
                     <div class="form-group">
-                        <label>Total Income</label>
+                        <label class="my-1">Total Income</label>
                         <input type="text" class="form-control" id="totalIncome" name="totalIncome" readonly />
                     </div>
                     <div class="form-group">
-                        <label>Max Investment</label>
+                        <label class="my-1">Max Investment</label>
                         <input type="text" class="form-control" id="maxInvestment" name="maxInvestment" readonly />
                     </div>
                     <div class="form-group">
-                        <label>Buy Share</label>
+                        <label class="my-2">Buy Share</label>
                         <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="2" required />
                     </div>
                     <div class="form-group">
-                        <label>Pay Money</label>
+                        <label class="my-2">Pay Money</label>
                         <input type="text" class="form-control" id="payMoney" name="payMoney" readonly />
                     </div>
                     <div class="form-group">
-                        <label>Expected Total Revenue</label>
+                        <label class="my-2">Expected Total Revenue</label>
                         <input type="text" class="form-control" id="expectedRevenue" name="expectedRevenue" readonly />
                     </div>
-                    <button type="submit" id="investBtn" class="btn btn-pink">Invest Now</button>
+                    <button type="submit" id="investBtn" class="btn btn-pink mt-3">Invest Now</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
+<style>
+    .spinner-border.text-primary.text-white {
+        color: #000 !important;
+    }
+</style>
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -173,7 +183,7 @@
                 $('#planId').val(id);
                 $('#planName').val(name);
                 $('#eachPrice').val('₹' + amount);
-                $('#revenueDuration').val(duration + (daily == 0 ? ' Hour(s)' : ' Day(s)'));
+                $('#revenueDuration').val(duration + (daily == 0 ? ' Day(s)' : ' Day(s)'));
                 $('#dailyEarnings').val('₹' + daily);
                 $('#totalIncome').val('₹' + totalIncome);
                 $('#maxInvestment').val(max);
@@ -201,6 +211,7 @@
 
             $("#investForm").on("submit", function (e) {
                 e.preventDefault();
+                $('#loaderModal').modal('show');
                 const quantity = parseInt(quantityInput.value);
                 if (quantity > 0 && quantity <= parseInt($('#maxInvestment').val())) {
                     $.ajax({
@@ -208,6 +219,7 @@
                         type: "POST",
                         data: $(this).serialize(),
                         success: function (response) {
+                            $('#loaderModal').modal('hide');
                             if (response.success) {
                                 alert(response.message);
                                 $('#investModal').modal('hide');

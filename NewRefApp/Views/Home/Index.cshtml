@@ -113,7 +113,7 @@
                                                         <div class="tile-label">Daily Profit</div>
                                                     </div>
                                                     <div class="tile-box col-6">
-                                                        <div class="tile-value">@plan.RevenueDurationValue @(plan.HourlyEarningsPerUnit.HasValue ? "Hour(s)" : "Day(s)")</div>
+                                                        <div class="tile-value">@plan.RevenueDurationValue @(plan.HourlyEarningsPerUnit.HasValue ? "Day(s)" : "Day(s)")</div>
                                                         <div class="tile-label">Duration</div>
                                                     </div>
                                                     <div class="tile-box col-6">
@@ -184,8 +184,8 @@
         <div class="modal-content color-darkBlue text-start tile-card">
             <div class="modal-header">
                 <h5 class="modal-title" id="investModalLabel">Confirm Investment</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    @* <span aria-hidden="true">×</span> *@
                 </button>
             </div>
             <div class="modal-body">
@@ -276,7 +276,7 @@
                 $('#planId').val(id);
                 $('#planName').val(name);
                 $('#eachPrice').val('₹' + amount);
-                $('#revenueDuration').val(duration + (daily == 0 ? ' Hour(s)' : ' Day(s)'));
+                $('#revenueDuration').val(duration + (daily == 0 ? ' Day(s)' : ' Day(s)'));
                 $('#dailyEarnings').val('₹' + daily);
                 $('#totalIncome').val('₹' + totalIncome);
                 $('#maxInvestment').val(max);
