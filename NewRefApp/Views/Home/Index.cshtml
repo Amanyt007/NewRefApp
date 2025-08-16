@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Dashboard";
     var plans = ViewBag.InvestmentPlans as IEnumerable<NewRefApp.Models.InvestmentPlan>;
+    // var popUpDetails = ViewBag.PopUPdetails as IEnumerable<NewRefApp.Data.DTOs.PopUpDto>;
     var categories = ViewBag.Categories as List<string>;
     var user = ViewBag.User as NewRefApp.Models.User;
     decimal balance = ViewBag.Balance ?? 0;
@@ -61,7 +62,7 @@
                 <div class="tabs mb-3 text-center">
                     @foreach (var category in categories)
                     {
-                        if (catCount == 2)
+                        if (catCount == 3)
                         {
                             break;
                         }
@@ -233,12 +234,25 @@
         </div>
     </div>
 </div>
-
+<div id="PopUp">
+    <div id="notification" class="notification">
+        <img id="productImg" src="" alt="">
+        <div class="content lh-sm">
+            <p class="mb-0"><span class="title" id="userName"></span> <span>Purchased</span></p>
+            <p class="product m-0" id="productName"></p>
+            <p class="mb-0"><span class="time mb-0" id="timeAgo"></span> <span class="ms-3"><i class="fa-regular fa-circle-check text-success"></i> Verify</span></p>
+        </div>
+    </div>
+</div>
 <style>
     .spinner-border.text-primary.text-white {
         color: #000 !important;
     }
 </style>
+@using Newtonsoft.Json
+@{
+    var popupsJson = JsonConvert.SerializeObject(ViewBag.PopUPdetails);
+}
 
 @section Scripts {
     <script>
@@ -327,6 +341,49 @@
                     });
                 }
             });
+
+
+            var popUpDetails = @Html.Raw(popupsJson);
+
+            console.log(popUpDetails); // check data
+
+            const notification = document.getElementById("notification");
+            const userName = document.getElementById("userName");
+            const productName = document.getElementById("productName");
+            const timeAgo = document.getElementById("timeAgo");
+            const productImg = document.getElementById("productImg");
+
+            function showNotification(data) {
+                userName.textContent = data.Name;
+                productName.textContent = data.ProductDescription;
+                productImg.src = data.ProductImage || "default.jpg";
+                timeAgo.textContent = `${Math.floor(Math.random() * 5) + 1} minutes ago`;
+
+                notification.classList.add("show");
+
+                setTimeout(() => {
+                    notification.classList.remove("show");
+                }, 4000); // show for 4s
+            }
+
+            function startNotifications() {
+                let index = 0;
+
+                function loop() {
+                    if (popUpDetails.length > 0) {
+                        showNotification(popUpDetails[index]);
+                        index = (index + 1) % popUpDetails.length;
+                    }
+
+                    // random interval between 5–15 sec
+                    const nextTime = Math.floor(Math.random() * 10000) + 5000;
+                    setTimeout(loop, nextTime);
+                }
+
+                loop();
+            }
+            setTimeout(startNotifications, 20000);
+            
         });
     </script>
 }

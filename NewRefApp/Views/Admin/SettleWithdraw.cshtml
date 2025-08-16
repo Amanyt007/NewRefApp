@@ -1,23 +1,36 @@
-﻿@model IEnumerable<Withdraw>
+﻿@model IEnumerable<NewRefApp.Data.DTOs.WithdrawDto>
 
 @{
     ViewData["Title"] = "Settle Withdrawals";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var count = 0;
 }
 
 <div class="container mt-4">
     <div class="card bg-dark text-white p-3 mb-3">
         <h5>Settle Withdrawals</h5>
     </div>
+   <div class="mb-3 d-flex gap-2">
+        <form method="get" asp-action="SettleWithdraw" class="d-flex mb-3">
+            <!-- Status Filter -->
+            <select name="statusFilter" class="form-select w-25 me-2" asp-items="ViewBag.StatusOptions" onchange="this.form.submit()"></select>
 
-    <div class="card bg-secondary text-white p-3">
+            <!-- Phone Search -->
+            <input type="text" name="phoneSearch" value="@ViewBag.PhoneSearch" class="form-control w-50 me-2" placeholder="Search by phone" />
+
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+
+    <div class="card bg-secondary text-white p-3 overflow-auto">
         @if (Model.Any())
         {
-            <table class="table table-dark table-striped" id="withdrawTable">
+            <table class="table table-dark table-striped">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>User ID</th>
+                        <th>User Name</th>
+                        <th>Phone Number</th>
                         <th>Amount</th>
                         <th>Payment Type</th>
                         <th>UPI ID</th>
@@ -30,17 +43,23 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
+                        count++;
                         <tr>
-
-                            <td>@item.Id</td>
-                            <td>@item.UserId</td>
+                            <td>@count</td>
+                            <td>@item.UserName</td>
+                            <td>@item.PhoneNumber</td>
                             <td>₹@item.Amount.ToString("F2")</td>
                             <td>@(item.PaymentType == 0 ? "UPI" : "Bank Transfer")</td>
-                            <td>@(item.PaymentType == 0 && item.UpiDetail != null ? item.UpiDetail.UpiId : "N/A")</td>
-                            <td>@(item.PaymentType == 1 && item.BankDetail != null ? $"{item.BankDetail.AccountNumber} ({item.BankDetail.BankName})" : "N/A")</td>
-                            <td>@(item.Status == 0 ? "Pending" : item.Status == 1 ? "Completed" : "Failed")</td>
+                            <td>@item.UpiId</td>
+                            <td>@item.BankAccount</td>
+                            <td>
+                                @(item.Status == 0 ? "Pending"
+                                    : item.Status == 1 ? "Completed"
+                                    : "Failed")
+                            </td>
                             <td>@item.Date.ToString("dd/MM/yyyy HH:mm:ss")</td>
                             <td>
+                                <!-- your action buttons (Success / Cancel) -->
                                 <form asp-action="ShowSuccessWithdrawConfirmation" method="post" id="successForm_@item.Id" style="display:inline;">
                                     <input type="hidden" name="id" value="@item.Id" />
                                     <button type="button" class="btn btn-success btn-sm success-btn" data-id="@item.Id">Success</button>
@@ -57,9 +76,10 @@
         }
         else
         {
-            <p class="text-warning">No pending withdrawals found.</p>
+            <p class="text-warning">No withdrawals found.</p>
         }
     </div>
+</div>
 </div>
 
 <!-- Modal for Confirmation -->

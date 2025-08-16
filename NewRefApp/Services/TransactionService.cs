@@ -348,10 +348,17 @@ namespace NewRefApp.Services
                     var timeSpanFromStartDate = DateTime.UtcNow - inv.StartDate;
 
                     // If the StartDate is in the future, then no days have passed yet
-                    int daysPassed = (timeSpanFromStartDate.TotalDays < 0) ? 0 : (int)timeSpanFromStartDate.TotalDays;
+                    //int daysPassed = (timeSpanFromStartDate.TotalDays < 0) ? 0 : (int)timeSpanFromStartDate.TotalDays;
                     //var hoursElapsed = (DateTime.UtcNow - inv.StartDate).TotalHours;
                     //var fullDays = (int)(hoursElapsed / 24);
-                    totalAccruedProfit += inv.DailyEarnings * inv.PurchaseQuantity * daysPassed;
+
+                    var timeSpan = DateTime.UtcNow - inv.StartDate;
+                    var fullDays = timeSpan.Days;
+                    var accruedDays = Math.Min(fullDays, inv.duration);
+
+                    //totalAccruedProfit += inv.DailyEarnings * inv.PurchaseQuantity * accruedDays;
+
+                    totalAccruedProfit += inv.DailyEarnings * inv.PurchaseQuantity * accruedDays;
                 }
 
                 // Fetch referral data to calculate rebate amounts
@@ -429,7 +436,7 @@ namespace NewRefApp.Services
                 decimal totalRebate = (totalAmount * referralData.Level1.Percentage) / 100;
                 referralData.Level1.Rebate += totalRebate;
 
-                decimal dailyRebate = totalRebate / durationDays;
+                decimal dailyRebate = totalRebate;
 
                 for (int i = 0; i < durationDays; i++)
                 {
@@ -465,7 +472,7 @@ namespace NewRefApp.Services
                     decimal totalRebate = (totalAmount * referralData.Level2.Percentage) / 100;
                     referralData.Level2.Rebate += totalRebate;
 
-                    decimal dailyRebate = totalRebate / durationDays;
+                    decimal dailyRebate = totalRebate;
 
                     for (int i = 0; i < durationDays; i++)
                     {
@@ -506,7 +513,7 @@ namespace NewRefApp.Services
                         decimal totalRebate = (totalAmount * referralData.Level3.Percentage) / 100;
                         referralData.Level3.Rebate += totalRebate;
 
-                        decimal dailyRebate = totalRebate / durationDays;
+                        decimal dailyRebate = totalRebate;
 
                         for (int i = 0; i < durationDays; i++)
                         {

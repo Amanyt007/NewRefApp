@@ -73,6 +73,7 @@ namespace NewRefApp.Controllers
             var userPhone = HttpContext.Session.GetString("UserPhone");
             User user = null;
             IEnumerable<InvestmentPlan> investmentPlans = null;
+            IEnumerable<PopUpDto> popUpDatails = null;
             decimal balance = 0;
 
             if (!string.IsNullOrEmpty(userPhone))
@@ -85,6 +86,7 @@ namespace NewRefApp.Controllers
                     {
                         balance = await _transactionService.CalculateUserBalanceAsync(user.Id);
                         investmentPlans = await _investmentPlanService.GetAllInvestmentPlansAsync();
+                        popUpDatails = await _userService.GetPopUpData();
                     }
                 }
                 catch (Exception ex)
@@ -98,6 +100,7 @@ namespace NewRefApp.Controllers
             ViewBag.User = user;
             ViewBag.InvestmentPlans = investmentPlans;
             ViewBag.Categories = categories;
+            ViewBag.PopUPdetails = popUpDatails;
             ViewBag.Balance = balance;
 
             return View(user);
@@ -304,7 +307,10 @@ namespace NewRefApp.Controllers
             var investmentPlans = await _investmentPlanService.GetAllInvestmentPlansAsync();
             return View(investmentPlans);
         }
-
+        public async Task<IActionResult> AboutUs()
+        {
+            return View();
+        }
         [HttpPost]
         public async Task<IActionResult> Invest(int planId, int quantity, string utrNumber)
         {

@@ -333,6 +333,22 @@ namespace NewRefApp.Services
         {
             return await _context.ReferralProgram.ToListAsync();
         }
+        public async Task<IEnumerable<PopUpDto>> GetPopUpData()
+        {
+            var popups = await (
+                from ui in _context.UserInvestment
+                join u in _context.Users on ui.UserId equals u.Id
+                join ip in _context.InvestmentPlan on ui.PlanId equals ip.Id
+                where u.IsActive && !u.IsAdmin && ui.status == 1 // purchased users only
+                select new PopUpDto
+                {
+                    Name = u.FullName,
+                    ProductDescription = ip.Name,
+                    ProductImage = ip.ImagePath
+                }
+            ).Take(30).ToListAsync();
 
+            return popups;
+        }
     }
 }

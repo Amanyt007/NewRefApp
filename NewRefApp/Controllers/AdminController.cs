@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NewRefApp.Data;
 using NewRefApp.Data.DTOs;
@@ -74,11 +75,34 @@ namespace NewRefApp.Controllers
             return Json(new { success = true, message = "Transaction canceled successfully." });
         }
 
-        public async Task<IActionResult> SettleWithdraw()
+        //public async Task<IActionResult> SettleWithdraw()
+        //{
+        //    var withdrawals = await _adminService.GetPendingWithdrawsAsync();
+        //    return View(withdrawals);
+        //}
+        public async Task<IActionResult> SettleWithdraw(int? statusFilter, string phoneSearch)
         {
-            var withdrawals = await _adminService.GetPendingWithdrawsAsync();
+            // get data
+            var withdrawals = await _adminService.GetPendingWithdrawsAsync(statusFilter, phoneSearch);
+
+            // keep selected filter in ViewBag
+            ViewBag.StatusFilter = statusFilter;
+            ViewBag.PhoneSearch = phoneSearch;
+
+            // dropdown options
+            ViewBag.StatusOptions = new SelectList(new[]
+            {
+        new { Value = "", Text = "All" },
+        new { Value = "0", Text = "Pending" },
+        new { Value = "1", Text = "Done" },
+        new { Value = "2", Text = "Failed" }
+    }, "Value", "Text", statusFilter);
+
             return View(withdrawals);
         }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> ShowSuccessWithdrawConfirmation(int id)
