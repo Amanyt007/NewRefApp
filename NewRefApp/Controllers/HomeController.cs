@@ -158,7 +158,7 @@ namespace NewRefApp.Controllers
         {
             var userPhone = HttpContext.Session.GetString("UserPhone");
             User user = null;
-            TeamMemberDataDto teamMembers = new TeamMemberDataDto();
+            TeamMemberDataDto teamMembers = null;
 
             if (!string.IsNullOrEmpty(userPhone))
             {
@@ -217,7 +217,7 @@ namespace NewRefApp.Controllers
 
             if (paymentType == "UPI")
             {
-                var upiDetail = await _upiDetailsService.GetFirstActiveAdminUpiAsync();
+                var upiDetail = await _upiDetailsService.GetRandomActiveAdminUpiAsync();
                 upiId = upiDetail?.UpiId ?? "No active admin UPI found";
                 if (upiDetail != null)
                 {
@@ -226,7 +226,7 @@ namespace NewRefApp.Controllers
             }
             else if (paymentType == "BankTransfer")
             {
-                bankDetail = await _bankService.GetFirstActiveAdminBankAsync();
+                bankDetail = await _bankService.GetRandomActiveAdminBankAsync();
             }
 
             ViewBag.Amount = amount;

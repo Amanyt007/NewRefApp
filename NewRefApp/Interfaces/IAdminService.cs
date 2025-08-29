@@ -7,7 +7,7 @@ namespace NewRefApp.Interfaces
     {
         Task<User?> GetLoggedInUserAsync(string userPhone);
         Task<decimal> GetUserBalanceAsync(int userId);
-        Task<List<Deposit>> GetPendingDepositsAsync();
+        Task<List<Deposit>> GetPendingDepositsAsync(int? statusFilter = null, string phoneSearch = null);
         Task<Withdraw?> GetWithdrawByIdAsync(int id);
         Task<List<WithdrawDto>> GetPendingWithdrawsAsync(int? statusFilter = null, string phoneSearch = null);
         Task<List<User>> GetAllUsersAsync();

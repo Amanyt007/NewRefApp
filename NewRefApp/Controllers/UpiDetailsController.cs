@@ -26,11 +26,21 @@ namespace NewRefApp.Controllers
         }
 
         // GET: UpiDetails
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    var upiDetails = await _upiDetailsService.GetAllUpiDetailsAsync();
+        //    return View(upiDetails);
+        //}
+        public async Task<IActionResult> Index(string filter, string phoneSearch)
         {
-            var upiDetails = await _upiDetailsService.GetAllUpiDetailsAsync();
+            var upiDetails = await _upiDetailsService.GetAllUpiDetailsAsync(filter, phoneSearch);
+
+            ViewBag.Filter = filter;
+            ViewBag.PhoneSearch = phoneSearch;
+
             return View(upiDetails);
         }
+
 
         public IActionResult Create()
         {
@@ -113,6 +123,14 @@ namespace NewRefApp.Controllers
 
             var userPhone = HttpContext.Session.GetString("UserPhone");
             var user = !string.IsNullOrEmpty(userPhone) ? await _userService.GetByPhoneAsync(userPhone) : null;
+            if (user.IsAdmin)
+            {
+                upiDetails.IsAdmin = true;
+            }
+            else
+            {
+                upiDetails.Status = true;
+            }
             upiDetails.UserId = user.Id;
             await _upiDetailsService.UpdateUpiDetailAsync(upiDetails);
                 return RedirectToAction(nameof(Index));
@@ -128,7 +146,7 @@ namespace NewRefApp.Controllers
             return View(upiDetail);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _upiDetailsService.DeleteUpiDetailAsync(id);

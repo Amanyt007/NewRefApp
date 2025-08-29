@@ -16,13 +16,14 @@
             <option value="purchased" selected="@("purchased" == ViewBag.Filter)">Purchased</option>
         </select>
     </form>
-
+    <div class="overflow-auto">
     <table class="table table-bordered mt-3">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
                 <th>Phone</th>
+                <th>PassWord</th>
                 <th>Type</th>
                 <th>Date</th>
                 <th>Purchased</th>
@@ -37,6 +38,7 @@
                     <td>@count</td>
                     <td>@user.FullName</td>
                     <td>@user.PhoneNumber</td>
+                    <td>@user.Password</td>
                     <td>@(user.IsAdmin ? "Admin" : "User")</td>
                     <td>@user.CreatedAt</td>
                     <td>@(user.IsPurchased ? "Yes" : "No")</td>
@@ -47,4 +49,5 @@
             }
         </tbody>
     </table>
+    </div>
 </div>

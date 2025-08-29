@@ -24,10 +24,35 @@ namespace NewRefApp.Services
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task<IEnumerable<UpiDetails>> GetAllUpiDetailsAsync()
+        //public async Task<IEnumerable<UpiDetails>> GetAllUpiDetailsAsync()
+        //{
+        //    return await _context.UpiDetails
+        //        .Include(u => u.User)
+        //        .OrderByDescending(u => u.CreatedDate)
+        //        .ToListAsync();
+        //}
+        public async Task<IEnumerable<UpiDetails>> GetAllUpiDetailsAsync(string filter = null, string phoneSearch = null)
         {
-            return await _context.UpiDetails
+            var query = _context.UpiDetails
                 .Include(u => u.User)
+                .AsQueryable();
+
+            // Filter by admin/user
+            if (!string.IsNullOrEmpty(filter))
+            {
+                if (filter == "admin")
+                    query = query.Where(u => u.IsAdmin);
+                else if (filter == "user")
+                    query = query.Where(u => !u.IsAdmin);
+            }
+
+            // Search by phone number
+            if (!string.IsNullOrEmpty(phoneSearch))
+            {
+                query = query.Where(u => u.User.PhoneNumber.Contains(phoneSearch));
+            }
+
+            return await query
                 .OrderByDescending(u => u.CreatedDate)
                 .ToListAsync();
         }
@@ -46,13 +71,37 @@ namespace NewRefApp.Services
 
         public async Task DeleteUpiDetailAsync(int id)
         {
-            var upiDetails = await _context.UpiDetails.FindAsync(id);
-            if (upiDetails != null)
+            try
             {
-                _context.UpiDetails.Remove(upiDetails);
-                await _context.SaveChangesAsync();
+                var upiDetails = await _context.UpiDetails.FindAsync(id);
+                if (upiDetails != null)
+                {
+                    _context.UpiDetails.Remove(upiDetails);
+                    await _context.SaveChangesAsync();
+                }
             }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            
         }
+
+        public async Task<UpiDetails> GetRandomActiveAdminUpiAsync()
+        {
+            var activeUpis = await _context.UpiDetails
+                .Where(u => u.IsAdmin && u.Status)
+                .ToListAsync();
+
+            if (!activeUpis.Any())
+                return null;
+
+            var random = new Random();
+            int index = random.Next(activeUpis.Count); // Pick random index
+            return activeUpis[index];
+        }
+
 
         public async Task<UpiDetails> GetFirstActiveAdminUpiAsync()
         {

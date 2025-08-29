@@ -29,10 +29,27 @@ namespace NewRefApp.Services
             return await _transactionService.CalculateUserBalanceAsync(userId);
         }
 
-        public async Task<List<Deposit>> GetPendingDepositsAsync()
+        //public async Task<List<Deposit>> GetPendingDepositsAsync()
+        //{
+        //    return await _context.Deposit.Where(d => d.Status == 0).ToListAsync();
+        //}
+        public async Task<List<Deposit>> GetPendingDepositsAsync(int? statusFilter, string phoneSearch)
         {
-            return await _context.Deposit.Where(d => d.Status == 0).ToListAsync();
+            var query = _context.Deposit
+                .Include(d => d.User) // include user info
+                .AsQueryable();
+
+            // Filter by status if selected
+            if (statusFilter.HasValue)
+                query = query.Where(d => d.Status == statusFilter.Value);
+
+            // Search by phone number
+            if (!string.IsNullOrEmpty(phoneSearch))
+                query = query.Where(d => d.User.PhoneNumber.Contains(phoneSearch));
+
+            return await query.OrderByDescending(d => d.Date).ToListAsync();
         }
+
 
         //public async Task<List<Withdraw>> GetPendingWithdrawsAsync()
         //{
@@ -70,7 +87,7 @@ namespace NewRefApp.Services
                                   ? $"{w.BankDetail.AccountNumber} ({w.BankDetail.BankName})"
                                   : "N/A",
                     Date = w.Date
-                })
+                }).OrderByDescending(x =>x.Status==0)
                 .ToListAsync();
         }
 

@@ -6,14 +6,32 @@
 }
 
 <h2>Bank Details</h2>
-
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<form asp-action="Index" method="get" class="mb-3 d-flex align-items-center gap-2">
+
+    <!-- Role filter -->
+    <select name="roleFilter" class="form-select w-auto" onchange="this.form.submit()">
+        <option value="">All</option>
+        <option value="admin" selected="@(ViewBag.RoleFilter == "admin")">Admins</option>
+        <option value="user" selected="@(ViewBag.RoleFilter == "user")">Users</option>
+    </select>
+
+    <!-- Phone search -->
+    <input type="text" name="phoneSearch" class="form-control w-auto"
+           placeholder="Search by phone"
+           value="@ViewBag.PhoneSearch" />
+
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<table class="table table-striped">
     <thead>
         <tr>
             <th>Id</th>
+            <th>User Name</th>
+            <th>Phone</th>
             <th>Account Number</th>
             <th>Account Name</th>
             <th>Bank Name</th>
@@ -30,14 +48,16 @@
         {
             <tr>
                 <td>@item.Id</td>
+                <td>@item.User?.FullName</td>
+                <td>@item.User?.PhoneNumber</td>
                 <td>@item.AccountNumber</td>
                 <td>@item.AccountName</td>
                 <td>@item.BankName</td>
                 <td>@item.IFSCCode</td>
                 <td>@item.BankLocation</td>
-                <td>@item.IsAdmin</td>
-                <td>@item.Status</td>
-                <td>@item.CreatedDate</td>
+                <td>@(item.IsAdmin ? "Admin" : "User")</td>
+                <td>@(item.Status ? "Active" : "Inactive")</td>
+                <td>@item.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

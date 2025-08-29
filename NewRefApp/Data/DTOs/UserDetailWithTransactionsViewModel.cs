@@ -6,5 +6,6 @@ namespace NewRefApp.Data.DTOs
     {
         public User User { get; set; }
         public UserTransactionsViewModel TransactionsData { get; set; }
+        public TeamMemberDataDto TeamMemberDetails { get; set; }
     }
 }

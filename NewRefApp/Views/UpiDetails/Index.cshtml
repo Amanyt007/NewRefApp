@@ -7,13 +7,29 @@
 
 <h2>UPI Details</h2>
 
+<form method="get" class="mb-3 d-flex align-items-center">
+    <select name="filter" class="form-select w-25 me-2" onchange="this.form.submit()">
+        <option value="">All</option>
+        <option value="admin" selected="@(ViewBag.Filter == "admin")">Admins</option>
+        <option value="user" selected="@(ViewBag.Filter == "user")">Users</option>
+    </select>
+
+    <input type="text" name="phoneSearch" value="@ViewBag.PhoneSearch" 
+           class="form-control w-25 me-2" placeholder="Search by Phone Number" />
+
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-success">Create New</a>
 </p>
-<table class="table">
+
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>Id</th>
+            <th>User Name</th>
+            <th>Phone Number</th>
             <th>UPI ID</th>
             <th>Is Admin</th>
             <th>Status</th>
@@ -26,14 +42,16 @@
         {
             <tr>
                 <td>@item.Id</td>
+                <td>@item.User?.FullName</td>
+                <td>@item.User?.PhoneNumber</td>
                 <td>@item.UpiId</td>
-                <td>@item.IsAdmin</td>
-                <td>@item.Status</td>
-                <td>@item.CreatedDate</td>
+                <td>@(item.IsAdmin ? "Admin" : "User")</td>
+                <td>@(item.Status ? "Active" : "Inactive")</td>
+                <td>@item.CreatedDate.ToString("g")</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
                 </td>
             </tr>
         }

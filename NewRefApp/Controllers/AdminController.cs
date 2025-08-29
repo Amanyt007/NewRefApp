@@ -45,11 +45,30 @@ namespace NewRefApp.Controllers
             return View(user);
         }
 
-        public async Task<IActionResult> SettleTransactions()
+        //public async Task<IActionResult> SettleTransactions()
+        //{
+        //    var deposits = await _adminService.GetPendingDepositsAsync();
+        //    return View(deposits);
+        //}
+        public async Task<IActionResult> SettleTransactions(int? statusFilter, string phoneSearch)
         {
-            var deposits = await _adminService.GetPendingDepositsAsync();
+            var deposits = await _adminService.GetPendingDepositsAsync(statusFilter, phoneSearch);
+
+            // preserve filter values for dropdown + search box
+            ViewBag.StatusFilter = statusFilter;
+            ViewBag.PhoneSearch = phoneSearch;
+
+            ViewBag.StatusOptions = new SelectList(new[]
+            {
+        new { Value = "", Text = "All" },
+        new { Value = "0", Text = "Pending" },
+        new { Value = "1", Text = "Done" },
+        new { Value = "2", Text = "Failed" }
+    }, "Value", "Text", statusFilter);
+
             return View(deposits);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> ApproveTransaction(int id)
@@ -152,14 +171,17 @@ namespace NewRefApp.Controllers
         public async Task<IActionResult> UserDetails(int id)
         {
             var user = await _adminService.GetUserByIdAsync(id);
+            TeamMemberDataDto teamMembers = null;
             if (user == null) return NotFound();
 
             var transactions = await _transactionService.GetUserTransactionsAsync(user.Id);
-
+            teamMembers = await _userService.GetAllTeamMembersAsync(user.Id);
+            ViewBag.ReferralData = await _transactionService.ReferralAmuntAsync(user.Id);
             var viewModel = new UserDetailWithTransactionsViewModel
             {
                 User = user,
-                TransactionsData = transactions
+                TransactionsData = transactions,
+                TeamMemberDetails = teamMembers
             };
 
             return View(viewModel);

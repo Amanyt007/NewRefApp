@@ -28,6 +28,30 @@ namespace NewRefApp.Services
                 .OrderByDescending(b => b.CreatedDate)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<BankDetails>> GetBankDetailsAsync(string roleFilter, string phoneSearch)
+        {
+            var query = _context.BankDetails
+                .Include(b => b.User)
+                .AsQueryable();
+
+            // Role filter (admin/user)
+            if (!string.IsNullOrEmpty(roleFilter))
+            {
+                if (roleFilter == "admin")
+                    query = query.Where(b => b.IsAdmin);
+                else if (roleFilter == "user")
+                    query = query.Where(b => !b.IsAdmin);
+            }
+
+            // Phone search
+            if (!string.IsNullOrEmpty(phoneSearch))
+            {
+                query = query.Where(b => b.User.PhoneNumber.Contains(phoneSearch));
+            }
+
+            return await query.OrderByDescending(b => b.CreatedDate).ToListAsync();
+        }
+
 
         public async Task CreateBankDetailAsync(BankDetails bankDetails,bool isAdmin = false)
         {
@@ -58,6 +82,23 @@ namespace NewRefApp.Services
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<BankDetails> GetRandomActiveAdminBankAsync()
+        {
+            var bank = await _context.BankDetails
+        .Where(b => b.IsAdmin && b.Status)
+        .OrderBy(b => b.LastUsedAt ?? DateTime.MinValue)
+        .ThenBy(b => b.Id)
+        .FirstOrDefaultAsync();
+
+            if (bank != null)
+            {
+                bank.LastUsedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+            }
+            return bank;
+        }
+
 
         public async Task<BankDetails> GetFirstActiveAdminBankAsync()
         {

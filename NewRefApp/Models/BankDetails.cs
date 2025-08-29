@@ -37,6 +37,8 @@ namespace NewRefApp.Models
         public bool Status { get; set; } // e.g., "Active", "Inactive"
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime? LastUsedAt { get; set; }
+
     }
 
 }

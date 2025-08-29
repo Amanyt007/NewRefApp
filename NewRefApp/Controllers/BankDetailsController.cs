@@ -19,11 +19,21 @@ namespace NewRefApp.Controllers
             ViewData["Layout"] = "~/Views/Shared/_AdminLayout.cshtml";
         }
 
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    var bankDetails = await _bankService.GetAllBankDetailsAsync();
+        //    return View(bankDetails);
+        //}
+        public async Task<IActionResult> Index(string roleFilter, string phoneSearch)
         {
-            var bankDetails = await _bankService.GetAllBankDetailsAsync();
+            var bankDetails = await _bankService.GetBankDetailsAsync(roleFilter, phoneSearch);
+
+            ViewBag.RoleFilter = roleFilter;
+            ViewBag.PhoneSearch = phoneSearch;
+
             return View(bankDetails);
         }
+
 
         public IActionResult Create()
         {
@@ -81,6 +91,14 @@ namespace NewRefApp.Controllers
 
                 var userPhone = HttpContext.Session.GetString("UserPhone");
                 var user = !string.IsNullOrEmpty(userPhone) ? await _userService.GetByPhoneAsync(userPhone) : null;
+                if (user.IsAdmin)
+                {
+                    bankDetails.IsAdmin = true;
+                }
+                else
+                {
+                    bankDetails.Status = true;
+                }
                 bankDetails.UserId = user.Id;
                 await _bankService.UpdateBankDetailAsync(bankDetails);
                 return RedirectToAction(nameof(Index));
@@ -104,7 +122,7 @@ namespace NewRefApp.Controllers
             return View(bankDetail);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _bankService.DeleteBankDetailAsync(id);

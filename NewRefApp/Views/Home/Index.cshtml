@@ -235,7 +235,7 @@
     </div>
 </div>
 <div id="PopUp">
-    <div id="notification" class="notification">
+    <div id="notification" class="notification show d-none">
         <img id="productImg" src="" alt="">
         <div class="content lh-sm">
             <p class="mb-0"><span class="title" id="userName"></span> <span>Purchased</span></p>
@@ -359,10 +359,10 @@
                 productImg.src = data.ProductImage || "default.jpg";
                 timeAgo.textContent = `${Math.floor(Math.random() * 5) + 1} minutes ago`;
 
-                notification.classList.add("show");
+                notification.classList.add("d-none");
 
                 setTimeout(() => {
-                    notification.classList.remove("show");
+                    notification.classList.remove("d-none");
                 }, 4000); // show for 4s
             }
 

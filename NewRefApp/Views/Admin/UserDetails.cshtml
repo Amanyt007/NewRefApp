@@ -3,6 +3,12 @@
 @{
     ViewData["Title"] = "User Details";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var currentDateTime = DateTime.Now.ToString("hh:mm tt 'IST' on dddd, MMMM dd, yyyy");
+    var totalInvite = 0;
+    var totalMoney = 0;
+    decimal totalWithdraw = 0;
+    decimal totalDeposite = 0;
+    decimal totalInvestment = 0;
 }
 
 <div class="container mt-4">
@@ -10,6 +16,7 @@
     <div class="card p-3 bg-light mb-4">
         <h4>User Information</h4>
         <p><strong>ID:</strong> @Model.User.Id</p>
+        <p class="h3">Current Balance: ₹@Model.TransactionsData.UserBalance</p>
         <p><strong>Name:</strong> @Model.User.FullName</p>
         <p><strong>Phone:</strong> @Model.User.PhoneNumber</p>
         <p><strong>Type:</strong> @(Model.User.IsAdmin ? "Admin" : "User")</p>
@@ -17,10 +24,120 @@
         <p><strong>Referral Code:</strong> @Model.User.ReferralCode</p>
         <p><strong>Created At:</strong> @Model.User.CreatedAt.ToLocalTime().ToString("g")</p>
     </div>
-
-    <div class="card bg-dark text-white p-3 mb-3">
+    <div class="card p-3 bg-light mb-4">
+        <div class="row justify-content-around text-dark mt-4">
+    <div class="col-4">
+        <div class="bg-white p-3 rounded shadow-sm">
+            <div class="fs-5 fw-bold" id="InvestMent"></div>
+            <small>Investment</small>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="bg-white p-3 rounded shadow-sm">
+            <div class="fs-5 fw-bold" id="Deposite"></div>
+            <small>Recharge</small>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="bg-white p-3 rounded shadow-sm">
+            <div class="fs-5 fw-bold" id="Withdraw"></div>
+            <small>Withdraw</small>
+        </div>
+    </div>
+</div>
+    </div>
+    @* <div class="card bg-dark text-white p-3 mb-3">
         <h5>All Transactions</h5>
         <p>Current Balance: ₹@Model.TransactionsData.UserBalance</p>
+    </div> *@
+    <div class="container my-4">
+        <div class="row text-center bg-white shadow-sm p-4 rounded mb-3">
+            <div class="col border-end">
+                <div class="text-muted">Referral Earning</div>
+                <div class="fw-bold fs-5 text-pink">₹@ViewBag.ReferralData</div>
+            </div>
+            <div class="col">
+                <div class="text-muted">Team Size</div>
+                <div class="fw-bold fs-5 text-pink" id="teamSize">@totalInvite</div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs nav-fill rounded bg-pink mb-3 p-2 px-3" id="levelTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="level1-tab" data-bs-toggle="tab" data-bs-target="#level1" type="button" role="tab">Level 1</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="level2-tab" data-bs-toggle="tab" data-bs-target="#level2" type="button" role="tab">Level 2</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="level3-tab" data-bs-toggle="tab" data-bs-target="#level3" type="button" role="tab">Level 3</button>
+            </li>
+        </ul>
+
+        <div class="tab-content bg-white shadow-sm rounded p-3">
+            <!-- LEVEL 1 -->
+            <div class="tab-pane fade show active" id="level1" role="tabpanel">
+                <p class="text-muted small">Updated as of @currentDateTime</p>
+                @if (Model.TeamMemberDetails?.Level1 != null && Model.TeamMemberDetails.Level1.Any())
+                {
+                    @foreach (var member in Model.TeamMemberDetails.Level1)
+                    {
+                        totalInvite++;
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span><strong>Mobile:</strong> @member.MobileNumber</span>
+                            <span><strong>Purchased:</strong> @(member.IsPurchased ? "Yes" : "No")</span>
+                            <span><strong>VIP Level:</strong> @member.VipLevel</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">No team members at this level</div>
+                }
+            </div>
+
+            <!-- LEVEL 2 -->
+            <div class="tab-pane fade" id="level2" role="tabpanel">
+                <p class="text-muted small">Updated as of @currentDateTime</p>
+                @if (Model.TeamMemberDetails?.Level2 != null && Model.TeamMemberDetails.Level2.Any())
+                {
+                    @foreach (var member in Model.TeamMemberDetails.Level2)
+                    {
+                        totalInvite++;
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span><strong>Mobile:</strong> @member.MobileNumber</span>
+                            <span><strong>Purchased:</strong> @(member.IsPurchased ? "Yes" : "No")</span>
+                            <span><strong>VIP Level:</strong> @member.VipLevel</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">No team members at this level</div>
+                }
+            </div>
+
+            <!-- LEVEL 3 -->
+            <div class="tab-pane fade" id="level3" role="tabpanel">
+                <p class="text-muted small">Updated as of @currentDateTime</p>
+                @if (Model.TeamMemberDetails?.Level3 != null && Model.TeamMemberDetails.Level3.Any())
+                {
+                    @foreach (var member in Model.TeamMemberDetails.Level3)
+                    {
+                        totalInvite++;
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span><strong>Mobile:</strong> @member.MobileNumber</span>
+                            <span><strong>Purchased:</strong> @(member.IsPurchased ? "Yes" : "No")</span>
+                            <span><strong>VIP Level:</strong> @member.VipLevel</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">No team members at this level</div>
+                }
+            </div>
+        </div>
     </div>
 
     <div class="card bg-secondary text-white p-3">
@@ -35,6 +152,15 @@
             <tbody>
                 @foreach (var tx in Model.TransactionsData.Transactions)
                 {
+                    @if(tx.TransactionType == "Investment Amount"){
+                        totalInvestment+=@tx.Amount;
+                    }
+                    @if(tx.TransactionType == "Deposit"){
+                        totalDeposite+=@tx.Amount;
+                    }
+                    @if(tx.TransactionType == "Withdraw"){
+                        totalWithdraw+=@tx.Amount;
+                    }
                     <tr>
                         <td>@tx.TransactionType</td>
                         <td>₹@tx.Amount</td>
@@ -44,4 +170,13 @@
             </tbody>
         </table>
     </div>
+
+    
 </div>
+<script>
+    // Set totalInvite value from Razor to JavaScript
+    document.getElementById("teamSize").innerText = "@totalInvite";
+    document.getElementById("InvestMent").innerText = "@totalInvestment.ToString("F0")";
+    document.getElementById("Deposite").innerText = "@totalDeposite.ToString("F0")";
+    document.getElementById("Withdraw").innerText = "@totalWithdraw.ToString("F0")";
+</script>
